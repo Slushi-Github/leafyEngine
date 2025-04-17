@@ -1,0 +1,26 @@
+{
+	"extraLibs": [
+		"slushiUtilsU",
+		"curl",
+		"SDL2",
+		"leafyEngine",
+		"jansson",
+		"vorbis"
+	],
+	"programVersion": "1.3.5",
+	"projectDefines": [],
+	"haxeConfig": {
+		"othersOptions": [],
+		"generateDoxDocs": true,
+		"hxMain": "src.Main",
+		"outDir": "output",
+		"debugMode": false,
+		"sourceDir": "src",
+		"errorReportingStyle": "pretty"
+	},
+	"wiiuConfig": {
+		"projectName": "leafyEngineTest",
+		"consoleIP": ""
+	},
+	"deleteTempFiles": false
+}

@@ -1,0 +1,16 @@
+{
+    "name": "leafyEngine",
+    "url": "https://github.com/Slushi-Github/leafyEngine",
+    "license": "Apache",
+    "tags": [
+        "native", "wiiu"
+    ],
+    "description": "An engine inspired by HaxeFlixel for making 2D games for the Wii U using Haxe!",
+    "version": "1.0.0",
+    "releasenote": "",
+    "contributors": [
+        "Slushi"
+    ],
+    "dependencies": {
+    }
+}
