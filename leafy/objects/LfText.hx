@@ -1,11 +1,11 @@
+// Copyright (c) 2025 Andrés E. G.
+//
+// This software is licensed under the MIT License.
+// See the LICENSE file for more details.
+
 package leafy.objects;
 
 import Std;
-
-import leafy.filesystem.LfSystemPaths;
-import leafy.backend.sdl.LfWindow;
-import leafy.objects.LfObject;
-import leafy.utils.LfUtils;
 
 import sdl2.SDL_TTF;
 import sdl2.SDL_Pixels.SDL_Color;
@@ -14,6 +14,11 @@ import sdl2.SDL_Render.SDL_Texture;
 import sdl2.SDL_Surface.SDL_Surface;
 import sdl2.SDL_Surface.SDL_SurfaceClass;
 import sdl2.SDL_Rect;
+
+import leafy.filesystem.LfSystemPaths;
+import leafy.backend.sdl.LfWindow;
+import leafy.objects.LfObject;
+import leafy.utils.LfUtils;
 
 /**
  * A text object, used to display text on the screen, is the same thing as a LfSprite, but with text

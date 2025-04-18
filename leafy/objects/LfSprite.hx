@@ -1,15 +1,13 @@
+// Copyright (c) 2025 Andrés E. G.
+//
+// This software is licensed under the MIT License.
+// See the LICENSE file for more details.
+
 package leafy.objects;
 
-
-import leafy.filesystem.LfSystemPaths;
 import Std;
-import wiiu.SDCardUtil;
 
-import leafy.backend.sdl.LfWindow;
-import leafy.utils.LfStringUtils;
-import leafy.backend.LeafyDebug;
-import leafy.objects.LfObject;
-import leafy.utils.LfUtils;
+import wiiu.SDCardUtil;
 
 import sdl2.SDL_Image;
 import sdl2.SDL_Render;
@@ -18,6 +16,13 @@ import sdl2.SDL_Surface.SDL_SurfaceClass;
 import sdl2.SDL_Rect;
 import sdl2.SDL_Error;
 import sdl2.SDL_Pixels;
+
+import leafy.backend.sdl.LfWindow;
+import leafy.utils.LfStringUtils;
+import leafy.backend.LeafyDebug;
+import leafy.objects.LfObject;
+import leafy.utils.LfUtils;
+import leafy.filesystem.LfSystemPaths;
 
 /**
  * A sprite object, used to display images on the screen

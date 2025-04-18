@@ -1,6 +1,10 @@
+// Copyright (c) 2025 Andrés E. G.
+//
+// This software is licensed under the MIT License.
+// See the LICENSE file for more details.
+
 package leafy;
 
-import leafy.audio.LfAudioManager;
 import wut.whb.Proc;
 import wut.whb.Log_udp;
 import wut.whb.Crash;
@@ -13,6 +17,7 @@ import leafy.filesystem.LfSystemPaths;
 import leafy.backend.LeafyDebug;
 import leafy.backend.LfStateHandler;
 import leafy.backend.LfGamepadInternal;
+import leafy.audio.LfAudioManager;
 
 /**
  * Leafy Engine Main class:

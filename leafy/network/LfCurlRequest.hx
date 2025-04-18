@@ -1,3 +1,8 @@
+// Copyright (c) 2025 Andrés E. G.
+//
+// This software is licensed under the MIT License.
+// See the LICENSE file for more details.
+
 package leafy.network;
 
 @:cppFileCode("
@@ -63,7 +68,7 @@ std::string curlRequest(const std::string& url,
 ")
 
 /**
- * C++ wrapper for curl, used to make HTTP requests
+ * C++ wrapper for Curl, used to make HTTP requests
  * 
  * Author: Slushi
  */

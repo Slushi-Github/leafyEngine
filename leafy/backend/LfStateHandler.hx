@@ -1,7 +1,11 @@
+// Copyright (c) 2025 Andrés E. G.
+//
+// This software is licensed under the MIT License.
+// See the LICENSE file for more details.
+
 package leafy.backend;
 
 import leafy.backend.LfGamepadInternal;
-
 import leafy.states.LfState;
 import leafy.tweens.LfTween;
 

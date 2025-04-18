@@ -1,13 +1,18 @@
+// Copyright (c) 2025 Andrés E. G.
+//
+// This software is licensed under the MIT License.
+// See the LICENSE file for more details.
+
 package leafy.objects;
 
 import Std;
 
-import leafy.utils.LfUtils.LfVector2D;
-
 import sdl2.SDL_Render.SDL_Texture;
 import sdl2.SDL_Pixels.SDL_Color;
-import leafy.backend.sdl.LfWindow;
 import sdl2.SDL_Render;
+
+import leafy.backend.sdl.LfWindow;
+import leafy.utils.LfUtils.LfVector2D;
 
 /**
  * Type of the object
