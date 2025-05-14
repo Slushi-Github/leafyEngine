@@ -10,9 +10,13 @@ import Std;
 import sdl2.SDL_Render.SDL_Texture;
 import sdl2.SDL_Pixels.SDL_Color;
 import sdl2.SDL_Render;
+import sdl2.SDL_Rect;
+import sdl2.SDL_Surface.SDL_Surface;
 
 import leafy.backend.sdl.LfWindow;
 import leafy.utils.LfUtils.LfVector2D;
+import leafy.utils.LfUtils;
+
 
 /**
  * Type of the object
@@ -59,6 +63,11 @@ class LfObject extends LfBase {
     // SDL Data //////////////////////////////
 
     /**
+     * Pointer to the SDL_Surface.
+     */
+    public var sdlSurfacePtr:Ptr<SDL_Surface>;
+
+    /**
      * Pointer to the SDL_Texture.
      */
     public var sdlTexturePtr:Ptr<SDL_Texture>;
@@ -67,6 +76,13 @@ class LfObject extends LfBase {
      * Color of the object.
      */
     public var color:SDL_Color;
+
+    /**
+     * Rect of the object.
+     */
+    public var rect:SDL_Rect;
+
+    // General Data //////////////////////////
 
     /**
      * X coordinate of the object.
@@ -107,6 +123,62 @@ class LfObject extends LfBase {
      * If the object is visible.
      */
     public var isVisible:Bool;
+
+    /**
+     * Velocity of the sprite
+     */
+    public var velocity:LfVector2D;
+
+    /**
+     * Acceleration of the sprite
+     */
+    public var acceleration:LfVector2D;
+
+    /**
+     * Drag of the sprite
+     */
+    public var drag:LfVector2D;
+
+    /**
+     * Max velocity of the sprite
+     */
+    public var maxVelocity:LfVector2D;
+
+    /**
+     * Gravity of the sprite
+     */
+    public var gravity:Float;
+
+    /**
+     * Can the sprite be moved by the gravity?
+     */
+    public var immovable:Bool;
+
+    ////////////////////////////////
+
+    override public function update(elapsed:Float):Void {
+        if (!this.immovable) {
+            this.acceleration.y += gravity;
+
+            this.velocity.x += this.acceleration.x * elapsed;
+            this.velocity.y += this.acceleration.y * elapsed;
+
+            this.velocity.x -= this.drag.x * elapsed * LfUtils.sign(this.velocity.x);
+            this.velocity.y -= this.drag.y * elapsed * LfUtils.sign(this.velocity.y);
+
+            if (Math.abs(this.velocity.x) > this.maxVelocity.x)
+                this.velocity.x = this.maxVelocity.x * LfUtils.sign(this.velocity.x);
+
+            if (Math.abs(this.velocity.y) > this.maxVelocity.y)
+                this.velocity.y = this.maxVelocity.y * LfUtils.sign(this.velocity.y);
+
+            this.x += Std.int(this.velocity.x * elapsed);
+            this.y += Std.int(this.velocity.y * elapsed);
+
+            this.acceleration.x = 0;
+            this.acceleration.y = 0;
+        }
+    }
 
     ////////////////////////////////
 

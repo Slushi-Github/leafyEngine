@@ -28,13 +28,12 @@ enum LfWindowType {
  * @: Slushi
  */
 class LfWindow {
-    @:dox(hide)
+
     private static var _drcResolution = {
         x: 1280,
         y: 720
     }
 
-    @:dox(hide)
     private static var _tvResolution = {
         x: 1920,
         y: 1080

@@ -99,6 +99,16 @@ class LfSystemPaths {
             return;
         }
         engineMainPath = consolePath + path;
+
+        // Check if the path exists and create it if it doesn't
+        if (!exists(engineMainPath)) {
+            createDirectory(engineMainPath);
+        } else {
+            if (!isDirectory(engineMainPath)) {
+                removeDirectory(engineMainPath);
+                createDirectory(engineMainPath);
+            }
+        }
     }
 
     /**

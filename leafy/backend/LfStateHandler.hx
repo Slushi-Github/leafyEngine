@@ -5,6 +5,7 @@
 
 package leafy.backend;
 
+import Std;
 import leafy.backend.LfGamepadInternal;
 import leafy.states.LfState;
 import leafy.tweens.LfTween;
@@ -38,10 +39,11 @@ class LfStateHandler {
      * Destroys the current state
      */
     public static function destroyCurrentState():Void {
+        LfTween.clearTweens();
         if (currentState != null) {
-            LfTween.clearTweens();
             currentState.destroy();
             currentState = null;
+            Leafy.currentState = null;
         }
     }
 
@@ -50,12 +52,12 @@ class LfStateHandler {
      * @param newState The new state
      */
     public static function changeState(newState:LfState):Void {
-        LfTween.clearTweens();
-        if (currentState != null) {
-            currentState.destroy();
-        }
+        LeafyDebug.log("Changing state...", INFO);
+        destroyCurrentState();
         currentState = newState;
+        Leafy.currentState = currentState;
         currentState.create();
+        LeafyDebug.log("State changed!", INFO);
     }
 
     /**

@@ -94,7 +94,7 @@ class LfAudioManager {
      * Updates the audio manager state
      */
     public static function update():Void {
-        if (currentAudio != null) {
+        if (untyped __cpp__("{0} != NULL", currentAudio)) {
             currentAudio.currentTime = currentTime;
             playing = currentAudio.playing;
             paused = currentAudio.paused;
@@ -202,7 +202,7 @@ class LfAudioManager {
         audioSpec = obtainedSpec;
 
         if (audioSpec.freq != desiredSpec.freq || audioSpec.channels != desiredSpec.channels) {
-            LeafyDebug.log("Warning: SDL provided different specs than requested! Freq: " + audioSpec.freq + " (req: " + desiredSpec.freq + "), Channels: " + audioSpec.channels + " (req: " + desiredSpec.channels + ")", WARNING);
+            LeafyDebug.log("Warning: SDL provided different specs than requested! Freq: " + Std.string(audioSpec.freq) + " (req: " + Std.string(desiredSpec.freq) + "), Channels: " + Std.string(audioSpec.channels) + " (req: " + Std.string(desiredSpec.channels) + ")", WARNING);
         }
 
         SDL_Audio.SDL_PauseAudioDevice(audioDevice, 0);

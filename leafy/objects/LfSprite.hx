@@ -35,36 +35,6 @@ class LfSprite extends LfObject {
      */
     public var imagePath:String;
 
-    /**
-     * Velocity of the sprite
-     */
-    public var velocity:LfVector2D;
-
-    /**
-     * Acceleration of the sprite
-     */
-    public var acceleration:LfVector2D;
-
-    /**
-     * Drag of the sprite
-     */
-    public var drag:LfVector2D;
-
-    /**
-     * Max velocity of the sprite
-     */
-    public var maxVelocity:LfVector2D;
-
-    /**
-     * Gravity of the sprite
-     */
-    public var gravity:Float;
-
-    /**
-     * Can the sprite be moved by the gravity?
-     */
-    public var immovable:Bool;
-
     /////////////////////////////////////////////////////////////////////
 
     /**
@@ -85,6 +55,9 @@ class LfSprite extends LfObject {
         this.isVisible = true;
         this.alpha = 1.0;
         this.sdlTexturePtr = null;
+        this.sdlSurfacePtr = null;
+        this.rect = new SDL_Rect();
+        this.readyToRender = false;
 
         //////////////////
 
@@ -95,7 +68,7 @@ class LfSprite extends LfObject {
         this.drag = {x: 0, y: 0};
         this.maxVelocity = {x: 0, y: 0};
         this.gravity = 0;
-        this.immovable = false; 
+        this.immovable = false;
     }
 
     /**
@@ -103,45 +76,43 @@ class LfSprite extends LfObject {
      * @param imgPath The path to the image
      */
     public function loadImage(imgPath:String):Void {
-
         var correctPath:String = LfSystemPaths.getConsolePath() + imgPath;
 
         if (imgPath == null || imgPath == "") {
             LeafyDebug.log("Image path cannot be null or empty", ERROR);
             return;
         }
-        else if (!LfStringUtils.stringEndsWith(correctPath, ".png")) {
+        if (!LfStringUtils.stringEndsWith(correctPath, ".png")) {
             LeafyDebug.log("Image must be a PNG file", ERROR);
             return;
         }
-        else if (!LfSystemPaths.exists(correctPath) ) {
+        if (!LfSystemPaths.exists(correctPath) ) {
             LeafyDebug.log("Image path does not exist: " + imgPath, ERROR);
             return;
         }
 
-        if (this.readyToRender) {
-            this.readyToRender = false;
-        }
+        this.readyToRender = false;
 
         this.imagePath = correctPath;
-        this.name = LfUtils.removeSDDirFromPath(imgPath);
+        this.name = LfUtils.removeSDDirFromPath(this.imagePath);
 
-        var surface:Ptr<SDL_Surface> = SDL_Image.IMG_Load(ConstCharPtr.fromString(this.imagePath));
-        if (surface == null) {
+        this.sdlSurfacePtr = SDL_Image.IMG_Load(ConstCharPtr.fromString(this.imagePath));
+        if (this.sdlSurfacePtr == null) {
             LeafyDebug.log("Failed to load image: " + SDL_Error.SDL_GetError().toString(), ERROR);
             return;
         }
 
-        this.sdlTexturePtr = SDL_Render.SDL_CreateTextureFromSurface(LfWindow.currentRenderer, surface);
+        this.sdlTexturePtr = SDL_Render.SDL_CreateTextureFromSurface(LfWindow.currentRenderer, this.sdlSurfacePtr);
         if (this.sdlTexturePtr == null) {
             LeafyDebug.log("Failed to create texture from surface: " + SDL_Error.SDL_GetError().toString(), ERROR);
-            SDL_SurfaceClass.SDL_FreeSurface(surface);
+            SDL_SurfaceClass.SDL_FreeSurface(this.sdlSurfacePtr);
             return;
         }
 
-        SDL_SurfaceClass.SDL_FreeSurface(surface);
+        // SDL_SurfaceClass.SDL_FreeSurface(this.sdlSurfacePtr);
 
-        var rect:SDL_Rect = new SDL_Rect();
+        SDL_Render.SDL_SetTextureBlendMode(this.sdlTexturePtr, SDL_BLENDMODE_BLEND);
+
         SDL_Render.SDL_QueryTexture(this.sdlTexturePtr, untyped __cpp__("NULL"), untyped __cpp__("NULL"), rect.w, rect.h);
         if (rect.w <= 0 || rect.h <= 0) {
             LeafyDebug.log("Failed to get texture size: " + SDL_Error.SDL_GetError().toString(), ERROR);
@@ -168,16 +139,23 @@ class LfSprite extends LfObject {
             return;
         }
 
-        if (this.sdlTexturePtr != null) {
-            SDL_Render.SDL_DestroyTexture(this.sdlTexturePtr);
-            this.sdlTexturePtr = null;
+        if (width <= 0 || height <= 0) {
+            LeafyDebug.log("Width and height must be greater than 0", ERROR);
+            return;
         }
+
+        this.readyToRender = false;
+
+        // if (this.sdlTexturePtr != null) {
+        //     SDL_Render.SDL_DestroyTexture(this.sdlTexturePtr);
+        //     this.sdlTexturePtr = null;
+        // }
 
         this.imagePath = "";
         this.width = width;
         this.height = height;
 
-        var surface:Ptr<SDL_Surface> = SDL_SurfaceClass.SDL_CreateRGBSurface(
+        this.sdlSurfacePtr = SDL_SurfaceClass.SDL_CreateRGBSurface(
             0,
             width,
             height,
@@ -188,7 +166,7 @@ class LfSprite extends LfObject {
             0xFF000000 
         );
 
-        if (surface == null) {
+        if (this.sdlSurfacePtr == null) {
             LeafyDebug.log("Failed to create surface: " + SDL_Error.SDL_GetError().toString(), ERROR);
             return;
         }
@@ -199,23 +177,25 @@ class LfSprite extends LfObject {
         var colorA:UInt8 = color[3];
 
         var mappedColor:UInt32 = SDL_PixelsClass.SDL_MapRGBA(
-            surface.format,
+            this.sdlSurfacePtr.format,
             colorR,
             colorG,
             colorB,
             colorA
         );
 
-        SDL_SurfaceClass.SDL_FillRect(surface, null, mappedColor);
+        SDL_SurfaceClass.SDL_FillRect(this.sdlSurfacePtr, null, mappedColor);
 
-        this.sdlTexturePtr = SDL_Render.SDL_CreateTextureFromSurface(LfWindow.currentRenderer, surface);
+        this.sdlTexturePtr = SDL_Render.SDL_CreateTextureFromSurface(LfWindow.currentRenderer, this.sdlSurfacePtr);
         if (this.sdlTexturePtr == null) {
             LeafyDebug.log("Failed to create texture from surface: " + SDL_Error.SDL_GetError().toString(), ERROR);
-            SDL_SurfaceClass.SDL_FreeSurface(surface);
+            SDL_SurfaceClass.SDL_FreeSurface(this.sdlSurfacePtr);
             return;
         }
 
-        SDL_SurfaceClass.SDL_FreeSurface(surface);
+        // SDL_SurfaceClass.SDL_FreeSurface(this.sdlSurfacePtr);
+
+        SDL_Render.SDL_SetTextureBlendMode(this.sdlTexturePtr, SDL_BLENDMODE_BLEND);
 
         this.name = "Graphic_(" + width + "x" + height + ")";
 
@@ -225,32 +205,6 @@ class LfSprite extends LfObject {
 
 
     /////////////////////////////////////////////////////////////////////
-
-    override public function update(elapsed:Float):Void {
-        if (this.immovable) {
-            return;
-        }
-
-        this.acceleration.y += gravity;
-
-        this.velocity.x += this.acceleration.x * elapsed;
-        this.velocity.y += this.acceleration.y * elapsed;
-
-        this.velocity.x -= this.drag.x * elapsed * LfUtils.sign(this.velocity.x);
-        this.velocity.y -= this.drag.y * elapsed * LfUtils.sign(this.velocity.y);
-
-        if (Math.abs(this.velocity.x) > this.maxVelocity.x)
-            this.velocity.x = this.maxVelocity.x * LfUtils.sign(this.velocity.x);
-
-        if (Math.abs(this.velocity.y) > this.maxVelocity.y)
-            this.velocity.y = this.maxVelocity.y * LfUtils.sign(this.velocity.y);
-
-        this.x += Std.int(this.velocity.x * elapsed);
-        this.y += Std.int(this.velocity.y * elapsed);
-
-        this.acceleration.x = 0;
-        this.acceleration.y = 0;
-    }
 
     /**
      * Render the sprite
@@ -282,6 +236,14 @@ class LfSprite extends LfObject {
         rect.w =this.width;
         rect.h = this.height;
 
+        if (this.alpha < 0) {
+            this.alpha = 0;
+        }
+        else if (this.alpha > 1) {
+            this.alpha = 1;
+        }
+
+        SDL_Render.SDL_SetTextureAlphaMod(this.sdlTexturePtr, Std.int(this.alpha * 255));
         SDL_Render.SDL_RenderCopyEx(LfWindow.currentRenderer, this.sdlTexturePtr, null, rect, this.angle, null, SDL_FLIP_NONE);
     }
 
@@ -289,6 +251,11 @@ class LfSprite extends LfObject {
      * Destroy the sprite
      */
     override public function destroy():Void {
+
+        if (this.sdlSurfacePtr != null) {
+            SDL_SurfaceClass.SDL_FreeSurface(this.sdlSurfacePtr);
+            this.sdlSurfacePtr = null;
+        }
         if (this.sdlTexturePtr != null) {
             SDL_Render.SDL_DestroyTexture(this.sdlTexturePtr);
             this.sdlTexturePtr = null;

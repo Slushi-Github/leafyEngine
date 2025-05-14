@@ -26,8 +26,9 @@ import leafy.utils.LfUtils;
  * Author: Slushi
  */
 class LfText extends LfObject {
-    private var text:String = "";
+    public var text:String = "";
     public var size:UInt32 = 20;
+    public var length:Int = 0;
 
     private var fontPtr:Ptr<TTF_Font>;
     public var fontPath:String = "";
@@ -76,6 +77,10 @@ class LfText extends LfObject {
         this.isVisible = true;
         this.alpha = 1.0;
         this.sdlTexturePtr = null;
+        this.sdlSurfacePtr = null;
+        this.color = new SDL_Color();
+        this.rect = new SDL_Rect();
+        this.readyToRender = false;
 
         //////////////////
 
@@ -83,11 +88,10 @@ class LfText extends LfObject {
         this.size = size;
         this.fontPath = fontPath;
 
-        var whiteColor:SDL_Color = new SDL_Color();
-        whiteColor.r = 255;
-        whiteColor.g = 255;
-        whiteColor.b = 255;
-        whiteColor.a = 255;
+        this.color.r = 255;
+        this.color.g = 255;
+        this.color.b = 255;
+        this.color.a = 255;
 
         this.fontPtr = SDL_TTF.TTF_OpenFont(ConstCharPtr.fromString(correctPath), size);
         if (untyped __cpp__("fontPtr == nullptr")) {
@@ -95,33 +99,31 @@ class LfText extends LfObject {
             return;
         }
 
-        var fontSurfacePtr:Ptr<SDL_Surface> = SDL_TTF.TTF_RenderText_Blended(this.fontPtr, ConstCharPtr.fromString(text), whiteColor);
-        if (fontSurfacePtr == null) {
+        this.sdlSurfacePtr = SDL_TTF.TTF_RenderText_Blended(this.fontPtr, ConstCharPtr.fromString(text), this.color);
+        if (this.sdlSurfacePtr == null) {
             LeafyDebug.log("Failed to create surface for text: " + SDL_TTF.TTF_GetError().toString(), ERROR);
             SDL_TTF.TTF_CloseFont(this.fontPtr);
             return;
         }
 
-        var fontTexturePtr:Ptr<SDL_Texture> = SDL_Render.SDL_CreateTextureFromSurface(LfWindow.currentRenderer, fontSurfacePtr);
-        if (fontTexturePtr == null) {
+        this.sdlTexturePtr = SDL_Render.SDL_CreateTextureFromSurface(LfWindow.currentRenderer, this.sdlSurfacePtr);
+        if (this.sdlTexturePtr == null) {
             LeafyDebug.log("Failed to create texture from surface: " + SDL_TTF.TTF_GetError().toString(), ERROR);
-            SDL_SurfaceClass.SDL_FreeSurface(fontSurfacePtr);
+            SDL_SurfaceClass.SDL_FreeSurface(this.sdlSurfacePtr);
             SDL_TTF.TTF_CloseFont(this.fontPtr);
             return;
         }
 
-        SDL_Render.SDL_SetTextureBlendMode(fontTexturePtr, SDL_BLENDMODE_BLEND);
+        SDL_Render.SDL_SetTextureBlendMode(this.sdlTexturePtr, SDL_BLENDMODE_BLEND);
 
-        this.sdlTexturePtr = fontTexturePtr;
-
-        this.width = fontSurfacePtr.w;
-        this.height = fontSurfacePtr.h;
-        this.color = whiteColor;
+        this.width = this.sdlSurfacePtr.w;
+        this.height = this.sdlSurfacePtr.h;
+        this.length = this.text.length;
 
         this.type = ObjectType.TEXT_SPRITE;
         this.name = LfUtils.removeSDDirFromPath(fontPath) + "_" + text;
 
-        SDL_SurfaceClass.SDL_FreeSurface(fontSurfacePtr);
+        // SDL_SurfaceClass.SDL_FreeSurface(this.sdlSurfacePtr);
 
         LeafyDebug.log("Created text sprite: [" + this.name + "]", INFO);
     }
@@ -138,34 +140,32 @@ class LfText extends LfObject {
             return;
         }
 
-        var fontSurface:Ptr<SDL_Surface> = SDL_TTF.TTF_RenderText_Blended(this.fontPtr, ConstCharPtr.fromString(newText), this.color);
-        if (fontSurface == null) {
+        this.readyToRender = false;
+
+        this.sdlSurfacePtr = SDL_TTF.TTF_RenderText_Blended(this.fontPtr, ConstCharPtr.fromString(newText), this.color);
+        if (this.sdlSurfacePtr == null) {
             LeafyDebug.log("Failed to create surface for new text: " + SDL_TTF.TTF_GetError().toString(), ERROR);
             return;
         }
 
-        var fontTexture:Ptr<SDL_Texture> = SDL_Render.SDL_CreateTextureFromSurface(LfWindow.currentRenderer, fontSurface);
-        if (fontTexture == null) {
-            LeafyDebug.log("Failed to create texture from new surface: " + SDL_TTF.TTF_GetError().toString(), ERROR);
-            SDL_SurfaceClass.SDL_FreeSurface(fontSurface);
-            return;
-        }
-
-        SDL_Render.SDL_SetTextureBlendMode(fontTexture, SDL_BLENDMODE_BLEND);
-
+        this.sdlTexturePtr = SDL_Render.SDL_CreateTextureFromSurface(LfWindow.currentRenderer, this.sdlSurfacePtr);
         if (this.sdlTexturePtr == null) {
-            LeafyDebug.log("Text texture is null, cannot update text", ERROR);
+            LeafyDebug.log("Failed to create texture from new surface: " + SDL_TTF.TTF_GetError().toString(), ERROR);
+            SDL_SurfaceClass.SDL_FreeSurface(this.sdlSurfacePtr);
             return;
         }
 
-        SDL_Render.SDL_DestroyTexture(this.sdlTexturePtr);
-        this.sdlTexturePtr = fontTexture;
+        SDL_Render.SDL_SetTextureBlendMode(this.sdlTexturePtr, SDL_BLENDMODE_BLEND);
 
-        this.width = fontSurface.w;
-        this.height = fontSurface.h;
+        this.width = this.sdlSurfacePtr.w;
+        this.height = this.sdlSurfacePtr.h;
         this.text = newText;
 
-        SDL_SurfaceClass.SDL_FreeSurface(fontSurface);
+        this.length = this.text.length;
+
+        this.readyToRender = true;
+
+        // SDL_SurfaceClass.SDL_FreeSurface(this.sdlSurfacePtr);
     }
 
     /**
@@ -179,35 +179,31 @@ class LfText extends LfObject {
             return;
         }
 
-        var tempNewColor:SDL_Color = new SDL_Color();
-        tempNewColor.r = newColor[0];
-        tempNewColor.g = newColor[1];
-        tempNewColor.b = newColor[2];
-        tempNewColor.a = newColor[3];
-        this.color = tempNewColor;
+        this.readyToRender = false;
 
-        var fontSurface:Ptr<SDL_Surface> = SDL_TTF.TTF_RenderText_Blended(this.fontPtr, ConstCharPtr.fromString(this.text), tempNewColor);
-        if (fontSurface == null) {
+        this.color.r = newColor[0];
+        this.color.g = newColor[1];
+        this.color.b = newColor[2];
+        this.color.a = newColor[3];
+
+        this.sdlSurfacePtr = SDL_TTF.TTF_RenderText_Blended(this.fontPtr, ConstCharPtr.fromString(this.text), this.color);
+        if (this.sdlSurfacePtr == null) {
             LeafyDebug.log("Failed to create surface for new text: " + SDL_TTF.TTF_GetError().toString(), ERROR);
             return;
         }
 
-        var fontTexture:Ptr<SDL_Texture> = SDL_Render.SDL_CreateTextureFromSurface(LfWindow.currentRenderer, fontSurface);
-        if (fontTexture == null) {
-            LeafyDebug.log("Failed to create texture from new surface: " + SDL_TTF.TTF_GetError().toString(), ERROR);
-            SDL_SurfaceClass.SDL_FreeSurface(fontSurface);
-            return;
-        }
-
+        this.sdlTexturePtr = SDL_Render.SDL_CreateTextureFromSurface(LfWindow.currentRenderer, this.sdlSurfacePtr);
         if (this.sdlTexturePtr == null) {
-            LeafyDebug.log("Text texture is null, cannot update text color", ERROR);
+            LeafyDebug.log("Failed to create texture from new surface: " + SDL_TTF.TTF_GetError().toString(), ERROR);
+            SDL_SurfaceClass.SDL_FreeSurface(this.sdlSurfacePtr);
             return;
         }
 
-        SDL_Render.SDL_DestroyTexture(this.sdlTexturePtr);
-        this.sdlTexturePtr = fontTexture;
+        SDL_Render.SDL_SetTextureBlendMode(this.sdlTexturePtr, SDL_BLENDMODE_BLEND);
 
-        SDL_SurfaceClass.SDL_FreeSurface(fontSurface);
+        this.readyToRender = true;
+
+        // SDL_SurfaceClass.SDL_FreeSurface(this.sdlSurfacePtr);
     }
 
     ////////////////////////////////////////////////
@@ -242,6 +238,14 @@ class LfText extends LfObject {
         rect.w =this.width;
         rect.h = this.height;
 
+        if (this.alpha < 0) {
+            this.alpha = 0;
+        }
+        else if (this.alpha > 1) {
+            this.alpha = 1;
+        }
+
+        SDL_Render.SDL_SetTextureAlphaMod(this.sdlTexturePtr, Std.int(this.alpha * 255));
         SDL_Render.SDL_RenderCopyEx(LfWindow.currentRenderer, this.sdlTexturePtr, null, rect, this.angle, null, SDL_FLIP_NONE);
     }
 

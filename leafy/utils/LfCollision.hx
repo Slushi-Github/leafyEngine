@@ -5,6 +5,7 @@
 
 package leafy.utils;
 
+import leafy.objects.LfObject;
 import Std;
 import leafy.objects.LfSprite;
 
@@ -14,14 +15,14 @@ import leafy.objects.LfSprite;
  * Author: Slushi
  */
 class LfCollision {
-
     /**
      * Check if two sprites are colliding
      * @param a First sprite
      * @param b Second sprite
      * @return Bool Whether the sprites are colliding
      */
-    public static function checkCollision(a:LfSprite, b:LfSprite):Bool {
+    public static function checkCollision(a:LfObject, b:LfObject):Bool {
+        if (a != null && b != null) return false;
         return (a.x < b.x + b.width &&
                 a.x + a.width > b.x &&
                 a.y < b.y + b.height &&
@@ -33,7 +34,7 @@ class LfCollision {
      * @param a First sprite
      * @param b Second sprite
      */
-    public static function separate(a:LfSprite, b:LfSprite):Void {
+    public static function separate(a:LfObject, b:LfObject):Void {
     if (!checkCollision(a, b)) return;
 
     var overlapX = 0.0;

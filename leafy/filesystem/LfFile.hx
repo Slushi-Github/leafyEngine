@@ -9,6 +9,7 @@ package leafy.filesystem;
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <sstream>
 
 bool CPP_writeFile(const std::string& path, const std::string& content) {
     std::ofstream file(path);
@@ -28,6 +29,16 @@ bool CPP_appendToFile(const std::string& path, const std::string& content) {
 
     file << content;
     return true;
+}
+
+std::string CPP_readFile(const std::string& path) {
+    std::ifstream file(path);
+    if (!file.is_open()) {
+        return \"\"; // Return empty string on error
+    }
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    return buffer.str();
 }
 ")
 
@@ -55,5 +66,14 @@ class LfFile {
     */
     public static function appendToFile(path:String, content:String):Bool {
         return untyped __cpp__("CPP_appendToFile({0}, {1});", path, content);
+    }
+
+    /**
+     * Read content from a file
+     * @param path The path to the file
+     * @return String (the content of the file)
+    */
+    public static function readFile(path:String):String {
+        return untyped __cpp__("CPP_readFile({0})", path);
     }
 }

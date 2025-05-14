@@ -30,7 +30,10 @@ enum LogLevel {
 
 @:cppFileCode("
 #include <iostream>
+#include <csignal>
+#include <cstdlib>
 #include <ctime>
+#include <haxe_PosInfos.h>
 
 std::string CPP_getCurrentDate() {
     time_t t = time(nullptr);
@@ -52,6 +55,54 @@ std::string CPP_getCurrentTime() {
     int second = timeNow->tm_sec;
 
     return std::to_string(hour) + \":\" + std::to_string(minute) + \":\" + std::to_string(second);
+}
+
+///////////////////////////
+/**
+ * Try to handle a crash, I don't think this will work
+ * but let's try it
+ */
+
+void crashHandler(int signal) {
+    std::cerr << \"Crash detected: \" << signal << \" => \";
+
+    const char* criticalErrorStr = \"\";
+
+    switch (signal) {
+        case SIGSEGV:
+            criticalErrorStr = \"Segmentation fault (Maybe a null pointer?)\\n\";
+        case SIGFPE:
+            criticalErrorStr = \"Arithmetic exception\\n\";
+        case SIGILL:
+            criticalErrorStr = \"Illegal instruction\\n\";
+        case SIGABRT:
+            criticalErrorStr = \"Abort (Failed assert or std::abort())\\n\";
+        case SIGBUS:
+            criticalErrorStr = \"Bus error (Memory access error)\\n\";
+        default:
+            criticalErrorStr = \"Unknown signal\\n\";
+    }
+
+    std::cerr << criticalErrorStr;
+
+    leafy::backend::LeafyDebug::criticalError(
+        criticalErrorStr,
+        haxe::shared_anon<haxe::PosInfos>(
+            \"leafy.backend.LeafyDebug\"s,
+            \"leafy/backend/LeafyDebug.hx\"s,
+            93,
+            \"crashHandler\"s
+        )
+    );
+}
+
+
+void registerCrashHandlers() {
+    std::signal(SIGSEGV, crashHandler);
+    std::signal(SIGFPE,  crashHandler);
+    std::signal(SIGILL,  crashHandler);
+    std::signal(SIGABRT, crashHandler);
+    std::signal(SIGBUS,  crashHandler);
 }
 ")
 
@@ -85,6 +136,13 @@ class LeafyDebug {
      * Whether the logger has started
      */
     private static var started:Bool = false;
+
+    /**
+     * Init C++ crash handlers
+     */
+    public static function initCrashHandlers():Void {
+        untyped __cpp__("registerCrashHandlers()");
+    }
 
     /**
      * // Log a message
@@ -142,7 +200,7 @@ class LeafyDebug {
         var logFile = logsDir + "leafyLog_" + currentTimeMod + "-" + currentDateMod + ".txt";
 
         if (!LfSystemPaths.exists(logFile)) {
-            LfFile.writeFile(logFile, "Leafy Engine Log File\n" + " - " + currentDateStr + " | " + currentTimeStr + "\n-------------------\n\n");
+            LfFile.writeFile(logFile, "Leafy Engine [" + LfEngine.version + "] Log File\n" + " - " + currentDateStr + " | " + currentTimeStr + "\n-------------------\n\n");
         }
 
         currentLogFile = logFile;
@@ -228,10 +286,11 @@ class LeafyDebug {
      * @param pos 
      */
     private static function crashConsole(crashError:String, ?pos:PosInfos):Void {
-        var strPtr:ConstCharPtr = ConstCharPtr.fromString("[Leafy Engine logger - " + getCurrentTime()
+        var strPtr:ConstCharPtr = ConstCharPtr.fromString("[Leafy Engine " + LfEngine.version + " logger - " + getCurrentTime()
         + " - CRASH]\n\nCall stack:\n" + getHaxeFilePosForCrash(pos) + "\n\nError: " + crashError
 		+ "\n\n\n\t\t    Please reset the console.");
 
+        LfFile.appendToFile(currentLogFile, "---------------------");
         log("CRASH: " + crashError, ERROR, pos);
         log("Stopping the engine and console due to crash...", ERROR, pos);
 

@@ -65,6 +65,11 @@ class Leafy {
     public static var audioManager:LfAudioManager;
 
     //////////////////////////////////
+
+    public static function switchState(newState:LfState):Void {
+        LfStateHandler.changeState(newState);
+    }
+
     //////////////////////////////////
 
     public static function update():Void {

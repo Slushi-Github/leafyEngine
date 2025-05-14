@@ -5,6 +5,7 @@
 
 package leafy.states;
 
+import Std;
 import leafy.objects.LfObject;
 import leafy.gamepad.LfGamepad;
 
@@ -60,7 +61,11 @@ class LfState extends LfBase {
      * Function called when the state is destroyed
      */
     override public function destroy():Void {
-        for (object in stateObjects) {
+        for (object in this.stateObjects) {
+            if (object == null) {
+                LeafyDebug.log("Object [" + Std.string(object) + "] is null, skipping", WARNING);
+                continue;
+            }
             object.destroy();
         }
     }
@@ -80,7 +85,7 @@ class LfState extends LfBase {
         //     Leafy.camera.addObjToCam(object);
         // }
 
-        stateObjects.push(object);
+        this.stateObjects.push(object);
     }
 
     /**
