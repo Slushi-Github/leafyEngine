@@ -5,6 +5,7 @@
 
 package leafy.states;
 
+import haxe.ds.List;
 import Std;
 import leafy.objects.LfObject;
 import leafy.gamepad.LfGamepad;
@@ -18,7 +19,7 @@ class LfState extends LfBase {
     /**
      * The list of objects in the state
      */
-    public var stateObjects:Array<LfObject> = new Array<LfObject>();
+    public var stateObjects:List<LfObject> = new List<LfObject>();
 
     public function new() {
         super();
@@ -44,7 +45,11 @@ class LfState extends LfBase {
             object.update(elapsed);
         }
     }
-    
+
+
+    /**
+     * /* Function called when the state is rendered
+     */
     override public function render():Void {
         for (obj in this.stateObjects) {
             if (untyped __cpp__("obj != nullptr")) {
@@ -68,6 +73,8 @@ class LfState extends LfBase {
             }
             object.destroy();
         }
+
+        this.stateObjects.clear();
     }
     
     /////////////////////////////////
@@ -85,7 +92,7 @@ class LfState extends LfBase {
         //     Leafy.camera.addObjToCam(object);
         // }
 
-        this.stateObjects.push(object);
+        this.stateObjects.add(object);
     }
 
     /**
@@ -93,14 +100,6 @@ class LfState extends LfBase {
      * @param object The object to remove
      */
     public function removeObject(object:LfObject):Void {
-        untyped __cpp__("
-for (size_t i = 0; i < stateObjects->size(); i++) {
-    auto obj = stateObjects->at(i);
-    if (obj == object) {
-        obj->destroy();
-        stateObjects->erase(stateObjects->begin() + i);
-        return;
-    }
-}");
+        this.stateObjects.remove(object);
     }
 }

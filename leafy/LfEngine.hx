@@ -32,7 +32,7 @@ class LfEngine {
     /**
      * The current version of the engine
      */
-    public static var version:String = "1.2.0";
+    public static var version:String = "1.3.0";
 
     /**
      * Function to be called when the engine exits

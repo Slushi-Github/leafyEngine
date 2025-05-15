@@ -120,6 +120,9 @@ class LfSprite extends LfObject {
             return;
         }
 
+        rect.x = this.x;
+        rect.y = this.y;
+
         this.width = rect.w;
         this.height = rect.h;
 
@@ -146,14 +149,12 @@ class LfSprite extends LfObject {
 
         this.readyToRender = false;
 
-        // if (this.sdlTexturePtr != null) {
-        //     SDL_Render.SDL_DestroyTexture(this.sdlTexturePtr);
-        //     this.sdlTexturePtr = null;
-        // }
-
         this.imagePath = "";
         this.width = width;
         this.height = height;
+
+        this.rect.w = this.width;
+        this.rect.h = this.height;
 
         this.sdlSurfacePtr = SDL_SurfaceClass.SDL_CreateRGBSurface(
             0,
@@ -171,21 +172,6 @@ class LfSprite extends LfObject {
             return;
         }
 
-        var colorR:UInt8 = color[0];
-        var colorG:UInt8 = color[1];
-        var colorB:UInt8 = color[2];
-        var colorA:UInt8 = color[3];
-
-        var mappedColor:UInt32 = SDL_PixelsClass.SDL_MapRGBA(
-            this.sdlSurfacePtr.format,
-            colorR,
-            colorG,
-            colorB,
-            colorA
-        );
-
-        SDL_SurfaceClass.SDL_FillRect(this.sdlSurfacePtr, null, mappedColor);
-
         this.sdlTexturePtr = SDL_Render.SDL_CreateTextureFromSurface(LfWindow.currentRenderer, this.sdlSurfacePtr);
         if (this.sdlTexturePtr == null) {
             LeafyDebug.log("Failed to create texture from surface: " + SDL_Error.SDL_GetError().toString(), ERROR);
@@ -193,7 +179,7 @@ class LfSprite extends LfObject {
             return;
         }
 
-        // SDL_SurfaceClass.SDL_FreeSurface(this.sdlSurfacePtr);
+        this.setColor(color[0], color[1], color[2], color[3]);
 
         SDL_Render.SDL_SetTextureBlendMode(this.sdlTexturePtr, SDL_BLENDMODE_BLEND);
 
@@ -205,53 +191,10 @@ class LfSprite extends LfObject {
 
 
     /////////////////////////////////////////////////////////////////////
-
-    /**
-     * Render the sprite
-     */
-    override public function render():Void {
-        if (this.sdlTexturePtr == null) {
-            LeafyDebug.log("Failed to render sprite: [" + this.name + "] - Texture is null (" + SDL_Image.IMG_GetError().toString() + ")", ERROR);
-            return;
-        }
-
-        // var localX = (this.x - camera.x) * camera.zoom;
-        // var localY = (this.y - camera.y) * camera.zoom;
-        // var centerX = Std.int(Leafy.screenWidth / 2);
-        // var centerY = Std.int(Leafy.screenHeight / 2);
-
-        // var rotatedPos = LfUtils.rotatePoint(localX, localY, camera.angle, centerX, centerY);
-
-        // var rect:SDL_Rect = new SDL_Rect();
-        // rect.x = Std.int(rotatedPos.x);
-        // rect.y = Std.int(rotatedPos.y);
-        // rect.w = Std.int(this.width * camera.zoom);
-        // rect.h = Std.int(this.height * camera.zoom);
-
-        // var totalAngle = this.angle + camera.angle;
-
-        var rect:SDL_Rect = new SDL_Rect();
-        rect.x = this.x;
-        rect.y = this.y;
-        rect.w =this.width;
-        rect.h = this.height;
-
-        if (this.alpha < 0) {
-            this.alpha = 0;
-        }
-        else if (this.alpha > 1) {
-            this.alpha = 1;
-        }
-
-        SDL_Render.SDL_SetTextureAlphaMod(this.sdlTexturePtr, Std.int(this.alpha * 255));
-        SDL_Render.SDL_RenderCopyEx(LfWindow.currentRenderer, this.sdlTexturePtr, null, rect, this.angle, null, SDL_FLIP_NONE);
-    }
-
     /**
      * Destroy the sprite
      */
     override public function destroy():Void {
-
         if (this.sdlSurfacePtr != null) {
             SDL_SurfaceClass.SDL_FreeSurface(this.sdlSurfacePtr);
             this.sdlSurfacePtr = null;

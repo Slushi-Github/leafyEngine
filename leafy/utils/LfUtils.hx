@@ -9,8 +9,23 @@ import Std;
 
 import wiiu.SDCardUtil;
 
-typedef LfVector2D = {x: Float, y: Float}
-typedef LfVector3D = {x: Float, y: Float, z: Float}
+typedef LfVector2D = {
+    x:Float, 
+    y:Float
+}
+
+typedef LfVector3D = {
+    x:Float, 
+    y:Float, 
+    z:Float
+}
+
+typedef LfRect = {
+    x:Float,
+    y:Float,
+    width:Float,
+    height:Float
+}
 
 /**
  * Utility functions, simple class

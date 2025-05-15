@@ -13,7 +13,7 @@ import sdl2.SDL_Timer;
 typedef TimerTask = {
     delay:Float, 
     elapsed:Float,
-    callback:() -> Void
+    callback:Void -> Void
 };
 
 /**
@@ -29,6 +29,25 @@ class LfTimer {
     private static var _timers:Array<TimerTask> = [];
 
     /**
+     * Schedule a function to run after a delay (in seconds).
+     * 
+     * @param delay The delay in seconds.
+     * @param callback The function to run.
+     */
+    public static function after(delay:Float, callback:Void -> Void):TimerTask {
+
+        var timer:TimerTask = {
+            delay:delay,
+            elapsed:0,
+            callback:callback
+        };
+
+        _timers.push(timer);
+
+        return timer;
+    }
+
+    /**
      * Update the delta time and timers.
      */
     public static function updateDeltaTime():Void {
@@ -36,27 +55,27 @@ class LfTimer {
         _deltaTime = (currentTime - _lastTime) / 1000.0;
         _lastTime = currentTime;
 
-        for (i in _timers.length - 1...-1) {
-            var timer = _timers[i];
+        for (timer in _timers) {
+            if (timer == null) {
+                continue;
+            }
+
             timer.elapsed += _deltaTime;
             if (timer.elapsed >= timer.delay) {
                 timer.callback();
-                _timers.splice(i, 1);
             }
         }
     }
 
-    /**
-     * Schedule a function to run after a delay (in seconds).
-     * 
-     * @param delay The delay in seconds.
-     * @param callback The function to run.
-     */
-    public static function after(delay:Float, callback:() -> Void):Void {
-        _timers.push({
-            delay: delay,
-            elapsed: 0,
-            callback: callback
-        });
+    public static function remove(timer:TimerTask):Void {
+        untyped __cpp__("
+for (size_t i = 0; i < _timers->size(); i++) {
+    auto obj = _timers->at(i);
+    if (obj == timer) {
+        _timers->erase(_timers->begin() + i);
+        return;
+    }
+}
+        ");
     }
 }

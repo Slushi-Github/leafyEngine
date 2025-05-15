@@ -208,6 +208,14 @@ class LfGamepad {
                 touchY <= sprite.y + sprite.height);
     }
 
+    // public function startRumble(intensity:Float = 1.0, durationSeconds:Float = -1.0):Void {
+    //     LfGamepadInternal.startRumble(intensity, durationSeconds);
+    // }
+
+    // public function stopRumble():Void {
+    //     LfGamepadInternal.stopRumble();
+    // }
+
 
     /**
      * Converts a LfGamepadButton to a VPADButtons

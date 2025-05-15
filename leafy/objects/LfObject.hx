@@ -12,6 +12,7 @@ import sdl2.SDL_Pixels.SDL_Color;
 import sdl2.SDL_Render;
 import sdl2.SDL_Rect;
 import sdl2.SDL_Surface.SDL_Surface;
+import sdl2.SDL_Image;
 
 import leafy.backend.sdl.LfWindow;
 import leafy.utils.LfUtils.LfVector2D;
@@ -183,9 +184,24 @@ class LfObject extends LfBase {
     ////////////////////////////////
 
     override public function render() {
-        if (!this.readyToRender || !this.isVisible) {
+        if (!this.readyToRender || !this.isVisible || this.alpha == 0) {
             return;
         }
+
+        if (this.sdlTexturePtr == null) {
+            LeafyDebug.log("Failed to render object: [" + this.name + "] - Texture is null (" + SDL_Image.IMG_GetError().toString() + ")", ERROR);
+            return;
+        }
+
+        if (this.alpha < 0) {
+            this.alpha = 0;
+        }
+        else if (this.alpha > 1) {
+            this.alpha = 1;
+        }
+
+        SDL_Render.SDL_SetTextureAlphaMod(this.sdlTexturePtr, Std.int(this.alpha * 255));
+        SDL_Render.SDL_RenderCopyEx(LfWindow.currentRenderer, this.sdlTexturePtr, null, this.rect, this.angle, null, SDL_FLIP_NONE);
     }
 
     /**
@@ -231,21 +247,37 @@ class LfObject extends LfBase {
         }
     }
 
+    public function isOnScreen():Bool {
+        return this.x < Leafy.screenWidth && this.x + this.width > 0 && this.y < Leafy.screenHeight && this.y + this.height > 0;
+    }
+
+    
     /**
-     * Get the screen position of the object
-     * @return LfVector2D
+     *  Set the object color
+     * @param newColor The new color
      */
-    // public function getScreenPosition():LfVector2D {
-    //     if (camera == null) {
-    //         return { x: this.x, y: this.y };
-    //     }
+    public function setColor(r:UInt8, g:UInt8, b:UInt8, a:UInt8,):Void {
+        if (this.color == null) {
+            LeafyDebug.log("Object color is null, cannot update text color", ERROR);
+            return;
+        }
 
-    //     return {
-    //         x: Std.int((this.x - camera.x) * camera.zoom),
-    //         y: Std.int((this.y - camera.y) * camera.zoom)
-    //     };
-    // }
+        if (this.sdlTexturePtr == null) {
+            LeafyDebug.log("Failed to set color for object: [" + this.name + "] - Texture is null (" + SDL_Image.IMG_GetError().toString() + ")", ERROR);
+            return;
+        }
 
+        this.readyToRender = false;
+
+        this.color.r = r;
+        this.color.g = g;
+        this.color.b = b;
+        this.color.a = a;
+
+        SDL_Render.SDL_SetTextureColorMod(this.sdlTexturePtr, this.color.r, this.color.g, this.color.b);
+
+        this.readyToRender = true;
+    }
     
     /////////////////////////////////////////////
 

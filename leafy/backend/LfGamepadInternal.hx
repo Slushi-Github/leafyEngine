@@ -8,9 +8,12 @@ package leafy.backend;
 import Std;
 
 import wut.vpad.Input;
+import wut.vpad.Input.VPAD;
 import wut.vpad.Input.VPADButtons;
 import wut.vpad.Input.VPADReadError;
 import wut.vpadbase.Base.VPADChan;
+
+import leafy.backend.LfTimer;
 
 /**
  * Internal class for the gamepad input
@@ -40,6 +43,12 @@ class LfGamepadInternal {
      * Whether the DRC is currently touching
      */
     private static var currentTouching:Bool = false;
+
+
+    private static var isRumbling:Bool = false;
+    private static var rumbleStopTimerTask: Null<TimerTask> = null;
+    private static var currentRumbleIntensityByte:UInt8;
+    private static var rumbleIntensityBytePtr:Ptr<UInt8>;
 
     /**
      * Initializes the DRC
@@ -292,4 +301,51 @@ class LfGamepadInternal {
         if (!lastReadWasValidAndNew) return 0.0;
         return drcStatus.accelorometer.acc.z;
     }
+
+    /////////////////////
+
+    // public static function startRumble(intensity:Float = 1.0, durationSeconds:Float = -1.0):Void {
+    //     if (intensity <= 0) {
+    //         stopRumble();
+    //         return;
+    //     }
+
+    //     if (rumbleStopTimerTask != null) {
+    //         LfTimer.remove(rumbleStopTimerTask);
+    //         rumbleStopTimerTask = null;
+    //     }
+        
+    //     currentRumbleIntensityByte = cast(Math.max(0, Math.min(255, Std.int(intensity * 255))), UInt8);
+    //     rumbleIntensityBytePtr = Syntax.toPointer(currentRumbleIntensityByte);
+
+    //     var result = VPAD.VPADControlMotor(VPADChan.VPAD_CHAN_0, rumbleIntensityBytePtr, 1);
+
+    //     if (result == 0) {
+    //         isRumbling = true;
+    //         LeafyDebug.log('Gamepad rumble STARTED with intensity: ${Std.string(intensity)} (byte: ${Std.string(currentRumbleIntensityByte)})', INFO);
+
+    //         if (durationSeconds > 0) {
+    //             rumbleStopTimerTask = LfTimer.after(durationSeconds, function():Void {
+    //                 stopRumble();
+    //                 rumbleStopTimerTask = null;
+    //             });
+    //         }
+    //     } else {
+    //         isRumbling = false;
+    //         LeafyDebug.log("VPADControlMotor failed to start rumble: " + result, ERROR);
+    //     }
+    // }
+
+    // public static function stopRumble():Void {
+    //     if (!isRumbling && rumbleStopTimerTask == null) return;
+
+    //     VPAD.VPADStopMotor(VPADChan.VPAD_CHAN_0);
+    //     isRumbling = false;
+    //     LeafyDebug.log("Gamepad rumble STOPPED", INFO);
+
+    //     if (rumbleStopTimerTask != null) {
+    //         LfTimer.remove(rumbleStopTimerTask); 
+    //         rumbleStopTimerTask = null;
+    //     }
+    // }
 }
