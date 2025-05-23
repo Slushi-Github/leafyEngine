@@ -36,7 +36,7 @@ If you're on Linux or MacOS, you can follow [this guide](https://devkitpro.org/w
 
 When you have everything, install the following:
 
-(include the ``-dkp-`` if you're on Linux or MacOS)
+(include the ``dkp-`` if you're on Linux or MacOS)
 ```bash
 (dkp-)pacman -Syu --needed wiiu-dev wiiu-curl wiiu-sdl2 wiiu-sdl2-image wiiu-sdl2-mixer wiiu-sdl2-ttf wiiu-sdl2_gfx ppc-jansson ppc-zlib ppc-libvorbis ppc-libopus ppc-libogg ppc-libjpeg-turbo ppc-freetype ppc-bzip2 ppc-libpng
 ```
