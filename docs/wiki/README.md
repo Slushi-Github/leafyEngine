@@ -7,4 +7,4 @@ leafy Engine is an engine built on top of Haxe and SDL2, specifically for the Ni
 Here we will explain each part of the engine for when you want to create a project with it.
 
 - [Getting Started (Installation and starting)](https://github.com/Slushi-Github/leafyEngine/blob/main/docs/wiki/Getting-Started.md) 
-- [Engine Documentation](https://github.com/Slushi-Github/leafyEngine/docs/wiki/sections/README.md)
+- [Engine Documentation](https://github.com/Slushi-Github/leafyEngine/blob/main/docs/wiki/sections/README.md)
