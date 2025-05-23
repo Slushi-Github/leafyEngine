@@ -18,8 +18,7 @@ import leafy.backend.sdl.LfWindow;
 import leafy.filesystem.LfSystemPaths;
 import leafy.backend.LeafyDebug;
 import leafy.backend.LfStateHandler;
-import leafy.backend.LfGamepadInternal;
-import leafy.audio.LfAudioManager;
+import leafy.backend.internal.LfGamepadInternal;
 
 /**
  * Leafy Engine Main class:
@@ -28,11 +27,10 @@ import leafy.audio.LfAudioManager;
  * Author: Slushi
  */
 class LfEngine {
-
     /**
      * The current version of the engine
      */
-    public static var version:String = "1.3.0";
+    public static var version:String = "1.3.5";
 
     /**
      * Function to be called when the engine exits
@@ -61,7 +59,9 @@ class LfEngine {
     public static function initEngine(gamePath:String, renderMode:LfWindowType = LfWindowType.DRC, state:LfState):Void {
         Log_udp.WHBLogUdpInit();
         Proc.WHBProcInit();
-        Crash.WHBInitCrashHandler();
+        Crash.WHBInitCrashHandler(); // This really works?
+
+        Sys.println("[Leafy Engine initial state - no logger started] Starting Leafy Engine " + Std.string(version));
 
         if (renderMode == null) {
             Sys.println("[Leafy Engine initial state - no logger started -> WARNING] Render mode cannot be null, defaulting to DRC mode");
@@ -78,22 +78,21 @@ class LfEngine {
         // initialize the engine systems
         LfSystemPaths.initFSSystem();
         LeafyDebug.initLogger();
-        LeafyDebug.initCrashHandlers();
         SubEngines.startSDL();
-        Leafy.audioManager = new LfAudioManager();
-        LfAudioManager.init();
 
         // Set the engine main path
         LfSystemPaths.setEngineMainPath(gamePath);
-
-        // Set and initialize the initial state
-        LfStateHandler.initFirstState(state);
-        Leafy.currentState = state;
 
         // Initialize the Wii U Gamepad
         LfGamepadInternal.initDRC();
 
         LeafyDebug.log("Leafy Engine " + Std.string(version) + " initialized", INFO);
+        
+        // Set and initialize the initial state
+        LfStateHandler.initFirstState(state);
+        Leafy.currentState = state;
+
+        ///////////////////////////////////////////
 
         _isRunning = Proc.WHBProcIsRunning();
         // Start the main loop, the engine will shutdown when the main loop ends

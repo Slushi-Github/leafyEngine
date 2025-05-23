@@ -7,11 +7,15 @@ package leafy.backend;
 
 import haxe.PosInfos; 
 import Std;
+import cxx.std.Exception;
 
 import wiiu.SDCardUtil;
 
 import wut.coreinit.Time.OSCalendarTime;
 import wut.coreinit.Debug;
+
+import notifications.Notifications;
+import notifications.Notification_defines.NMColor;
 
 import leafy.filesystem.LfFile;
 import leafy.filesystem.LfSystemPaths;
@@ -56,54 +60,6 @@ std::string CPP_getCurrentTime() {
 
     return std::to_string(hour) + \":\" + std::to_string(minute) + \":\" + std::to_string(second);
 }
-
-///////////////////////////
-/**
- * Try to handle a crash, I don't think this will work
- * but let's try it
- */
-
-void crashHandler(int signal) {
-    std::cerr << \"Crash detected: \" << signal << \" => \";
-
-    const char* criticalErrorStr = \"\";
-
-    switch (signal) {
-        case SIGSEGV:
-            criticalErrorStr = \"Segmentation fault (Maybe a null pointer?)\\n\";
-        case SIGFPE:
-            criticalErrorStr = \"Arithmetic exception\\n\";
-        case SIGILL:
-            criticalErrorStr = \"Illegal instruction\\n\";
-        case SIGABRT:
-            criticalErrorStr = \"Abort (Failed assert or std::abort())\\n\";
-        case SIGBUS:
-            criticalErrorStr = \"Bus error (Memory access error)\\n\";
-        default:
-            criticalErrorStr = \"Unknown signal\\n\";
-    }
-
-    std::cerr << criticalErrorStr;
-
-    leafy::backend::LeafyDebug::criticalError(
-        criticalErrorStr,
-        haxe::shared_anon<haxe::PosInfos>(
-            \"leafy.backend.LeafyDebug\"s,
-            \"leafy/backend/LeafyDebug.hx\"s,
-            93,
-            \"crashHandler\"s
-        )
-    );
-}
-
-
-void registerCrashHandlers() {
-    std::signal(SIGSEGV, crashHandler);
-    std::signal(SIGFPE,  crashHandler);
-    std::signal(SIGILL,  crashHandler);
-    std::signal(SIGABRT, crashHandler);
-    std::signal(SIGBUS,  crashHandler);
-}
 ")
 
 /**
@@ -138,11 +94,14 @@ class LeafyDebug {
     private static var started:Bool = false;
 
     /**
-     * Init C++ crash handlers
+     * The background color of the notification
      */
-    public static function initCrashHandlers():Void {
-        untyped __cpp__("registerCrashHandlers()");
-    }
+    private static var notificationBGColor:NMColor = new NMColor();
+
+    /**
+     * The text color of the notification
+     */
+    private static var notificationTextColor:NMColor = new NMColor();
 
     /**
      * // Log a message
@@ -153,6 +112,30 @@ class LeafyDebug {
     public static function log(msg:String, level:LogLevel, ?pos:PosInfos):Void {
         if (level == LogLevel.CRITICAL) {
             return;
+        }
+
+        switch (level) {
+            case LogLevel.INFO:
+                // Do nothing
+            case LogLevel.WARNING:
+                notificationBGColor.r = 152;
+                notificationBGColor.g = 93;
+                notificationBGColor.b = 0;
+                Notifications.NotificationModule_AddInfoNotificationEx(ConstCharPtr.fromString(msg), 3, notificationTextColor, notificationBGColor, untyped __cpp__("nullptr"), untyped __cpp__("nullptr"), false);
+            case LogLevel.ERROR:
+                notificationBGColor.r = 237;
+                notificationBGColor.g = 28;
+                notificationBGColor.b = 36;
+                Notifications.NotificationModule_AddErrorNotificationEx(ConstCharPtr.fromString(msg), 3, 0.8, notificationTextColor, notificationBGColor, untyped __cpp__("nullptr"), untyped __cpp__("nullptr"), false);
+            case LogLevel.DEBUG:
+                notificationBGColor.r = 104;
+                notificationBGColor.g = 0;
+                notificationBGColor.b = 93;
+                Notifications.NotificationModule_AddInfoNotificationEx(ConstCharPtr.fromString(msg), 3, notificationTextColor, notificationBGColor, untyped __cpp__("nullptr"), untyped __cpp__("nullptr"), false);
+            case LogLevel.CRITICAL:
+                // Do nothing
+            default:
+                // Do nothing
         }
 
         var formattedMessage:String = prepareText(msg, level, pos);
@@ -182,31 +165,41 @@ class LeafyDebug {
      * // Initialize the logger
      */
     public static function initLogger():Void {
-        SDCardUtil.prepareSDCard();
-        var logsDir = logsPath = SDCardUtil.getSDCardPathFixed() + "LeafyLogs/";
-        if (!LfSystemPaths.exists(logsDir)) {
-            LfSystemPaths.createDirectory(logsDir);
+        try {
+            SDCardUtil.prepareSDCard();
+            var logsDir = logsPath = SDCardUtil.getSDCardPathFixed() + "LeafyLogs/";
+            if (!LfSystemPaths.exists(logsDir)) {
+                LfSystemPaths.createDirectory(logsDir);
+            }
+    
+            notificationTextColor.r = 255;
+            notificationTextColor.g = 255;
+            notificationTextColor.b = 255;
+            notificationTextColor.a = 255;
+    
+            var currentTimeStr:String = untyped __cpp__("CPP_getCurrentTime()");
+            var currentTimeMod:String = currentTimeStr;
+            currentTimeMod = LfStringUtils.stringReplacer(currentTimeMod, ":", "_");
+            currentTimeMod = LfStringUtils.stringReplacer(currentTimeMod, ".", "_");
+            currentTimeMod = LfStringUtils.stringReplacer(currentTimeMod, " ", "_");
+    
+            var currentDateStr:String = untyped __cpp__("CPP_getCurrentDate()");
+            var currentDateMod:String = LfStringUtils.stringReplacer(currentDateStr, "/", "_");
+    
+            var logFile = logsDir + "leafyLog_" + currentTimeMod + "-" + currentDateMod + ".txt";
+    
+            if (!LfSystemPaths.exists(logFile)) {
+                LfFile.writeFile(logFile, "Leafy Engine [" + LfEngine.version + "] Log File\n" + " - " + currentDateStr + " | " + currentTimeStr + "\n-------------------\n\n");
+            }
+    
+            currentLogFile = logFile;
+            started = true;
+    
+            log("Logger initialized!", INFO);
         }
-
-        var currentTimeStr:String = untyped __cpp__("CPP_getCurrentTime()");
-        var currentTimeMod:String = currentTimeStr;
-        currentTimeMod = LfStringUtils.stringReplacer(currentTimeMod, ":", "_");
-        currentTimeMod = LfStringUtils.stringReplacer(currentTimeMod, ".", "_");
-        currentTimeMod = LfStringUtils.stringReplacer(currentTimeMod, " ", "_");
-
-        var currentDateStr:String = untyped __cpp__("CPP_getCurrentDate()");
-        var currentDateMod:String = LfStringUtils.stringReplacer(currentDateStr, "/", "_");
-
-        var logFile = logsDir + "leafyLog_" + currentTimeMod + "-" + currentDateMod + ".txt";
-
-        if (!LfSystemPaths.exists(logFile)) {
-            LfFile.writeFile(logFile, "Leafy Engine [" + LfEngine.version + "] Log File\n" + " - " + currentDateStr + " | " + currentTimeStr + "\n-------------------\n\n");
+        catch (e:Exception) {
+            log("Failed to initialize logger: " + e.what().toString(), ERROR);
         }
-
-        currentLogFile = logFile;
-        started = true;
-
-        log("Logger initialized!", INFO);
     }
 
     /**

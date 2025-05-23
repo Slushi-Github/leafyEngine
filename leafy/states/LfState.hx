@@ -19,7 +19,7 @@ class LfState extends LfBase {
     /**
      * The list of objects in the state
      */
-    public var stateObjects:List<LfObject> = new List<LfObject>();
+    public var stateObjects:Array<LfObject> = new Array<LfObject>();
 
     public function new() {
         super();
@@ -51,12 +51,12 @@ class LfState extends LfBase {
      * /* Function called when the state is rendered
      */
     override public function render():Void {
+        if (this.stateObjects == []) {
+            return;
+        }
+
         for (obj in this.stateObjects) {
             if (untyped __cpp__("obj != nullptr")) {
-                // Check if the object has a camera, if it does, skip
-                // if (obj.camera != null) {
-                //     continue;
-                // }
                 obj.render();
             }
         }
@@ -66,6 +66,10 @@ class LfState extends LfBase {
      * Function called when the state is destroyed
      */
     override public function destroy():Void {
+        if (this.stateObjects == []) {
+            return;
+        }
+
         for (object in this.stateObjects) {
             if (object == null) {
                 LeafyDebug.log("Object [" + Std.string(object) + "] is null, skipping", WARNING);
@@ -74,7 +78,7 @@ class LfState extends LfBase {
             object.destroy();
         }
 
-        this.stateObjects.clear();
+        this.stateObjects.pop();
     }
     
     /////////////////////////////////
@@ -88,11 +92,7 @@ class LfState extends LfBase {
             return;
         }
 
-        // if (object.camera == null) {
-        //     Leafy.camera.addObjToCam(object);
-        // }
-
-        this.stateObjects.add(object);
+        this.stateObjects.push(object);
     }
 
     /**
@@ -100,6 +100,16 @@ class LfState extends LfBase {
      * @param object The object to remove
      */
     public function removeObject(object:LfObject):Void {
-        this.stateObjects.remove(object);
+        untyped __cpp__("
+for (size_t i = 0; i < stateObjects->size(); i++) {
+    auto obj = stateObjects->at(i);
+    if (obj == object) {
+        stateObjects->erase(stateObjects->begin() + i);
+        return;
+    }
+}
+        ");
+
+        
     }
 }

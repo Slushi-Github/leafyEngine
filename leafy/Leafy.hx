@@ -5,10 +5,10 @@
 
 package leafy;
 
-import leafy.audio.LfAudioManager;
+import leafy.audio.LfAudioEngine;
 import leafy.backend.sdl.LfWindow;
 import leafy.backend.LfTimer;
-import leafy.backend.LfGamepadInternal;
+import leafy.backend.internal.LfGamepadInternal;
 import leafy.backend.LfStateHandler;
 import leafy.gamepad.LfGamepad;
 import leafy.objects.LfSprite;
@@ -37,16 +37,6 @@ class Leafy {
      */
     public static var currentState:LfState = LfStateHandler.getCurrentState();
 
-    /**
-     * The main camera
-     */
-    // public static var camera:LfCamera = new LfCamera();
-
-    /**
-     * The list of cameras
-     */
-    // public static var cameras:Array<LfCamera> = new Array<LfCamera>();
-
     /////////////////////////////
 
     /**
@@ -60,9 +50,9 @@ class Leafy {
     public static var screenHeight:Int = 0;
 
     /**
-     * LFE Audio Manager
+     * The audio engine
      */
-    public static var audioManager:LfAudioManager;
+    public static var audio:LfAudioEngine;
 
     //////////////////////////////////
 
@@ -75,11 +65,6 @@ class Leafy {
     public static function update():Void {
         LfTimer.updateDeltaTime();
         deltaTime = LfTimer._deltaTime;
-
-        screenWidth = LfWindow.getScreenWidth();
-        screenHeight = LfWindow.getScreenHeight();
-
-        LfAudioManager.update();
 
         LfTween.updateTweens(deltaTime);
         LfGamepadInternal.updateDRC();

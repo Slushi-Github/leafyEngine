@@ -204,17 +204,17 @@ class LfText extends LfObject {
      * Destroy the text
      */
     override public function destroy():Void {
-        if (this.sdlTexturePtr != null) {
+        if (untyped __cpp__("sdlTexturePtr != nullptr")) {
             SDL_Render.SDL_DestroyTexture(this.sdlTexturePtr);
             this.sdlTexturePtr = null;
         }
 
-        if (this.sdlSurfacePtr != null) {
+        if (untyped __cpp__("sdlSurfacePtr != nullptr")) {
             SDL_SurfaceClass.SDL_FreeSurface(this.sdlSurfacePtr);
             this.sdlSurfacePtr = null;
         }
 
-        if (this.fontPtr != null) {
+        if (untyped __cpp__("fontPtr != nullptr")) {
             SDL_TTF.TTF_CloseFont(this.fontPtr);
         }
 

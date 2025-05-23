@@ -184,7 +184,8 @@ class LfObject extends LfBase {
     ////////////////////////////////
 
     override public function render() {
-        if (!this.readyToRender || !this.isVisible || this.alpha == 0) {
+        // Why need need to render if the object is ready o visible and on screen?
+        if (!this.readyToRender || !this.isVisible || this.alpha == 0 || !this.isOnScreen()) {
             return;
         }
 

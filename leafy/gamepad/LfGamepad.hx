@@ -5,10 +5,11 @@
 
 package leafy.gamepad;
 
+import leafy.objects.LfObject;
 import Std;
 import wut.vpad.Input.VPADButtons;
 
-import leafy.backend.LfGamepadInternal;
+import leafy.backend.internal.LfGamepadInternal;
 import leafy.objects.LfSprite;
 import leafy.utils.LfUtils.LfVector2D;
 import leafy.utils.LfUtils.LfVector3D;
@@ -43,7 +44,6 @@ enum LfGamepadButton {
  * Author: Slushi
  */
 class LfGamepad {
-
     public function new() {}
 
     /**
@@ -196,8 +196,8 @@ class LfGamepad {
      * @param sprite The sprite
      * @return Bool
      */
-    public function isTouchingSprite(sprite:LfSprite):Bool {
-        if (!this.isTouching()) return false;
+    public function isTouchingAObject(sprite:LfObject):Bool {
+        if (!this.isTouching() || sprite == null) return false;
 
         var touchX = this.getTouch().x;
         var touchY = this.getTouch().y;
@@ -208,14 +208,21 @@ class LfGamepad {
                 touchY <= sprite.y + sprite.height);
     }
 
-    // public function startRumble(intensity:Float = 1.0, durationSeconds:Float = -1.0):Void {
-    //     LfGamepadInternal.startRumble(intensity, durationSeconds);
-    // }
+    /**
+     *  Starts the rumble of the Wii U Gamepad
+     * @param intensity The intensity of the rumble, from 0.0 to 1.0
+     * @param durationSeconds The duration of the rumble in seconds, -1.0 for infinite
+     */
+    public function startRumble(intensity:Float = 1.0, durationSeconds:Float = -1.0):Void {
+        LfGamepadInternal.startRumble(intensity, durationSeconds);
+    }
 
-    // public function stopRumble():Void {
-    //     LfGamepadInternal.stopRumble();
-    // }
-
+    /**
+     * Stops the rumble of the Wii U Gamepad
+     */
+    public function stopRumble():Void {
+        LfGamepadInternal.stopRumble();
+    }
 
     /**
      * Converts a LfGamepadButton to a VPADButtons

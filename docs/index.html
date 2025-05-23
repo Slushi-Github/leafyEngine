@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página con Imagen, Texto y Botones</title>
+
+    <link rel="icon" href="./webImages/icon.png" type="image/png">
+    <meta content="Leafy Engine" property="og:title" />
+    <meta content="Leafy Engine is an engine inspired by HaxeFlixel for making 2D games for the Wii U using Haxe!!" property="og:description" />
+    <meta content="https://slushi-github.github.io/leafyEngine" property="og:url" />
+    <meta content="https://raw.githubusercontent.com/Slushi-Github/leafyEngine/refs/heads/main/docs/webImages/leafyEngineLogo.webp" property="og:image" />
+    <meta content="#75C69B" data-react-helmet="true" name="theme-color" />
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: linear-gradient(to bottom, #75c69b, #c1efa5);
+            position: relative;
+            font-family: Arial, sans-serif;
+            color: white;
+            text-align: center;
+        }
+
+        /* Capa oscura semi-transparente */
+        body::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.3); /* Negro al 30% de opacidad */
+            pointer-events: none;
+        }
+
+        .content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+        }
+
+        h1 {
+            font-size: 1.6em;
+            margin-bottom: 8px;
+            margin-top: 10px; /* Acercar al logo */
+        }
+
+        p {
+            font-size: 1em;
+            margin-bottom: 20px;
+            margin-top: 0;
+        }
+
+        img {
+            max-width: 300px;
+            height: auto;
+            display: block;
+            margin: 0 auto 10px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .button {
+            padding: 12px 24px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            color: white;
+            text-decoration: none;
+            font-size: 1em;
+            border-radius: 5px;
+            transition: all 0.2s ease-in-out;
+            flex: 1 1 auto;
+            max-width: 180px;
+            text-align: center;
+        }
+
+        .button:hover {
+            background-color: white;
+            color: #75c69b;
+        }
+
+        .button:active {
+            transform: scale(0.9);
+        }
+
+        .copyright {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.7);
+            z-index: 2;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <img src="./webImages/leafyEngineLogo.webp" alt="Leafy Engine Logo">
+        <h1>The first 2D game engine for the Wii U created using Haxe</h1>
+        <p>Leafy Engine is an engine inspired by HaxeFlixel for making 2D games for the Wii U using Haxe</p>
+
+        <div class="buttons">
+            <a href="https://github.com/Slushi-Github/leafyEngine/" target="_blank" class="button">GitHub</a>
+            <a href="https://github.com/Slushi-Github/leafyEngine/docs/wiki/README.md" target="_blank"
+                class="button">Documentation</a>
+        </div>
+    </div>
+    <!-- Colócalo FUERA de .content -->
+    <div class="footer copyright">
+        &copy; Website created using QwenAI. Project by <a href="https://github.com/Slushi-Github">Slushi</a>. Logo by <a
+                href="https://www.youtube.com/@owkby06">Owk</a>.
+    </div>
+</body>
+
+</html>

@@ -3,7 +3,7 @@
 // This software is licensed under the MIT License.
 // See the LICENSE file for more details.
 
-package leafy.backend;
+package leafy.backend.internal;
 
 import Std;
 
@@ -13,12 +13,70 @@ import wut.vpad.Input.VPADButtons;
 import wut.vpad.Input.VPADReadError;
 import wut.vpadbase.Base.VPADChan;
 
-import leafy.backend.LfTimer;
+@:cppFileCode("
+#include <vpad/input.h>
+#include <atomic>
+#include <thread>
+#include <chrono>
+#include <vector>
+#include <algorithm>
+#include <iostream>
 
-/**
- * Internal class for the gamepad input
- * To use the gamepad it is recommended to use the `LfGamepad` class
- */
+std::atomic<bool> shouldStopVibration{false};
+std::thread vibrationThread;
+
+std::vector<uint8_t> createVibrationPattern(float intensity, size_t len = 64) {
+    std::vector<uint8_t> pattern(len, 0);
+    if (intensity >= 1.0f) {
+        std::fill(pattern.begin(), pattern.end(), 0xFF);
+    } else if (intensity > 0.0f) {
+        size_t onCount = static_cast<size_t>(intensity * len);
+        std::fill_n(pattern.begin(), onCount, 0xFF);
+        std::rotate(pattern.begin(), pattern.begin() + onCount / 2, pattern.end());
+    }
+    return pattern;
+}
+
+void CPP_vibrateGamepad(float intensity, int ms_duration) {
+    shouldStopVibration = true;
+    if (vibrationThread.joinable())
+        vibrationThread.join();
+    shouldStopVibration = false;
+
+    if (intensity <= 0.0f) {
+        VPADStopMotor(VPAD_CHAN_0);
+        return;
+    }
+
+    vibrationThread = std::thread([=]() {
+        auto pattern = createVibrationPattern(intensity);
+        const VPADChan chan = VPAD_CHAN_0;
+
+        if (ms_duration < 0) {
+            while (!shouldStopVibration) {
+                VPADControlMotor(chan, pattern.data(), static_cast<uint8_t>(pattern.size()));
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            }
+            VPADStopMotor(chan);
+        } else {
+            int ciclos = ms_duration / 100;
+            for (int i = 0; i < ciclos && !shouldStopVibration; ++i) {
+                VPADControlMotor(chan, pattern.data(), static_cast<uint8_t>(pattern.size()));
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            }
+            VPADStopMotor(chan);
+        }
+    });
+}
+
+void CPP_stopVibration() {
+    shouldStopVibration = true;
+    if (vibrationThread.joinable())
+        vibrationThread.join();
+    VPADStopMotor(VPAD_CHAN_0);
+}
+
+")
 class LfGamepadInternal {
     /**
      * The current state of the DRC
@@ -45,10 +103,10 @@ class LfGamepadInternal {
     private static var currentTouching:Bool = false;
 
 
-    private static var isRumbling:Bool = false;
-    private static var rumbleStopTimerTask: Null<TimerTask> = null;
-    private static var currentRumbleIntensityByte:UInt8;
-    private static var rumbleIntensityBytePtr:Ptr<UInt8>;
+    /**
+     * Whether the DRC is rumbling
+     */
+    public static var isRumbling:Bool = false;
 
     /**
      * Initializes the DRC
@@ -67,14 +125,14 @@ class LfGamepadInternal {
         VPAD.VPADRead(VPAD_CHAN_0, Syntax.toPointer(drcStatus), 1, Syntax.toPointer(drcLastError));
 
         untyped __cpp__("
-            switch (leafy::backend::LfGamepadInternal::drcLastError) {
+            switch (leafy::backend::internal::LfGamepadInternal::drcLastError) {
                 case VPAD_READ_SUCCESS:
-                    leafy::backend::LfGamepadInternal::lastReadWasValidAndNew = true;
+                    leafy::backend::internal::LfGamepadInternal::lastReadWasValidAndNew = true;
                     return true;
                 case VPAD_READ_NO_SAMPLES:
                     return false;
                 default:
-                    leafy::backend::LfGamepadInternal::lastReadWasValidAndNew = false;
+                    leafy::backend::internal::LfGamepadInternal::lastReadWasValidAndNew = false;
                     return false;
             }
         ");
@@ -304,48 +362,20 @@ class LfGamepadInternal {
 
     /////////////////////
 
-    // public static function startRumble(intensity:Float = 1.0, durationSeconds:Float = -1.0):Void {
-    //     if (intensity <= 0) {
-    //         stopRumble();
-    //         return;
-    //     }
+    /**
+     * Starts rumble on the DRC
+     * @param intensity The intensity of the rumble (0.0 to 1.0)
+     * @param durationSeconds The duration of the rumble
+     */
+    public static function startRumble(intensity:Float = 1.0, durationSeconds:Float = -1.0):Void {
+        untyped __cpp__("CPP_vibrateGamepad({0}, {1})", intensity, durationSeconds);
+    }
 
-    //     if (rumbleStopTimerTask != null) {
-    //         LfTimer.remove(rumbleStopTimerTask);
-    //         rumbleStopTimerTask = null;
-    //     }
-        
-    //     currentRumbleIntensityByte = cast(Math.max(0, Math.min(255, Std.int(intensity * 255))), UInt8);
-    //     rumbleIntensityBytePtr = Syntax.toPointer(currentRumbleIntensityByte);
-
-    //     var result = VPAD.VPADControlMotor(VPADChan.VPAD_CHAN_0, rumbleIntensityBytePtr, 1);
-
-    //     if (result == 0) {
-    //         isRumbling = true;
-    //         LeafyDebug.log('Gamepad rumble STARTED with intensity: ${Std.string(intensity)} (byte: ${Std.string(currentRumbleIntensityByte)})', INFO);
-
-    //         if (durationSeconds > 0) {
-    //             rumbleStopTimerTask = LfTimer.after(durationSeconds, function():Void {
-    //                 stopRumble();
-    //                 rumbleStopTimerTask = null;
-    //             });
-    //         }
-    //     } else {
-    //         isRumbling = false;
-    //         LeafyDebug.log("VPADControlMotor failed to start rumble: " + result, ERROR);
-    //     }
-    // }
-
-    // public static function stopRumble():Void {
-    //     if (!isRumbling && rumbleStopTimerTask == null) return;
-
-    //     VPAD.VPADStopMotor(VPADChan.VPAD_CHAN_0);
-    //     isRumbling = false;
-    //     LeafyDebug.log("Gamepad rumble STOPPED", INFO);
-
-    //     if (rumbleStopTimerTask != null) {
-    //         LfTimer.remove(rumbleStopTimerTask); 
-    //         rumbleStopTimerTask = null;
-    //     }
-    // }
+    /**
+     * Stops rumble on the DRC
+     */
+    public static function stopRumble():Void {
+        untyped __cpp__("CPP_stopVibration()");
+        isRumbling = false;
+    }
 }

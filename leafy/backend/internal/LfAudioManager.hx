@@ -3,7 +3,7 @@
 // This software is licensed under the MIT License.
 // See the LICENSE file for more details.
 
-package leafy.audio;
+package leafy.backend.internal;
 
 import Std;
 
@@ -18,11 +18,16 @@ import vorbis.VorbisFile;
 import vorbis.VorbisFile.OggVorbis_File;
 import vorbis.Codec.Vorbis_info;
 
+import leafy.audio.LfAudio;
+
 /**
  * Audio manager, manages music playback
  * 
  * (it took me more than 7 hours to make this work...)
+ * And, I just can't not make it possible to play more than one audio 
+ * at a time, so only one audio can be used.
  * 
+ * Is recomended to use the `LfAudioEngine` class instead of this one.
  * Author: Slushi
  */
 class LfAudioManager {
@@ -59,7 +64,7 @@ class LfAudioManager {
     /**
      * Current audio object
      */
-    private static var currentAudio:LfAudio;
+    public static var currentAudio:LfAudio;
 
     /**
      * Current audio time
@@ -112,11 +117,11 @@ class LfAudioManager {
             SDL_Stdinc.SDL_memset(stream, 0, len);
             return;
         }
-
+    
         var bitstream:Int = 0;
         var bytesRead:Int = 0;
         var totalBytesToRead = len;
-
+    
         while (bytesRead < totalBytesToRead) {
             var remainingLen = totalBytesToRead - bytesRead;
             var ret = VorbisFile.ov_read(
@@ -128,31 +133,37 @@ class LfAudioManager {
                 1,
                 Syntax.toPointer(bitstream)
             );
-
+    
             if (ret == 0) {
-                playing = false;
-                if (bytesRead < totalBytesToRead) {
-                    SDL_Stdinc.SDL_memset(
-                        untyped __cpp__("((char*){0}) + {1}", stream, bytesRead),
-                        0,
-                        totalBytesToRead - bytesRead
-                    );
+                if (currentAudio != null && currentAudio.loop) {
+                    VorbisFile.ov_time_seek(currentFile, 0.0);
+                    continue;
+                } else {
+                    playing = false;
+                    if (bytesRead < totalBytesToRead) {
+                        SDL_Stdinc.SDL_memset(
+                            untyped __cpp__("((char*){0}) + {1}", stream, bytesRead),
+                            0,
+                            totalBytesToRead - bytesRead
+                        );
+                    }
+                    break;
                 }
-                break;
             } else if (ret < 0) {
                 LeafyDebug.log("Vorbis read error: " + ret, INFO);
                 playing = false;
                 SDL_Stdinc.SDL_memset(stream, 0, totalBytesToRead);
                 break;
             }
-
+    
             bytesRead += ret;
         }
-
+    
         if (playing) {
             currentTime = VorbisFile.ov_time_tell(currentFile);
         }
     }
+    
 
     /**
      * Initialize the audio device with the desired specs
@@ -249,9 +260,8 @@ class LfAudioManager {
             }
         }
 
-
         if (playing || paused) {
-            pause();
+            stopStatic();
             playing = false;
             paused = true;
             if (untyped __cpp__("{0} != nullptr", currentFile)) {
@@ -259,7 +269,6 @@ class LfAudioManager {
             currentAudio = null;
             currentTime = 0.0;
         }
-
 
         currentFile = audio.file;
         currentAudio = audio;
@@ -303,15 +312,19 @@ class LfAudioManager {
      * Start audio playback
      * @param audio 
      */
-    public function play(audio:LfAudio):Void {
+    public function play(path:String, loop:Bool):LfAudio {
+        var tempAudio:LfAudio = new LfAudio(path, loop);
+
         if (audioDevice <= 0) {
             init();
             if (audioDevice <= 0) {
-                LeafyDebug.log("Cannot play audio, device initialization failed.", INFO);
-                return;
+                LeafyDebug.log("Cannot play audio, device initialization failed.", ERROR);
+                return null;
             }
         }
-        loadOgg(audio);
+        loadOgg(tempAudio);
+
+        return tempAudio;
     }
 
     /**
@@ -326,10 +339,52 @@ class LfAudioManager {
         LeafyDebug.log("Audio " + (paused ? "Paused" : "Resumed"), INFO);
     }
 
+
+
+    /**
+     * Set if the audio should loop
+     */
+    public static function setLoop(value:Bool):Void {
+        if (currentAudio != null) {
+            currentAudio.loop = value;
+        }
+    }
+
+    /**
+     * Switch the loop state of the audio
+     */
+    public static function toggleLoop():Void {
+        if (currentAudio != null) {
+            currentAudio.loop = !currentAudio.loop;
+        }
+    }    
+
+    /**
+     * Get the current audio time
+     * @return Float
+     */
+    public static function getCurrentTime():Float {
+        if (currentAudio != null) {
+            return currentAudio.currentTime;
+        }
+        return 0.0;
+    }
+
+    /**
+     * Get the current audio duration
+     * @return Float
+     */
+    public static function getDuration():Float {
+        if (currentAudio != null) {
+            return currentAudio.duration;
+        }
+        return 0.0;
+    }
+
     /**
      * Pause audio playback
      */
-    public static function pause():Void {
+    public function pause():Void {
         if (audioDevice <= 0 || currentAudio == null || !playing || paused) return;
         paused = true;
         SDL_Audio.SDL_PauseAudioDevice(audioDevice, 1);
@@ -340,7 +395,7 @@ class LfAudioManager {
     /**
      * Resume audio playback
      */
-    public static function resume():Void {
+    public function resume():Void {
         if (audioDevice <= 0 || currentAudio == null || !playing || !paused) return;
         paused = false;
         SDL_Audio.SDL_PauseAudioDevice(audioDevice, 0);
@@ -351,7 +406,7 @@ class LfAudioManager {
     /**
      * Stop audio playback
      */
-    public static function stop():Void {
+    public function stop():Void {
         stopStatic();
     }
 

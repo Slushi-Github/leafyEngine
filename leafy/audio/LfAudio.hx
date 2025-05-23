@@ -55,10 +55,20 @@ class LfAudio {
     public var paused:Bool = false;
 
     /**
+     * The volume of the OGG
+     */
+    public var loop:Bool = false;
+
+    // /**
+    //  * The fade tween
+    //  */
+    // private var fadeTween:LfTween;
+
+    /**
      * Creates a new OGG and loads it
      * @param path The path to the OGG
      */
-    public function new(path:String) {
+    public function new(path:String, loop:Bool = false) {
         var correctPath:String = LfSystemPaths.getConsolePath() + path;
 
         if (!LfSystemPaths.exists(correctPath)) {
@@ -66,7 +76,7 @@ class LfAudio {
             return;
         }
 
-        this.path = correctPath;
+        this.path = path;
 
         file = new OggVorbis_File();
         // SDL_Stdinc.SDL_zero(currentFile.ref);
@@ -84,6 +94,8 @@ class LfAudio {
         duration = VorbisFile.ov_time_total(file, -1);
         currentTime = 0.0;
         playing = true;
+        paused = false;
+        this.loop = loop;
 
         LeafyDebug.log("Loaded OGG: [" + path + "] with duration: " + duration + " seconds" , INFO);
         return;
@@ -110,6 +122,25 @@ class LfAudio {
         paused = false;
         currentTime = 0;
     }
+
+    /**
+     * Checks if the OGG is currently playing
+     * @return Bool
+     */
+    public function isPlaying():Bool {
+        return playing;
+    }
+
+    // /**
+    //  * 
+    //  */
+    // public function fadeOut(duration:Float, onComplete:Void->Void):Void {
+    //     if (fadeTween != null) LfTween.cancelTween(this.fadeTween);
+    //     fadeTween = LfTween.tweenNumber(this.);
+    // }
+
+    // public function update():Void {
+    // }
 
     /**
      * Destroys the OGG and frees memory

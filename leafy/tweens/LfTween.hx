@@ -106,6 +106,10 @@ class LfTween {
      */
     private var _isComplete:Bool = false;
 
+    private var _isNumber:Bool = false;
+
+    private var _autoDestroy:Bool;
+
     /**
      * Create a new tween, add it to the list of active tweens
      * @param target The LfObject to tween
@@ -116,7 +120,7 @@ class LfTween {
      * @param ease The easing function
      * @param onComplete The function to call when the tween is complete
      */
-    public function new(target:LfObject, valueType:LfTweenProperty, startValue:Float, endValue:Float, duration:Float, ease:LfTweenEase = LfTweenEase.LINEAR, ?onComplete:Void->Void = null) {
+    public function new(target:LfObject, valueType:LfTweenProperty, startValue:Float, endValue:Float, duration:Float, ease:LfTweenEase = LfTweenEase.LINEAR, ?onComplete:Void->Void = null, autoDestroy:Bool = true, ?isNumber:Bool = false) {
         this.target = target;
         this.valueType = valueType;
         this.startValue = startValue;
@@ -126,8 +130,23 @@ class LfTween {
         this.ease = ease;
         this.onComplete = onComplete;
         _isComplete = false;
+        _isNumber = isNumber;
+        _autoDestroy = autoDestroy;
 
         _tweens.push(this);
+    }
+
+    /**
+     * Create a number tween
+     * @param startValue The start value
+     * @param endValue The end value
+     * @param duration The duration
+     * @param ease The ease
+     * @param onComplete The onComplete
+     * @return LfTween
+     */
+    public static function tweenNumber(startValue:Float, endValue:Float, duration:Float, ease:LfTweenEase = LfTweenEase.LINEAR, ?onComplete:Void->Void = null):LfTween {
+        return new LfTween(null, LfTweenProperty.ALPHA, startValue, endValue, duration, ease, onComplete, true, true);
     }
 
     /**
@@ -144,18 +163,27 @@ class LfTween {
 
             var value = startValue + (endValue - startValue) * easedProgress;
 
-            switch (valueType) {
-                case LfTweenProperty.X: target.x = Std.int(value);
-                case LfTweenProperty.Y: target.y = Std.int(value);
-                case LfTweenProperty.SCALEX: target.scale.x = value;
-                case LfTweenProperty.SCALEY: target.scale.y = value;
-                case LfTweenProperty.ALPHA: target.alpha = value;
-                case LfTweenProperty.ANGLE: target.angle = Std.int(value);
+            if (_isNumber) {
+                value = Std.int(value);
+            }
+            else {
+                switch (valueType) {
+                    case LfTweenProperty.X: target.x = Std.int(value);
+                    case LfTweenProperty.Y: target.y = Std.int(value);
+                    case LfTweenProperty.SCALEX: target.scale.x = value;
+                    case LfTweenProperty.SCALEY: target.scale.y = value;
+                    case LfTweenProperty.ALPHA: target.alpha = value;
+                    case LfTweenProperty.ANGLE: target.angle = Std.int(value);
+                }
             }
         } else {
             _isComplete = true;
             if (untyped __cpp__("onComplete != NULL")) {
                 onComplete();
+            }
+
+            if (_autoDestroy) {
+                removeTween(this);
             }
         }
     }

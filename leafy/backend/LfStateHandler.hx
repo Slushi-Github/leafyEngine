@@ -6,7 +6,7 @@
 package leafy.backend;
 
 import Std;
-import leafy.backend.LfGamepadInternal;
+import leafy.backend.internal.LfGamepadInternal;
 import leafy.states.LfState;
 import leafy.tweens.LfTween;
 
@@ -31,6 +31,8 @@ class LfStateHandler {
      * @param newState The initial state
      */
     public static function initFirstState(newState:LfState):Void {
+        LeafyDebug.log("Initing first state", INFO);
+        Leafy.currentState = newState;
         currentState = newState;
         currentState.create();
     }
