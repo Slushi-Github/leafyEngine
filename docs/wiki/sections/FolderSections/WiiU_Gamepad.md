@@ -12,13 +12,13 @@ import leafy.Leafy;
 var isPressed:Bool = Leafy.gamepad.pressed(BUTTON_A);
 
 // Get if a button is released
-var isReleased:Bool = Leafy.gamepad.released(BUTTON_A);
+var isReleased:Bool = Leafy.wiiuGamepad.released(BUTTON_A);
 
 // Get if a button is just pressed
-var isHeld:Bool = Leafy.gamepad.justPressed(BUTTON_A);
+var isHeld:Bool = Leafy.wiiuGamepad.justPressed(BUTTON_A);
 
 // Get if a button is just released
-var isJustReleased:Bool = Leafy.gamepad.justReleased(BUTTON_A);
+var isJustReleased:Bool = Leafy.wiiuGamepad.justReleased(BUTTON_A);
 ```
 
 The buttons can be found on the enum [``leafy.gamepad.LfGamepad.LfGamepadButton``](https://github.com/Slushi-Github/leafyEngine/blob/main/leafy/gamepad/LfGamepad.hx)
@@ -32,10 +32,10 @@ For the sticks, use:
 import leafy.Leafy;
 
 // get the left stick position
-var stickLeftPosition:LfVector2D = Leafy.gamepad.getLeftStick();
+var stickLeftPosition:LfVector2D = Leafy.wiiuGamepad.getLeftStick();
 
 // get the right stick position
-var stickRightPosition:LfVector2D = Leafy.gamepad.getRightStick();
+var stickRightPosition:LfVector2D = Leafy.wiiuGamepad.getRightStick();
 ```
 
 --------
