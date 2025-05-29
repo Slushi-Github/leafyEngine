@@ -60,7 +60,7 @@ A code probably similar to one from [HaxeFlixel](https://haxeflixel.com/) right?
 	- [x] Wii U Gamepad Gyroscope
 	- [x] Wii U Gamepad Touchscreen
 		- [x] Wii U Gamepad Touchscreen touch position and click
-		- [x] Wii U Gamepad Touchscreen LCD brightness control
+		- [ ] Wii U Gamepad Touchscreen LCD brightness control
 	- [ ] Wii U Gamepad Camera
 	- [ ] Wii U Gamepad Microphone
 - Objects

@@ -97,7 +97,7 @@ Leafy.wiiuGamepad.startRumble(1, -1);
 Leafy.wiiuGamepad.stopRumble();
 ```
 
---------
+<!-- --------
 
 For the screen brightness, it would be done in this way:
 ```haxe
@@ -111,7 +111,7 @@ Leafy.wiiuGamepad.setScreenBrightness(BRIGHTNESS_3);
 // get the brightness of the screen
 var brightness:LfGamepadScreenBrightness = Leafy.wiiuGamepad.getScreenBrightness();
 ```
-The brightness modes can be found on the enum [``leafy.gamepad.LfGamepad.LfGamepadScreenBrightness``](https://github.com/Slushi-Github/leafyEngine/blob/main/leafy/gamepad/LfGamepad.hx)
+The brightness modes can be found on the enum [``leafy.gamepad.LfGamepad.LfGamepadScreenBrightness``](https://github.com/Slushi-Github/leafyEngine/blob/main/leafy/gamepad/LfGamepad.hx) -->
 
 --------
 

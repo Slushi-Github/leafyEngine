@@ -10,6 +10,7 @@ import Std;
 import wut.whb.Proc;
 import wut.whb.Log_udp;
 import wut.whb.Crash;
+// import wut.nn.ccr.Sys;
 
 import leafy.states.LfState;
 import leafy.backend.SubEngines;
@@ -52,10 +53,10 @@ class LfEngine {
      */
     private static var _isRunning:Bool = false;
 
-    /**
-     * The initial DRC screen brightness level
-     */
-    public static var initBrightness:Int = -1;
+    // /**
+    //  * The initial DRC screen brightness level
+    //  */
+    // public static var initBrightness:Null<CCRSysLCDMode>;
 
     /**
      * Initialize the engine, and start the state
@@ -92,7 +93,7 @@ class LfEngine {
         LfGamepadInternal.initDRC();
 
         // Get the initial DRC screen brightness level
-        initBrightness = LfGamepadInternal.getDRCLCDBrightness();
+        // initBrightness = LfGamepadInternal.getDRCLCDBrightness();
 
         LeafyDebug.log("Leafy Engine " + Std.string(version) + " initialized", INFO);
         
@@ -106,7 +107,6 @@ class LfEngine {
         // Start the main loop, the engine will shutdown when the main loop ends
         while(_isRunning) {
             _isRunning = Proc.WHBProcIsRunning();
-
             LfWindowRender.updateRenderers();
             LeafyDebug.updateLogTime();
             Leafy.update();
@@ -117,17 +117,18 @@ class LfEngine {
             onEngineExit();
         }
 
-        if (LfGamepadInternal.getDRCLCDBrightness() != initBrightness) {
-            // Restore the initial DRC screen brightness level
-            LfGamepadInternal.setDRCLCDBrightness(initBrightness);
-        }
+        LeafyDebug.log("Shutting down Leafy Engine " + Std.string(version), INFO);
+
+        // if (LfGamepadInternal.getDRCLCDBrightness() != initBrightness) {
+        //     // Restore the initial DRC screen brightness level
+        //     LeafyDebug.log("Restoring initial DRC screen brightness level: " + Std.string(initBrightness), INFO);
+        //     LfGamepadInternal.setDRCLCDBrightness(initBrightness);
+        // }
 
         LfStateHandler.destroyCurrentState();
         SubEngines.shutdownSDL();
         LfSystemPaths.deinitFSSystem();
         Log_udp.WHBLogUdpDeinit();
         Proc.WHBProcShutdown();
-        LeafyDebug.log("Leafy Engine " + Std.string(version) + " shutdown", INFO);
-
     }
 }

@@ -56,7 +56,7 @@ class LfSprite extends LfObject {
         this.alpha = 1.0;
         this.sdlTexturePtr = null;
         this.sdlSurfacePtr = null;
-        this.rect = new SDL_Rect();
+        this.sdlRect = new SDL_Rect();
         this.readyToRender = false;
 
         //////////////////
@@ -113,18 +113,18 @@ class LfSprite extends LfObject {
 
         SDL_Render.SDL_SetTextureBlendMode(this.sdlTexturePtr, SDL_BLENDMODE_BLEND);
 
-        SDL_Render.SDL_QueryTexture(this.sdlTexturePtr, untyped __cpp__("NULL"), untyped __cpp__("NULL"), rect.w, rect.h);
-        if (rect.w <= 0 || rect.h <= 0) {
+        SDL_Render.SDL_QueryTexture(this.sdlTexturePtr, untyped __cpp__("NULL"), untyped __cpp__("NULL"), sdlRect.w, sdlRect.h);
+        if (sdlRect.w <= 0 || sdlRect.h <= 0) {
             LeafyDebug.log("Failed to get texture size: " + SDL_Error.SDL_GetError().toString(), ERROR);
             SDL_Render.SDL_DestroyTexture(this.sdlTexturePtr);
             return;
         }
 
-        rect.x = this.x;
-        rect.y = this.y;
+        sdlRect.x = this.x;
+        sdlRect.y = this.y;
 
-        this.width = rect.w;
-        this.height = rect.h;
+        this.width = sdlRect.w;
+        this.height = sdlRect.h;
 
         this.readyToRender = true;
         LeafyDebug.log("Image loaded: " + imagePath, INFO);
@@ -153,8 +153,8 @@ class LfSprite extends LfObject {
         this.width = width;
         this.height = height;
 
-        this.rect.w = this.width;
-        this.rect.h = this.height;
+        this.sdlRect.w = this.width;
+        this.sdlRect.h = this.height;
 
         this.sdlSurfacePtr = SDL_SurfaceClass.SDL_CreateRGBSurface(
             0,

@@ -216,7 +216,6 @@ class LfGamepadInternal {
         return !currentTouching && lastTouching;
     }
 
-
     /**
      * Gets the X position of the left stick
      * @return Float The X position
@@ -372,7 +371,7 @@ class LfGamepadInternal {
      * @param brightness 
      */
     public static function setDRCLCDBrightness(brightness:CCRSysLCDMode):Void {
-        Sys.ccrSysSetCurrentLCDMode(brightness);
+        Sys.CCRSysSetCurrentLCDMode(brightness);
     }
 
     /*
@@ -380,9 +379,11 @@ class LfGamepadInternal {
      * @return CCRSysLCDMode
      */
     public static function getDRCLCDBrightness():CCRSysLCDMode {
-        var mode:Null<Int> = null;
-        Sys.ccrSysGetCurrentLCDMode(Syntax.toPointer(mode));
-        return mode;
+        untyped __cpp__("
+CCRSysLCDMode mode;
+CCRSysGetCurrentLCDMode(&mode);
+return mode");
+        return untyped __cpp__("mode");
     }
 
     /////////////////////

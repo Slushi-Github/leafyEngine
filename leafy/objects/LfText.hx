@@ -78,8 +78,8 @@ class LfText extends LfObject {
         this.alpha = 1.0;
         this.sdlTexturePtr = null;
         this.sdlSurfacePtr = null;
-        this.color = new SDL_Color();
-        this.rect = new SDL_Rect();
+        this.sdlColor = new SDL_Color();
+        this.sdlRect = new SDL_Rect();
         this.readyToRender = false;
 
         //////////////////
@@ -96,7 +96,7 @@ class LfText extends LfObject {
             return;
         }
 
-        this.sdlSurfacePtr = SDL_TTF.TTF_RenderText_Blended(this.fontPtr, ConstCharPtr.fromString(text), this.color);
+        this.sdlSurfacePtr = SDL_TTF.TTF_RenderText_Blended(this.fontPtr, ConstCharPtr.fromString(text), this.sdlColor);
         if (this.sdlSurfacePtr == null) {
             LeafyDebug.log("Failed to create surface for text: " + SDL_TTF.TTF_GetError().toString(), ERROR);
             SDL_TTF.TTF_CloseFont(this.fontPtr);
@@ -116,10 +116,10 @@ class LfText extends LfObject {
         this.width = this.sdlSurfacePtr.w;
         this.height = this.sdlSurfacePtr.h;
 
-        this.rect.x = this.x;
-        this.rect.y = this.y;
-        this.rect.w = this.width;
-        this.rect.h = this.height;
+        this.sdlRect.x = this.x;
+        this.sdlRect.y = this.y;
+        this.sdlRect.w = this.width;
+        this.sdlRect.h = this.height;
 
         this.length = this.text.length;
 
@@ -143,7 +143,7 @@ class LfText extends LfObject {
 
         this.readyToRender = false;
 
-        this.sdlSurfacePtr = SDL_TTF.TTF_RenderText_Blended(this.fontPtr, ConstCharPtr.fromString(newText), this.color);
+        this.sdlSurfacePtr = SDL_TTF.TTF_RenderText_Blended(this.fontPtr, ConstCharPtr.fromString(newText), this.sdlColor);
         if (this.sdlSurfacePtr == null) {
             LeafyDebug.log("Failed to create surface for new text: " + SDL_TTF.TTF_GetError().toString(), ERROR);
             return;
@@ -167,10 +167,10 @@ class LfText extends LfObject {
         this.width = this.sdlSurfacePtr.w;
         this.height = this.sdlSurfacePtr.h;
 
-        this.rect.x = this.x;
-        this.rect.y = this.y;
-        this.rect.w = this.width;
-        this.rect.h = this.height;
+        this.sdlRect.x = this.x;
+        this.sdlRect.y = this.y;
+        this.sdlRect.w = this.width;
+        this.sdlRect.h = this.height;
 
         this.text = newText;
         this.length = this.text.length;

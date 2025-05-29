@@ -5,14 +5,17 @@
 
 package leafy.gamepad;
 
-import leafy.objects.LfObject;
 import Std;
+
 import wut.vpad.Input.VPADButtons;
+import wut.nn.ccr.Sys;
 
 import leafy.backend.internal.LfGamepadInternal;
 import leafy.objects.LfSprite;
+import leafy.objects.LfObject;
 import leafy.utils.LfUtils.LfVector2D;
 import leafy.utils.LfUtils.LfVector3D;
+
 
 /**
  * The list of gamepad buttons
@@ -236,21 +239,21 @@ class LfGamepad {
         LfGamepadInternal.stopRumble();
     }
 
-    /**
-     * Set the brightness of the gamepad LCD
-     * @return Bool Whether the gamepad is connected
-     */
-    public function setScreenBrightness(brightness:LfGamepadScreenBrightness):Void {
-        LfGamepadInternal.setDRCLCDBrightness(getBrightnessValue(brightness));
-    }
+    // /**
+    //  * Set the brightness of the gamepad LCD
+    //  * @return Bool Whether the gamepad is connected
+    //  */
+    // public function setScreenBrightness(brightness:LfGamepadScreenBrightness):Void {
+    //     LfGamepadInternal.setDRCLCDBrightness(getBrightnessValue(brightness));
+    // }
 
-    /**
-     * Gets the brightness of the gamepad LCD
-     * @return Int The brightness of the gamepad LCD
-     */
-    public function getScreenBrightness():Int {
-        return LfGamepadInternal.getDRCLCDBrightness();
-    }
+    // /**
+    //  * Gets the brightness of the gamepad LCD
+    //  * @return Int The brightness of the gamepad LCD
+    //  */
+    // public function getScreenBrightness():LfGamepadScreenBrightness {
+    //     return getBrightnessFromCCRSysLCDMode(LfGamepadInternal.getDRCLCDBrightness());
+    // }
 
     /**
      * Converts a LfGamepadButton to a VPADButtons
@@ -302,28 +305,48 @@ class LfGamepad {
         return VPADButtons.VPAD_BUTTON_A;
     }
 
-    /**
-     * CConverts a LfGamepadScreenBrightness to a Int
-     * @return Int The Int value of the brightness
-     */
-    private function getBrightnessValue(brightness:LfGamepadScreenBrightness):Int {
-        switch(brightness) {
-            case LfGamepadScreenBrightness.BRIGHTNESS_0:
-                return 0;
-            case LfGamepadScreenBrightness.BRIGHTNESS_1:
-                return 1;
-            case LfGamepadScreenBrightness.BRIGHTNESS_2:
-                return 2;
-            case LfGamepadScreenBrightness.BRIGHTNESS_3:
-                return 3;
-            case LfGamepadScreenBrightness.BRIGHTNESS_4:
-                return 4;
-            case LfGamepadScreenBrightness.BRIGHTNESS_5:
-                return 5;
-            default:
-                LeafyDebug.log("Unknown brightness: " + Std.string(brightness), WARNING);
-                return 0;
-        }
-        return 0; // Default to BRIGHTNESS_0
-    }
+    // /**
+    //  * Converts a LfGamepadScreenBrightness to a CCRSysLCDMode
+    //  * @return Int The Int value of the brightness
+    //  */
+    // private function getBrightnessValue(brightness:LfGamepadScreenBrightness):CCRSysLCDMode {
+    //     switch(brightness) {  
+    //         case LfGamepadScreenBrightness.BRIGHTNESS_1:
+    //             return CCRSysLCDMode.CCR_SYS_LCD_MODE_BRIGHTNESS_1;
+    //         case LfGamepadScreenBrightness.BRIGHTNESS_2:
+    //             return CCRSysLCDMode.CCR_SYS_LCD_MODE_BRIGHTNESS_2;
+    //         case LfGamepadScreenBrightness.BRIGHTNESS_3:
+    //             return CCRSysLCDMode.CCR_SYS_LCD_MODE_BRIGHTNESS_3;
+    //         case LfGamepadScreenBrightness.BRIGHTNESS_4:
+    //             return CCRSysLCDMode.CCR_SYS_LCD_MODE_BRIGHTNESS_4;
+    //         case LfGamepadScreenBrightness.BRIGHTNESS_5:
+    //             return CCRSysLCDMode.CCR_SYS_LCD_MODE_BRIGHTNESS_5;
+    //         default:
+    //             LeafyDebug.log("Unknown brightness: " + Std.string(brightness), WARNING);
+    //             return CCRSysLCDMode.CCR_SYS_LCD_MODE_BRIGHTNESS_1;
+    //     }
+    //     return CCRSysLCDMode.CCR_SYS_LCD_MODE_BRIGHTNESS_1; // Default to BRIGHTNESS_1
+    // }
+    
+    // /**
+    //  * Converts a CCRSysLCDMode to a LfGamepadScreenBrightness
+    //  * @return LfGamepadScreenBrightness The corresponding LfGamepadScreenBrightness
+    //  */
+    // public function getBrightnessFromCCRSysLCDMode(mode:CCRSysLCDMode):LfGamepadScreenBrightness {
+    //     switch(mode) {
+    //         case CCRSysLCDMode.CCR_SYS_LCD_MODE_BRIGHTNESS_1:
+    //             return LfGamepadScreenBrightness.BRIGHTNESS_1;
+    //         case CCRSysLCDMode.CCR_SYS_LCD_MODE_BRIGHTNESS_2:
+    //             return LfGamepadScreenBrightness.BRIGHTNESS_2;
+    //         case CCRSysLCDMode.CCR_SYS_LCD_MODE_BRIGHTNESS_3:
+    //             return LfGamepadScreenBrightness.BRIGHTNESS_3;
+    //         case CCRSysLCDMode.CCR_SYS_LCD_MODE_BRIGHTNESS_4:
+    //             return LfGamepadScreenBrightness.BRIGHTNESS_4;
+    //         case CCRSysLCDMode.CCR_SYS_LCD_MODE_BRIGHTNESS_5:
+    //             return LfGamepadScreenBrightness.BRIGHTNESS_5;
+    //         default:
+    //             LeafyDebug.log("Unknown brightness mode: " + Std.string(mode), WARNING);
+    //             return LfGamepadScreenBrightness.BRIGHTNESS_1; // Default to BRIGHTNESS_1
+    //     }
+    // }
 }

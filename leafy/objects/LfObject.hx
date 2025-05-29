@@ -25,6 +25,7 @@ import leafy.utils.LfUtils;
 enum ObjectType {
     SPRITE;
     TEXT_SPRITE;
+    OTHER;
 }
 
 /**
@@ -61,7 +62,7 @@ class LfObject extends LfBase {
      */
     // public var camera:LfCamera;
 
-    // SDL Data //////////////////////////////
+    // SDL variables //////////////////////////////
 
     /**
      * Pointer to the SDL_Surface.
@@ -76,12 +77,18 @@ class LfObject extends LfBase {
     /**
      * Color of the object.
      */
-    public var color:SDL_Color;
+    public var sdlColor:SDL_Color;
 
     /**
      * Rect of the object.
      */
-    public var rect:SDL_Rect;
+    public var sdlRect:SDL_Rect;
+
+    /**
+     * Used to determine if the object can be rendered or not
+     * with the default render method.
+     */
+    public var omitDefaultRenderMethod:Bool = false;
 
     // General Data //////////////////////////
 
@@ -184,6 +191,10 @@ class LfObject extends LfBase {
     ////////////////////////////////
 
     override public function render() {
+        if (this.omitDefaultRenderMethod) {
+            return;
+        }
+
         // Why need need to render if the object is ready o visible and on screen?
         if (!this.readyToRender || !this.isVisible || this.alpha == 0 || !this.isOnScreen()) {
             return;
@@ -202,7 +213,7 @@ class LfObject extends LfBase {
         }
 
         SDL_Render.SDL_SetTextureAlphaMod(this.sdlTexturePtr, Std.int(this.alpha * 255));
-        SDL_Render.SDL_RenderCopyEx(LfWindow.currentRenderer, this.sdlTexturePtr, null, this.rect, this.angle, null, SDL_FLIP_NONE);
+        SDL_Render.SDL_RenderCopyEx(LfWindow.currentRenderer, this.sdlTexturePtr, null, this.sdlRect, this.angle, null, SDL_FLIP_NONE);
     }
 
     /**
@@ -252,13 +263,12 @@ class LfObject extends LfBase {
         return this.x < Leafy.screenWidth && this.x + this.width > 0 && this.y < Leafy.screenHeight && this.y + this.height > 0;
     }
 
-    
     /**
      *  Set the object color
      * @param newColor The new color
      */
     public function setColor(r:UInt8, g:UInt8, b:UInt8, a:UInt8,):Void {
-        if (this.color == null) {
+        if (this.sdlColor == null) {
             LeafyDebug.log("Object color is null, cannot update text color", ERROR);
             return;
         }
@@ -270,12 +280,12 @@ class LfObject extends LfBase {
 
         this.readyToRender = false;
 
-        this.color.r = r;
-        this.color.g = g;
-        this.color.b = b;
-        this.color.a = a;
+        this.sdlColor.r = r;
+        this.sdlColor.g = g;
+        this.sdlColor.b = b;
+        this.sdlColor.a = a;
 
-        SDL_Render.SDL_SetTextureColorMod(this.sdlTexturePtr, this.color.r, this.color.g, this.color.b);
+        SDL_Render.SDL_SetTextureColorMod(this.sdlTexturePtr, this.sdlColor.r, this.sdlColor.g, this.sdlColor.b);
 
         this.readyToRender = true;
     }
