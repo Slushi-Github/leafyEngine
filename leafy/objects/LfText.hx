@@ -149,6 +149,12 @@ class LfText extends LfObject {
             return;
         }
 
+        if (this.sdlTexturePtr != null) {
+            // Destroy the old texture
+            SDL_Render.SDL_DestroyTexture(this.sdlTexturePtr);
+            this.sdlTexturePtr = null;
+        }
+
         this.sdlTexturePtr = SDL_Render.SDL_CreateTextureFromSurface(LfWindow.currentRenderer, this.sdlSurfacePtr);
         if (this.sdlTexturePtr == null) {
             LeafyDebug.log("Failed to create texture from new surface: " + SDL_TTF.TTF_GetError().toString(), ERROR);

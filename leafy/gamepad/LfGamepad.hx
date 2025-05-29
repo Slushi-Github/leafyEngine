@@ -39,6 +39,18 @@ enum LfGamepadButton {
 }
 
 /**
+ * The list of gamepad screen brightness levels (From WUT (nn/ccr/sys.h))
+ */
+enum LfGamepadScreenBrightness {
+    BRIGHTNESS_0;
+    BRIGHTNESS_1;
+    BRIGHTNESS_2;
+    BRIGHTNESS_3;
+    BRIGHTNESS_4;
+    BRIGHTNESS_5; 
+}
+
+/**
  *  The Wii U Gamepad class, this class is used to get the gamepad input
  * 
  * Author: Slushi
@@ -225,6 +237,22 @@ class LfGamepad {
     }
 
     /**
+     * Set the brightness of the gamepad LCD
+     * @return Bool Whether the gamepad is connected
+     */
+    public function setScreenBrightness(brightness:LfGamepadScreenBrightness):Void {
+        LfGamepadInternal.setDRCLCDBrightness(getBrightnessValue(brightness));
+    }
+
+    /**
+     * Gets the brightness of the gamepad LCD
+     * @return Int The brightness of the gamepad LCD
+     */
+    public function getScreenBrightness():Int {
+        return LfGamepadInternal.getDRCLCDBrightness();
+    }
+
+    /**
      * Converts a LfGamepadButton to a VPADButtons
      * @param button The button
      * @return VPADButtons The VPADButtons
@@ -272,5 +300,30 @@ class LfGamepad {
                 return VPADButtons.VPAD_BUTTON_A;
         }
         return VPADButtons.VPAD_BUTTON_A;
+    }
+
+    /**
+     * CConverts a LfGamepadScreenBrightness to a Int
+     * @return Int The Int value of the brightness
+     */
+    private function getBrightnessValue(brightness:LfGamepadScreenBrightness):Int {
+        switch(brightness) {
+            case LfGamepadScreenBrightness.BRIGHTNESS_0:
+                return 0;
+            case LfGamepadScreenBrightness.BRIGHTNESS_1:
+                return 1;
+            case LfGamepadScreenBrightness.BRIGHTNESS_2:
+                return 2;
+            case LfGamepadScreenBrightness.BRIGHTNESS_3:
+                return 3;
+            case LfGamepadScreenBrightness.BRIGHTNESS_4:
+                return 4;
+            case LfGamepadScreenBrightness.BRIGHTNESS_5:
+                return 5;
+            default:
+                LeafyDebug.log("Unknown brightness: " + Std.string(brightness), WARNING);
+                return 0;
+        }
+        return 0; // Default to BRIGHTNESS_0
     }
 }

@@ -5,7 +5,7 @@
 
 package leafy.audio;
 
-import leafy.backend.internal.LfAudioManager;
+import leafy.backend.internal.LfAudioManagerInternal;
 
 /**
  * Audio engine, handles audio playback
@@ -14,44 +14,61 @@ import leafy.backend.internal.LfAudioManager;
  */
 class LfAudioEngine {
 
-    public var currentAudio:LfAudio;
+    /**
+     * Is the audio currently playing
+     */
+    public var playing:Bool = false;
+
+    /**
+     * Is the audio currently paused
+     */
+    public var paused:Bool = true;
+
+    // /**
+    //  * The current audio time
+    //  */
+    // public var currentTime:Float = 0;
+
+    // /**
+    //  * The current audio duration
+    //  */
+    // public var duration:Float = 0;
 
     /**
      * Plays an audio file
      * @param path The path to the audio file
      * @param loop Whether the audio should loop
      */
-    public function play(path:String, loop:Bool = false):LfAudio {
-        currentAudio = LfAudioManager.instance.play(path, loop);
-        return currentAudio;
+    public function play(path:String, loop:Bool = false):Void {
+        LfAudioManagerInternal.instance.play(path, loop);
     }
 
     /**
      * Pauses the currently playing audio
      */
     public function pause():Void {
-        LfAudioManager.instance.pause();
+        LfAudioManagerInternal.instance.pause();
     }
 
     /**
      * Resumes the currently paused audio
      */
     public function resume():Void {
-        LfAudioManager.instance.resume();
+        LfAudioManagerInternal.instance.resume();
     }
 
     /**
      * Stops the currently playing audio
      */
     public function stop():Void {
-        LfAudioManager.instance.stop();
+        LfAudioManagerInternal.instance.stop();
     }
 
     /**
      * Toggles the loop state of the currently playing audio
      */
     public function toggleLoop():Void {
-        LfAudioManager.toggleLoop();
+        LfAudioManagerInternal.toggleLoop();
     }
 
     /**
@@ -59,7 +76,7 @@ class LfAudioEngine {
      * @return Float
      */
     public function getCurrentTime():Float {
-        return LfAudioManager.getCurrentTime();
+        return LfAudioManagerInternal.getCurrentTime();
     }
 
     /**
@@ -67,6 +84,6 @@ class LfAudioEngine {
      * @return Float
      */
     public function getDuration():Float {
-        return LfAudioManager.getDuration();
+        return LfAudioManagerInternal.getDuration();
     }
 }

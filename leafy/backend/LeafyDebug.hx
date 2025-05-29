@@ -14,9 +14,6 @@ import wiiu.SDCardUtil;
 import wut.coreinit.Time.OSCalendarTime;
 import wut.coreinit.Debug;
 
-import notifications.Notifications;
-import notifications.Notification_defines.NMColor;
-
 import leafy.filesystem.LfFile;
 import leafy.filesystem.LfSystemPaths;
 import leafy.utils.LfStringUtils;
@@ -94,16 +91,6 @@ class LeafyDebug {
     private static var started:Bool = false;
 
     /**
-     * The background color of the notification
-     */
-    private static var notificationBGColor:NMColor = new NMColor();
-
-    /**
-     * The text color of the notification
-     */
-    private static var notificationTextColor:NMColor = new NMColor();
-
-    /**
      * // Log a message
      * @param msg The message
      * @param level The log level
@@ -112,30 +99,6 @@ class LeafyDebug {
     public static function log(msg:String, level:LogLevel, ?pos:PosInfos):Void {
         if (level == LogLevel.CRITICAL) {
             return;
-        }
-
-        switch (level) {
-            case LogLevel.INFO:
-                // Do nothing
-            case LogLevel.WARNING:
-                notificationBGColor.r = 152;
-                notificationBGColor.g = 93;
-                notificationBGColor.b = 0;
-                Notifications.NotificationModule_AddInfoNotificationEx(ConstCharPtr.fromString(msg), 3, notificationTextColor, notificationBGColor, untyped __cpp__("nullptr"), untyped __cpp__("nullptr"), false);
-            case LogLevel.ERROR:
-                notificationBGColor.r = 237;
-                notificationBGColor.g = 28;
-                notificationBGColor.b = 36;
-                Notifications.NotificationModule_AddErrorNotificationEx(ConstCharPtr.fromString(msg), 3, 0.8, notificationTextColor, notificationBGColor, untyped __cpp__("nullptr"), untyped __cpp__("nullptr"), false);
-            case LogLevel.DEBUG:
-                notificationBGColor.r = 104;
-                notificationBGColor.g = 0;
-                notificationBGColor.b = 93;
-                Notifications.NotificationModule_AddInfoNotificationEx(ConstCharPtr.fromString(msg), 3, notificationTextColor, notificationBGColor, untyped __cpp__("nullptr"), untyped __cpp__("nullptr"), false);
-            case LogLevel.CRITICAL:
-                // Do nothing
-            default:
-                // Do nothing
         }
 
         var formattedMessage:String = prepareText(msg, level, pos);
@@ -171,11 +134,6 @@ class LeafyDebug {
             if (!LfSystemPaths.exists(logsDir)) {
                 LfSystemPaths.createDirectory(logsDir);
             }
-    
-            notificationTextColor.r = 255;
-            notificationTextColor.g = 255;
-            notificationTextColor.b = 255;
-            notificationTextColor.a = 255;
     
             var currentTimeStr:String = untyped __cpp__("CPP_getCurrentTime()");
             var currentTimeMod:String = currentTimeStr;

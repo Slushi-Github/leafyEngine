@@ -53,9 +53,13 @@ class LfJson {
      * @param jsonPath 
      * @return LeafyJson
      */
-    public static function parseJsonFile(jsonPath:String):LeafyJson {
-
-        var correctPath:String = LfSystemPaths.getConsolePath() + jsonPath;
+    public static function parseJsonFile(jsonPath:String, absolutePath:Bool = false):LeafyJson {
+        var correctPath:String = "";
+        if (absolutePath) {
+            correctPath = jsonPath;
+        } else {
+            correctPath = LfSystemPaths.getEngineMainPath() + jsonPath;
+        }
 
         if (jsonPath == null || jsonPath == "") {
             LeafyDebug.log("JSON file path cannot be null or empty", ERROR);
@@ -65,7 +69,6 @@ class LfJson {
         if (!LfSystemPaths.exists(correctPath) || !LfStringUtils.stringEndsWith(correctPath, ".json")) {
             LeafyDebug.log("JSON file does not exist or is not a valid JSON file", ERROR);
             return null;
-            
         }
         
         var rawJSONError:Json_error_t = new Json_error_t();

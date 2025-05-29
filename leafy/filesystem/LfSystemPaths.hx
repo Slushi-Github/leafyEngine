@@ -98,7 +98,7 @@ class LfSystemPaths {
         if (path == "") {
             return;
         }
-        engineMainPath = consolePath + path;
+        engineMainPath = consolePath + path + "/";
 
         // Check if the path exists and create it if it doesn't
         if (!exists(engineMainPath)) {

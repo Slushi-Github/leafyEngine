@@ -30,7 +30,7 @@ class LfEngine {
     /**
      * The current version of the engine
      */
-    public static var version:String = "1.3.5";
+    public static var version:String = "1.3.7";
 
     /**
      * Function to be called when the engine exits
@@ -43,14 +43,19 @@ class LfEngine {
     public static var windowMode:LfWindowType;
 
     /**
+     * The initial state
+     */
+    public static var initState:LfState;
+
+    /**
      * Is the engine running
      */
     private static var _isRunning:Bool = false;
 
     /**
-     * The initial state
+     * The initial DRC screen brightness level
      */
-    public static var initState:LfState;
+    public static var initBrightness:Int = -1;
 
     /**
      * Initialize the engine, and start the state
@@ -86,6 +91,9 @@ class LfEngine {
         // Initialize the Wii U Gamepad
         LfGamepadInternal.initDRC();
 
+        // Get the initial DRC screen brightness level
+        initBrightness = LfGamepadInternal.getDRCLCDBrightness();
+
         LeafyDebug.log("Leafy Engine " + Std.string(version) + " initialized", INFO);
         
         // Set and initialize the initial state
@@ -109,10 +117,17 @@ class LfEngine {
             onEngineExit();
         }
 
+        if (LfGamepadInternal.getDRCLCDBrightness() != initBrightness) {
+            // Restore the initial DRC screen brightness level
+            LfGamepadInternal.setDRCLCDBrightness(initBrightness);
+        }
+
         LfStateHandler.destroyCurrentState();
         SubEngines.shutdownSDL();
         LfSystemPaths.deinitFSSystem();
         Log_udp.WHBLogUdpDeinit();
         Proc.WHBProcShutdown();
+        LeafyDebug.log("Leafy Engine " + Std.string(version) + " shutdown", INFO);
+
     }
 }

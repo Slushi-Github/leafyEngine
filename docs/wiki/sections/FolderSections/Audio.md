@@ -24,11 +24,11 @@ Leafy.audio.stop();
 // Toggle the loop of a sound or music
 Leafy.audio.toggleLoop();
 
-// Get the LfAudio object if is already created
-var audioObj:LfAudio = Leafy.audio.currentAudio;
+// Check if the audio is playing
+var isPlaying:Bool = Leafy.audio.playing;
 
-// Or get it as soon as you play the audio
-var audioObj:LfAudio = Leafy.audio.play("GAME_PATH/music.ogg", true);
+// Check if the audio is paused
+var isPaused:Bool = Leafy.audio.paused;
 
 // get the current time of the audio
 var currentTime:Float = Leafy.audio.getCurrentTime();

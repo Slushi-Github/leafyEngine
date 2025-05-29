@@ -30,11 +30,11 @@ import leafy.audio.LfAudio;
  * Is recomended to use the `LfAudioEngine` class instead of this one.
  * Author: Slushi
  */
-class LfAudioManager {
+class LfAudioManagerInternal {
     /**
      * Class instance
      */
-    public static var instance:LfAudioManager;
+    public static var instance:LfAudioManagerInternal;
 
     /**
      * Audio specs
@@ -103,6 +103,9 @@ class LfAudioManager {
             currentAudio.currentTime = currentTime;
             playing = currentAudio.playing;
             paused = currentAudio.paused;
+
+            Leafy.audio.playing = playing;
+            Leafy.audio.paused = paused;
         }
     }
 
@@ -233,6 +236,11 @@ class LfAudioManager {
         }
 
         var fileInfo:Ptr<Vorbis_info> = VorbisFile.ov_info(audio.file, -1);
+        if (untyped __cpp__("{0} == nullptr", fileInfo)) {
+            LeafyDebug.log("Failed to get Ogg Vorbis info for the file.", INFO);
+            return false;
+        }
+
         if (fileInfo == null) {
             LeafyDebug.log("Failed to get Ogg Vorbis info for the file.", INFO);
             return false;
@@ -264,7 +272,8 @@ class LfAudioManager {
             stopStatic();
             playing = false;
             paused = true;
-            if (untyped __cpp__("{0} != nullptr", currentFile)) {
+            if (untyped __cpp__("{0} == nullptr", currentFile)) {
+                return false;
             }
             currentAudio = null;
             currentTime = 0.0;
@@ -278,6 +287,8 @@ class LfAudioManager {
         currentTime = 0;
         playing = true;
         paused = false;
+        // Leafy.audio.playing = playing;
+        // Leafy.audio.paused = paused;
 
         SDL_Audio.SDL_PauseAudioDevice(audioDevice, 0);
 
@@ -310,21 +321,34 @@ class LfAudioManager {
 
     /**
      * Start audio playback
-     * @param audio 
+     * @param audio The audio to play
+     * @param loop Whether the audio should loop
      */
-    public function play(path:String, loop:Bool):LfAudio {
+    public function play(path:String, loop:Bool):Void {
+
+        if (instance == null) {
+            LeafyDebug.log("Audio manager instance is null.", ERROR);
+            return;
+        }
+
         var tempAudio:LfAudio = new LfAudio(path, loop);
+        if (untyped __cpp__("{0} == nullptr", tempAudio)) {
+            LeafyDebug.log("Failed to create LfAudio object.", INFO);
+            return;
+        }
 
         if (audioDevice <= 0) {
             init();
             if (audioDevice <= 0) {
                 LeafyDebug.log("Cannot play audio, device initialization failed.", ERROR);
-                return null;
+                return;
             }
         }
-        loadOgg(tempAudio);
-
-        return tempAudio;
+        var result:Bool = loadOgg(tempAudio);
+        if (!result) {
+            LeafyDebug.log("Failed to load Ogg file: " + path, ERROR);
+            return;
+        }
     }
 
     /**
@@ -336,6 +360,7 @@ class LfAudioManager {
         paused = !paused;
         SDL_Audio.SDL_PauseAudioDevice(audioDevice, paused ? 1 : 0);
         currentAudio.paused = paused;
+        // Leafy.audio.paused = paused;
         LeafyDebug.log("Audio " + (paused ? "Paused" : "Resumed"), INFO);
     }
 
@@ -364,10 +389,7 @@ class LfAudioManager {
      * @return Float
      */
     public static function getCurrentTime():Float {
-        if (currentAudio != null) {
-            return currentAudio.currentTime;
-        }
-        return 0.0;
+        return currentTime;
     }
 
     /**
@@ -388,7 +410,11 @@ class LfAudioManager {
         if (audioDevice <= 0 || currentAudio == null || !playing || paused) return;
         paused = true;
         SDL_Audio.SDL_PauseAudioDevice(audioDevice, 1);
+        // playing = false;
+        // currentAudio.playing = playing;
         currentAudio.paused = paused;
+        // Leafy.audio.paused = paused;
+        // Leafy.audio.playing = playing;
         LeafyDebug.log("Audio Paused", INFO);
     }
 
@@ -400,6 +426,7 @@ class LfAudioManager {
         paused = false;
         SDL_Audio.SDL_PauseAudioDevice(audioDevice, 0);
         currentAudio.paused = paused;
+        // Leafy.audio.paused = paused;
         LeafyDebug.log("Audio Resumed", INFO);
     }
 

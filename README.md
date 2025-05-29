@@ -53,23 +53,32 @@ class PlayState extends LfState {
 A code probably similar to one from [HaxeFlixel](https://haxeflixel.com/) right?
 
 ## Current status of the engine:
-- [x] Wii U Gamepad support (Touchscreen support partially)
-- [x] Sprites
-- [x] Texts
-- [x] buttons (Partially broken)
-- [x] Audio support (Only one music or sound at the same time)
+- [x] Wii U Gamepad support
+	- [x] Wii U Gamepad Buttons and sticks
+	- [x] Wii U Gamepad Rumble
+	- [x] Wii U Gamepad Accelerometer
+	- [x] Wii U Gamepad Gyroscope
+	- [x] Wii U Gamepad Touchscreen
+		- [x] Wii U Gamepad Touchscreen touch position and click
+		- [x] Wii U Gamepad Touchscreen LCD brightness control
+	- [] Wii U Gamepad Camera
+	- [] Wii U Gamepad Microphone
+- Objects
+	- [x] Sprites
+	- [x] Texts
+	- [x] buttons (Partially broken)
+- [x] Audio support with precise control (Only one music or sound at the same time)
 - [x] States 
+- [] Substates
 - [x] Collisions
 - [x] Sprites basic physics 
 - [x] Tweens and easing functions
 - [x] JSONs file support (Only decoding)
-- [x] Timers
+- [x] Timers (Using [``haxe.Timer``](https://api.haxe.org/haxe/Timer.html))
 - [x] HTTP requests (Via Curl)
 - [x] Multiple renders mode (``DRC``, ``TV`` and ``UNIQUE``)
 - [x] FileSystem manipulation
-- [ ] Cameras
-- [ ] Wii U Gamepad Camera support
-- [ ] Wii U Gamepad Microphone support
+- [] Engine cameras
 
 ## How?
 This engine uses [SDL2 (For the Wii U)](https://github.com/devkitPro/SDL/tree/wiiu-sdl2-2.28) as a base, along with other WUT functions. All the libraries are ported to Haxe to work through the ``@:native`` feature, to finally use [Reflaxe/C++](https://github.com/SomeRanDev/reflaxe.CPP) to generate the code in C++ and compile it through the [DevKitPPC](https://wiibrew.org/wiki/DevkitPPC) tools, although due to this mode, there are things that change and have more care in how the engine is used when you want to make a project with it. 

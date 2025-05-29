@@ -6,17 +6,16 @@
 package leafy.groups;
 
 import Std;
-import haxe.ds.List;
 import leafy.objects.LfObject;
 
 /**
  * A group of objects, used to manage multiple objects at once
  */
-class LfGroup extends LfObject {
+class LfGroup<T:LfObject> extends LfObject {
     /**
      * List of objects in the group
      */
-    public var objectsList:Array<LfObject>;
+    public var objectsList:Array<T>;
 
     /**
      * The length of the group
@@ -29,14 +28,14 @@ class LfGroup extends LfObject {
     public function new() {
         super();
 
-        objectsList = new Array<LfObject>();
+        objectsList = new Array<T>();
     }
 
     /**
      * Add an object to the group
      * @param item The object to add
      */
-    public function add(item:LfObject):Void {
+    public function add(item:T):Void {
         
         if (item != null && !objectsList.contains(item)) {
             objectsList.push(item);
@@ -49,7 +48,7 @@ class LfGroup extends LfObject {
      * Remove an object from the group
      * @param item The object to remove
      */
-    public function remove(item:LfObject):Void {
+    public function remove(item:T):Void {
         if (item == null) {
             return;
         }

@@ -11,7 +11,7 @@ import sdl2.SDL_Error;
 import sdl2.SDL;
 
 import leafy.backend.sdl.LfWindow;
-import leafy.backend.internal.LfAudioManager;
+import leafy.backend.internal.LfAudioManagerInternal;
 
 /**
  * A class for initializing the SDL libraries
@@ -52,8 +52,8 @@ class SubEngines {
         }
 
         // Init SDL Audio Engine
-        new LfAudioManager();
-        LfAudioManager.init();
+        new LfAudioManagerInternal();
+        LfAudioManagerInternal.init();
 
         LeafyDebug.log("SDL_Audio initialized", INFO);
     }
@@ -65,7 +65,7 @@ class SubEngines {
      */
     public static function shutdownSDL():Void {
         LfWindow.closeEngineWindows();
-        LfAudioManager.shutdown();
+        LfAudioManagerInternal.shutdown();
 
         SDL_TTF.TTF_Quit();
         SDL_Image.IMG_Quit();

@@ -48,8 +48,8 @@ class LfUtils {
      * @param x X value
      * @param y Y value
      * @param angleDegrees Angle in degrees
-     * @param originX ...
-     * @param originY ...
+     * @param originX Origin X value
+     * @param originY Origin Y value
      * @return LfVector2D
      */
     public static function rotatePoint(x:Float, y:Float, angleDegrees:Float, originX:Float, originY:Float):LfVector2D {

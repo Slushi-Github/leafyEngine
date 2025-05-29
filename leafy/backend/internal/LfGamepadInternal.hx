@@ -12,6 +12,7 @@ import wut.vpad.Input.VPAD;
 import wut.vpad.Input.VPADButtons;
 import wut.vpad.Input.VPADReadError;
 import wut.vpadbase.Base.VPADChan;
+import wut.nn.ccr.Sys;
 
 @:cppFileCode("
 #include <vpad/input.h>
@@ -75,8 +76,13 @@ void CPP_stopVibration() {
         vibrationThread.join();
     VPADStopMotor(VPAD_CHAN_0);
 }
-
 ")
+
+/**
+ * Internal class for handling the DRC (Wii U Gamepad) input
+ * This class is used to read the state of the DRC and handle different events
+ * It is not meant to be used directly, but rather through the `LfGamepad` class.
+ */
 class LfGamepadInternal {
     /**
      * The current state of the DRC
@@ -101,7 +107,6 @@ class LfGamepadInternal {
      * Whether the DRC is currently touching
      */
     private static var currentTouching:Bool = false;
-
 
     /**
      * Whether the DRC is rumbling
@@ -363,12 +368,33 @@ class LfGamepadInternal {
     /////////////////////
 
     /**
+     * Changes the brightness of the DRC LCD
+     * @param brightness 
+     */
+    public static function setDRCLCDBrightness(brightness:CCRSysLCDMode):Void {
+        Sys.ccrSysSetCurrentLCDMode(brightness);
+    }
+
+    /*
+     * Gets the current brightness of the DRC LCD
+     * @return CCRSysLCDMode
+     */
+    public static function getDRCLCDBrightness():CCRSysLCDMode {
+        var mode:Null<Int> = null;
+        Sys.ccrSysGetCurrentLCDMode(Syntax.toPointer(mode));
+        return mode;
+    }
+
+    /////////////////////
+
+    /**
      * Starts rumble on the DRC
      * @param intensity The intensity of the rumble (0.0 to 1.0)
      * @param durationSeconds The duration of the rumble
      */
     public static function startRumble(intensity:Float = 1.0, durationSeconds:Float = -1.0):Void {
         untyped __cpp__("CPP_vibrateGamepad({0}, {1})", intensity, durationSeconds);
+        isRumbling = true;
     }
 
     /**
