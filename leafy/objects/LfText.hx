@@ -33,6 +33,8 @@ class LfText extends LfObject {
     private var fontPtr:Ptr<TTF_Font>;
     public var fontPath:String = "";
 
+    private var failed:Bool = false;
+
     /////////////////////////////////////////////////////////////////////
 
     /**
@@ -68,6 +70,7 @@ class LfText extends LfObject {
 
         //////////////////
 
+        this.type = ObjectType.TEXT_SPRITE;
         this.x = x;
         this.y = y;
         this.width = 0;
@@ -88,11 +91,10 @@ class LfText extends LfObject {
         this.size = size;
         this.fontPath = fontPath;
 
-        this.setColor(255, 255, 255, 255);
-
         this.fontPtr = SDL_TTF.TTF_OpenFont(ConstCharPtr.fromString(correctPath), size);
         if (untyped __cpp__("fontPtr == nullptr")) {
             LeafyDebug.log("Failed to load font: " + LfUtils.removeSDDirFromPath(fontPath) + " with size: " + size, ERROR);
+            failed = true;
             return;
         }
 
@@ -112,6 +114,9 @@ class LfText extends LfObject {
         }
 
         SDL_Render.SDL_SetTextureBlendMode(this.sdlTexturePtr, SDL_BLENDMODE_BLEND);
+        SDL_SurfaceClass.SDL_FreeSurface(this.sdlSurfacePtr);
+
+        this.setColor(255, 255, 255, 255);
 
         this.width = this.sdlSurfacePtr.w;
         this.height = this.sdlSurfacePtr.h;
@@ -136,12 +141,22 @@ class LfText extends LfObject {
      * @param newText The new text
      */
     public function setText(newText:String):Void {
+        if (this.failed) {
+            LeafyDebug.log("Cannot set text, SDL TTF font loading failed", ERROR);
+            return;
+        }
+
         if (newText == null || newText == "") {
             LeafyDebug.log("New text cannot be null or empty", ERROR);
             return;
         }
 
         this.readyToRender = false;
+
+        if (this.sdlSurfacePtr != null) {
+            SDL_SurfaceClass.SDL_FreeSurface(this.sdlSurfacePtr);
+            this.sdlSurfacePtr = null;
+        }
 
         this.sdlSurfacePtr = SDL_TTF.TTF_RenderText_Blended(this.fontPtr, ConstCharPtr.fromString(newText), this.sdlColor);
         if (this.sdlSurfacePtr == null) {
@@ -150,7 +165,6 @@ class LfText extends LfObject {
         }
 
         if (this.sdlTexturePtr != null) {
-            // Destroy the old texture
             SDL_Render.SDL_DestroyTexture(this.sdlTexturePtr);
             this.sdlTexturePtr = null;
         }
@@ -163,6 +177,8 @@ class LfText extends LfObject {
         }
 
         SDL_Render.SDL_SetTextureBlendMode(this.sdlTexturePtr, SDL_BLENDMODE_BLEND);
+        SDL_SurfaceClass.SDL_FreeSurface(this.sdlSurfacePtr);
+        this.sdlSurfacePtr = null;
 
         this.width = this.sdlSurfacePtr.w;
         this.height = this.sdlSurfacePtr.h;

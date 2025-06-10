@@ -96,6 +96,16 @@ class LfSprite extends LfObject {
         this.imagePath = correctPath;
         this.name = LfUtils.removeSDDirFromPath(this.imagePath);
 
+        if (this.sdlTexturePtr != null) {
+            SDL_Render.SDL_DestroyTexture(this.sdlTexturePtr);
+            this.sdlTexturePtr = null;
+        }
+
+        if (this.sdlSurfacePtr != null) {
+            SDL_SurfaceClass.SDL_FreeSurface(this.sdlSurfacePtr);
+            this.sdlSurfacePtr = null;
+        }
+
         this.sdlSurfacePtr = SDL_Image.IMG_Load(ConstCharPtr.fromString(this.imagePath));
         if (this.sdlSurfacePtr == null) {
             LeafyDebug.log("Failed to load image: " + SDL_Error.SDL_GetError().toString(), ERROR);
@@ -109,7 +119,8 @@ class LfSprite extends LfObject {
             return;
         }
 
-        // SDL_SurfaceClass.SDL_FreeSurface(this.sdlSurfacePtr);
+        SDL_SurfaceClass.SDL_FreeSurface(this.sdlSurfacePtr);
+        this.sdlSurfacePtr = null;
 
         SDL_Render.SDL_SetTextureBlendMode(this.sdlTexturePtr, SDL_BLENDMODE_BLEND);
 
@@ -156,6 +167,11 @@ class LfSprite extends LfObject {
         this.sdlRect.w = this.width;
         this.sdlRect.h = this.height;
 
+        if (this.sdlSurfacePtr != null) {
+            SDL_SurfaceClass.SDL_FreeSurface(this.sdlSurfacePtr);
+            this.sdlSurfacePtr = null;
+        }
+
         this.sdlSurfacePtr = SDL_SurfaceClass.SDL_CreateRGBSurface(
             0,
             width,
@@ -172,6 +188,22 @@ class LfSprite extends LfObject {
             return;
         }
 
+        // TODO: Make use of setColor function instead of this code
+        var mappedColor:UInt32 = SDL_PixelsClass.SDL_MapRGBA(
+            this.sdlSurfacePtr.format,
+            color[0], // R
+            color[1], // G
+            color[2], // B
+            color[3]  // A
+        );
+
+        SDL_SurfaceClass.SDL_FillRect(this.sdlSurfacePtr, null, mappedColor);
+
+        if (this.sdlTexturePtr != null) {
+            SDL_Render.SDL_DestroyTexture(this.sdlTexturePtr);
+            this.sdlTexturePtr = null;
+        }
+
         this.sdlTexturePtr = SDL_Render.SDL_CreateTextureFromSurface(LfWindow.currentRenderer, this.sdlSurfacePtr);
         if (this.sdlTexturePtr == null) {
             LeafyDebug.log("Failed to create texture from surface: " + SDL_Error.SDL_GetError().toString(), ERROR);
@@ -179,9 +211,12 @@ class LfSprite extends LfObject {
             return;
         }
 
-        this.setColor(color[0], color[1], color[2], color[3]);
+        // this.setColor(color[0], color[1], color[2], color[3]);
 
         SDL_Render.SDL_SetTextureBlendMode(this.sdlTexturePtr, SDL_BLENDMODE_BLEND);
+
+        SDL_SurfaceClass.SDL_FreeSurface(this.sdlSurfacePtr);
+        this.sdlSurfacePtr = null;
 
         this.name = "Graphic_(" + width + "x" + height + ")";
 

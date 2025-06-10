@@ -165,6 +165,8 @@ class LfObject extends LfBase {
     ////////////////////////////////
 
     override public function update(elapsed:Float):Void {
+        updateSDLRect();
+
         if (!this.immovable) {
             this.acceleration.y += gravity;
 
@@ -195,7 +197,7 @@ class LfObject extends LfBase {
             return;
         }
 
-        // Why need need to render if the object is ready o visible and on screen?
+        // Why need need to render if the object is not ready o visible and on screen?
         if (!this.readyToRender || !this.isVisible || this.alpha == 0 || !this.isOnScreen()) {
             return;
         }
@@ -268,6 +270,11 @@ class LfObject extends LfBase {
      * @param newColor The new color
      */
     public function setColor(r:UInt8, g:UInt8, b:UInt8, a:UInt8,):Void {
+        if (this.type == ObjectType.SPRITE) {
+            LeafyDebug.log("Cannot set color for sprite, use createGraphic again (BUG)", WARNING);
+            return;
+        }
+
         if (this.sdlColor == null) {
             LeafyDebug.log("Object color is null, cannot update text color", ERROR);
             return;
@@ -285,9 +292,23 @@ class LfObject extends LfBase {
         this.sdlColor.b = b;
         this.sdlColor.a = a;
 
-        SDL_Render.SDL_SetTextureColorMod(this.sdlTexturePtr, this.sdlColor.r, this.sdlColor.g, this.sdlColor.b);
+        var result:Int = SDL_Render.SDL_SetTextureColorMod(this.sdlTexturePtr, this.sdlColor.r, this.sdlColor.g, this.sdlColor.b);
+        if (result != 0) {
+            LeafyDebug.log("Failed to set color for object: [" + this.name + "] - " + SDL_Image.IMG_GetError().toString(), ERROR);
+            return;
+        }
 
         this.readyToRender = true;
+    }
+
+    private function updateSDLRect():Void {
+        if (this.sdlRect == null) {
+            return;
+        }
+        this.sdlRect.x = this.x;
+        this.sdlRect.y = this.y;
+        this.sdlRect.w = this.width;
+        this.sdlRect.h = this.height;
     }
     
     /////////////////////////////////////////////

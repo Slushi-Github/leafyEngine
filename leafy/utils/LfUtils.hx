@@ -73,6 +73,20 @@ class LfUtils {
      */
     public static function sign(n:Float):Int {
     return n > 0 ? 1 : (n < 0 ? -1 : 0);
-}
+    }
+
+    /**
+     * Returns the remainder of the division of `dividend` by `divisor`.
+     * 
+     * This is similar to the `%` operator, but it always returns a positive
+     * result when `divisor` is positive.
+     * 
+     * @param dividend The dividend.
+     * @param divisor The divisor.
+     * @return The positive remainder.
+     */
+    public static function fmod(dividend:Float, divisor:Float):Float {
+        return dividend - Math.floor(dividend / divisor) * divisor;
+    }
 
 }
