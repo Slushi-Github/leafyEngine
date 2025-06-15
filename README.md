@@ -5,8 +5,7 @@
 
 Leafy Engine is an engine inspired by [HaxeFlixel](https://haxeflixel.com/) for making 2D games for the Wii U using Haxe, yes, Haxe!
 
-> **Note**
->
+> [!IMPORTANT]
 > The engine is still in development, so there may be some bugs and many changes constantly!
 
 [Leafy Engine Docs](https://github.com/Slushi-Github/leafyEngine/blob/main/docs/wiki/README.md)
