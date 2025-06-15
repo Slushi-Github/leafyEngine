@@ -10,7 +10,6 @@ import Std;
 import wut.whb.Proc;
 import wut.whb.Log_udp;
 import wut.whb.Crash;
-// import wut.nn.ccr.Sys;
 
 import leafy.states.LfState;
 import leafy.backend.SubEngines;
@@ -31,7 +30,7 @@ class LfEngine {
     /**
      * The current version of the engine
      */
-    public static var version:String = "1.4.0";
+    public static var version:String = "1.4.3";
 
     /**
      * Function to be called when the engine exits
@@ -53,11 +52,6 @@ class LfEngine {
      */
     private static var _isRunning:Bool = false;
 
-    // /**
-    //  * The initial DRC screen brightness level
-    //  */
-    // public static var initBrightness:Null<CCRSysLCDMode>;
-
     /**
      * Initialize the engine, and start the state
      * @param state The initial state
@@ -67,7 +61,7 @@ class LfEngine {
         Proc.WHBProcInit();
         Crash.WHBInitCrashHandler(); // This really works?
 
-        Sys.println("[Leafy Engine initial state - no logger started] Starting Leafy Engine " + Std.string(version));
+        Sys.println("[Leafy Engine initial state - no logger started] Starting Leafy Engine " + version);
 
         if (renderMode == null) {
             Sys.println("[Leafy Engine initial state - no logger started -> WARNING] Render mode cannot be null, defaulting to DRC mode");
@@ -92,10 +86,7 @@ class LfEngine {
         // Initialize the Wii U Gamepad
         LfGamepadInternal.initDRC();
 
-        // Get the initial DRC screen brightness level
-        // initBrightness = LfGamepadInternal.getDRCLCDBrightness();
-
-        LeafyDebug.log("Leafy Engine " + Std.string(version) + " initialized", INFO);
+        LeafyDebug.log("Leafy Engine [" + version + "] initialized", INFO);
         
         // Set and initialize the initial state
         LfStateHandler.initFirstState(state);
@@ -117,13 +108,7 @@ class LfEngine {
             onEngineExit();
         }
 
-        LeafyDebug.log("Shutting down Leafy Engine " + Std.string(version), INFO);
-
-        // if (LfGamepadInternal.getDRCLCDBrightness() != initBrightness) {
-        //     // Restore the initial DRC screen brightness level
-        //     LeafyDebug.log("Restoring initial DRC screen brightness level: " + Std.string(initBrightness), INFO);
-        //     LfGamepadInternal.setDRCLCDBrightness(initBrightness);
-        // }
+        LeafyDebug.log("Shutting down Leafy Engine " + version, INFO);
 
         LfStateHandler.destroyCurrentState();
         SubEngines.shutdownSDL();

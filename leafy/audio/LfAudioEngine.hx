@@ -86,4 +86,12 @@ class LfAudioEngine {
     public function getDuration():Float {
         return LfAudioManagerInternal.getDuration();
     }
+
+    /**
+     * Sets the current audio time
+     * @param time The time to set
+     */
+    public function setCurrentTime(time:Float):Void {
+        LfAudioManagerInternal.setCurrentTime(time);
+    }
 }

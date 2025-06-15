@@ -1,6 +1,5 @@
 {
 	"extraLibs": [
-		"slushiUtilsU",
 		"curl",
 		"SDL2",
 		"leafyEngine",

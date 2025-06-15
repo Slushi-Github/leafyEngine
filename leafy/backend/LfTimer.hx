@@ -16,7 +16,6 @@ import sdl2.SDL_Timer;
  * Author: Slushi
  */
 class LfTimer {
-
     private static var _lastTime:UInt32 = SDL_Timer.SDL_GetTicks();
 
     public static var _deltaTime:Float = 0;

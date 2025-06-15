@@ -5,7 +5,7 @@
 
 package leafy.filesystem;
 
-import wiiu.SDCardUtil;
+import leafy.system.console.SDCard;
 import leafy.backend.LeafyDebug;
 
 @:cppFileCode("
@@ -76,16 +76,15 @@ class LfSystemPaths {
      * Initialize the file system
      */
     public static function initFSSystem():Void {
-        SDCardUtil.prepareSDCard();
-        consolePath = SDCardUtil.getSDCardPathFixed();
-        LeafyDebug.log("Wii U SD Card path: " + consolePath, INFO);
+        SDCard.mountSDCard();
+        LeafyDebug.log("Wii U SD Card path: [" + SDCard.getSDCardWiiUPath() + "]", INFO);
     }
 
     /**
      * Shutdown the file system
      */
     public static function deinitFSSystem():Void {
-        SDCardUtil.unmountSDCard();
+        SDCard.unmountSDCard();
     }
 
     //////////////////////////////////////////////////////////////

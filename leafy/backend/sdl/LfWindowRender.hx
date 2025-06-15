@@ -38,16 +38,6 @@ class LfWindowRender {
             currentState.render();
         }
 
-        // if (Leafy.camera != null) {
-        //     Leafy.camera.render();
-        // }
-
-        // for (cam in Leafy.cameras) {
-        //     if (cam != null) {
-        //         cam.render();
-        //     }
-        // }
-
         switch (LfEngine.windowMode) {
             case LfWindowType.TV:
                 SDL_Render.SDL_RenderPresent(LfWindow._tvRenderer);

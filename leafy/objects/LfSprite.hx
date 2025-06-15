@@ -7,8 +7,6 @@ package leafy.objects;
 
 import Std;
 
-import wiiu.SDCardUtil;
-
 import sdl2.SDL_Image;
 import sdl2.SDL_Render;
 import sdl2.SDL_Surface.SDL_Surface;
@@ -148,8 +146,8 @@ class LfSprite extends LfObject {
      * @param color Array of 4 components: [R, G, B, A] (0-255)
      */
     public function createGraphic(width:Int, height:Int, color:Array<UInt8>):Void {
-        if (color == null || color.length != 4) {
-            LeafyDebug.log("Invalid color array. Must be [R, G, B, A]", ERROR);
+        if (color == null || color.length != 3) {
+            LeafyDebug.log("Invalid color array. Must be [R, G, B]", ERROR);
             return;
         }
 
@@ -194,7 +192,7 @@ class LfSprite extends LfObject {
             color[0], // R
             color[1], // G
             color[2], // B
-            color[3]  // A
+            255 // A (Alpha is always 255 for solid color)
         );
 
         SDL_SurfaceClass.SDL_FillRect(this.sdlSurfacePtr, null, mappedColor);
@@ -221,7 +219,7 @@ class LfSprite extends LfObject {
         this.name = "Graphic_(" + width + "x" + height + ")";
 
         this.readyToRender = true;
-        LeafyDebug.log("Generated graphic (" + width + "x" + height + ")", INFO);
+        LeafyDebug.log("Generated graphic (" + width + "x" + height + ")", DEBUG);
     }
 
 

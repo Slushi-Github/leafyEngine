@@ -13,6 +13,7 @@ import wut.vpad.Input.VPADButtons;
 import wut.vpad.Input.VPADReadError;
 import wut.vpadbase.Base.VPADChan;
 import wut.nn.ccr.Sys;
+import wut.coreinit.Systeminfo;
 
 @:cppFileCode("
 #include <vpad/input.h>
@@ -404,5 +405,15 @@ return mode");
     public static function stopRumble():Void {
         untyped __cpp__("CPP_stopVibration()");
         isRumbling = false;
+    }
+
+    /////////////////////
+
+    public static function enableHomeMenuButton(mode:Bool):Void {
+        Systeminfo.OSEnableHomeButtonMenu(mode);
+    }
+
+    public static function isHomeMenuButtonEnabled():Bool {
+        return Systeminfo.OSIsHomeButtonMenuEnabled();
     }
 }

@@ -9,14 +9,12 @@ import haxe.PosInfos;
 import Std;
 import cxx.std.Exception;
 
-import wiiu.SDCardUtil;
-
-import wut.coreinit.Time.OSCalendarTime;
 import wut.coreinit.Debug;
 
 import leafy.filesystem.LfFile;
 import leafy.filesystem.LfSystemPaths;
 import leafy.utils.LfStringUtils;
+import leafy.system.console.SDCard;
 
 /**
  * The log level
@@ -129,8 +127,8 @@ class LeafyDebug {
      */
     public static function initLogger():Void {
         try {
-            SDCardUtil.prepareSDCard();
-            var logsDir = logsPath = SDCardUtil.getSDCardPathFixed() + "LeafyLogs/";
+            SDCard.mountSDCard();
+            var logsDir = logsPath = SDCard.getSDCardWiiUPath() + "LeafyLogs/";
             if (!LfSystemPaths.exists(logsDir)) {
                 LfSystemPaths.createDirectory(logsDir);
             }

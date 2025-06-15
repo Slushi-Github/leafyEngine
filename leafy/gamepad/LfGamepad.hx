@@ -8,14 +8,11 @@ package leafy.gamepad;
 import Std;
 
 import wut.vpad.Input.VPADButtons;
-import wut.nn.ccr.Sys;
 
 import leafy.backend.internal.LfGamepadInternal;
-import leafy.objects.LfSprite;
 import leafy.objects.LfObject;
 import leafy.utils.LfUtils.LfVector2D;
 import leafy.utils.LfUtils.LfVector3D;
-
 
 /**
  * The list of gamepad buttons
@@ -208,19 +205,19 @@ class LfGamepad {
 
     /**
      * Checks if the touchscreen of the gamepad is touching a sprite
-     * @param sprite The sprite
+     * @param object The object to check
      * @return Bool
      */
-    public function isTouchingAObject(sprite:LfObject):Bool {
-        if (!this.isTouching() || sprite == null) return false;
+    public function isTouchingAObject(object:LfObject):Bool {
+        if (!this.isTouching() || object == null) return false;
 
         var touchX = this.getTouch().x;
         var touchY = this.getTouch().y;
 
-        return (touchX >= sprite.x &&
-                touchX <= sprite.x + sprite.width &&
-                touchY >= sprite.y &&
-                touchY <= sprite.y + sprite.height);
+        return (touchX >= object.x &&
+                touchX <= object.x + object.width &&
+                touchY >= object.y &&
+                touchY <= object.y + object.height);
     }
 
     /**
@@ -239,21 +236,23 @@ class LfGamepad {
         LfGamepadInternal.stopRumble();
     }
 
-    // /**
-    //  * Set the brightness of the gamepad LCD
-    //  * @return Bool Whether the gamepad is connected
-    //  */
-    // public function setScreenBrightness(brightness:LfGamepadScreenBrightness):Void {
-    //     LfGamepadInternal.setDRCLCDBrightness(getBrightnessValue(brightness));
-    // }
+    /**
+     * Enables or disables the home menu button
+     * @param mode 
+     */
+    public static function enableHomeMenuButton(mode:Bool):Void {
+        LfGamepadInternal.enableHomeMenuButton(mode);
+    }
 
-    // /**
-    //  * Gets the brightness of the gamepad LCD
-    //  * @return Int The brightness of the gamepad LCD
-    //  */
-    // public function getScreenBrightness():LfGamepadScreenBrightness {
-    //     return getBrightnessFromCCRSysLCDMode(LfGamepadInternal.getDRCLCDBrightness());
-    // }
+    /**
+     * Checks if the home menu button is enabled
+     * @return Bool Whether the home menu button is enabled
+     */
+    public static function isHomeMenuButtonEnabled():Bool {
+        return LfGamepadInternal.isHomeMenuButtonEnabled();
+    }
+
+    //////////////////////////////
 
     /**
      * Converts a LfGamepadButton to a VPADButtons
@@ -304,49 +303,4 @@ class LfGamepad {
         }
         return VPADButtons.VPAD_BUTTON_A;
     }
-
-    // /**
-    //  * Converts a LfGamepadScreenBrightness to a CCRSysLCDMode
-    //  * @return Int The Int value of the brightness
-    //  */
-    // private function getBrightnessValue(brightness:LfGamepadScreenBrightness):CCRSysLCDMode {
-    //     switch(brightness) {  
-    //         case LfGamepadScreenBrightness.BRIGHTNESS_1:
-    //             return CCRSysLCDMode.CCR_SYS_LCD_MODE_BRIGHTNESS_1;
-    //         case LfGamepadScreenBrightness.BRIGHTNESS_2:
-    //             return CCRSysLCDMode.CCR_SYS_LCD_MODE_BRIGHTNESS_2;
-    //         case LfGamepadScreenBrightness.BRIGHTNESS_3:
-    //             return CCRSysLCDMode.CCR_SYS_LCD_MODE_BRIGHTNESS_3;
-    //         case LfGamepadScreenBrightness.BRIGHTNESS_4:
-    //             return CCRSysLCDMode.CCR_SYS_LCD_MODE_BRIGHTNESS_4;
-    //         case LfGamepadScreenBrightness.BRIGHTNESS_5:
-    //             return CCRSysLCDMode.CCR_SYS_LCD_MODE_BRIGHTNESS_5;
-    //         default:
-    //             LeafyDebug.log("Unknown brightness: " + Std.string(brightness), WARNING);
-    //             return CCRSysLCDMode.CCR_SYS_LCD_MODE_BRIGHTNESS_1;
-    //     }
-    //     return CCRSysLCDMode.CCR_SYS_LCD_MODE_BRIGHTNESS_1; // Default to BRIGHTNESS_1
-    // }
-    
-    // /**
-    //  * Converts a CCRSysLCDMode to a LfGamepadScreenBrightness
-    //  * @return LfGamepadScreenBrightness The corresponding LfGamepadScreenBrightness
-    //  */
-    // public function getBrightnessFromCCRSysLCDMode(mode:CCRSysLCDMode):LfGamepadScreenBrightness {
-    //     switch(mode) {
-    //         case CCRSysLCDMode.CCR_SYS_LCD_MODE_BRIGHTNESS_1:
-    //             return LfGamepadScreenBrightness.BRIGHTNESS_1;
-    //         case CCRSysLCDMode.CCR_SYS_LCD_MODE_BRIGHTNESS_2:
-    //             return LfGamepadScreenBrightness.BRIGHTNESS_2;
-    //         case CCRSysLCDMode.CCR_SYS_LCD_MODE_BRIGHTNESS_3:
-    //             return LfGamepadScreenBrightness.BRIGHTNESS_3;
-    //         case CCRSysLCDMode.CCR_SYS_LCD_MODE_BRIGHTNESS_4:
-    //             return LfGamepadScreenBrightness.BRIGHTNESS_4;
-    //         case CCRSysLCDMode.CCR_SYS_LCD_MODE_BRIGHTNESS_5:
-    //             return LfGamepadScreenBrightness.BRIGHTNESS_5;
-    //         default:
-    //             LeafyDebug.log("Unknown brightness mode: " + Std.string(mode), WARNING);
-    //             return LfGamepadScreenBrightness.BRIGHTNESS_1; // Default to BRIGHTNESS_1
-    //     }
-    // }
 }

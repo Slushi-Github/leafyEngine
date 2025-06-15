@@ -57,11 +57,6 @@ class LfObject extends LfBase {
      */
     public var readyToRender:Bool;
 
-    /**
-     * Camera of the object
-     */
-    // public var camera:LfCamera;
-
     // SDL variables //////////////////////////////
 
     /**
@@ -269,12 +264,7 @@ class LfObject extends LfBase {
      *  Set the object color
      * @param newColor The new color
      */
-    public function setColor(r:UInt8, g:UInt8, b:UInt8, a:UInt8,):Void {
-        if (this.type == ObjectType.SPRITE) {
-            LeafyDebug.log("Cannot set color for sprite, use createGraphic again (BUG)", WARNING);
-            return;
-        }
-
+    public function setColor(r:UInt8, g:UInt8, b:UInt8):Void {
         if (this.sdlColor == null) {
             LeafyDebug.log("Object color is null, cannot update text color", ERROR);
             return;
@@ -290,7 +280,7 @@ class LfObject extends LfBase {
         this.sdlColor.r = r;
         this.sdlColor.g = g;
         this.sdlColor.b = b;
-        this.sdlColor.a = a;
+        this.sdlColor.a = 255; // Alpha is always 255 for color mod
 
         var result:Int = SDL_Render.SDL_SetTextureColorMod(this.sdlTexturePtr, this.sdlColor.r, this.sdlColor.g, this.sdlColor.b);
         if (result != 0) {

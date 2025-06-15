@@ -404,6 +404,19 @@ class LfAudioManagerInternal {
     }
 
     /**
+     * set the current audio time
+     * @param time The time to set
+     */
+    public static function setCurrentTime(time:Float):Void {
+        if (currentAudio != null && currentFile != null) {
+            VorbisFile.ov_time_seek(currentFile, time);
+            currentTime = time;
+        } else {
+            LeafyDebug.log("Cannot set current time, no audio is loaded.", INFO);
+        }
+    }
+    
+    /**
      * Pause audio playback
      */
     public function pause():Void {

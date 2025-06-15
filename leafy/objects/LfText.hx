@@ -29,10 +29,9 @@ class LfText extends LfObject {
     public var text:String = "";
     public var size:UInt32 = 20;
     public var length:Int = 0;
-
-    private var fontPtr:Ptr<TTF_Font>;
     public var fontPath:String = "";
 
+    private var fontPtr:Ptr<TTF_Font>;
     private var failed:Bool = false;
 
     /////////////////////////////////////////////////////////////////////
@@ -114,9 +113,8 @@ class LfText extends LfObject {
         }
 
         SDL_Render.SDL_SetTextureBlendMode(this.sdlTexturePtr, SDL_BLENDMODE_BLEND);
-        SDL_SurfaceClass.SDL_FreeSurface(this.sdlSurfacePtr);
 
-        this.setColor(255, 255, 255, 255);
+        this.setColor(255, 255, 255);
 
         this.width = this.sdlSurfacePtr.w;
         this.height = this.sdlSurfacePtr.h;
@@ -127,6 +125,11 @@ class LfText extends LfObject {
         this.sdlRect.h = this.height;
 
         this.length = this.text.length;
+
+        SDL_SurfaceClass.SDL_FreeSurface(this.sdlSurfacePtr);
+        this.sdlSurfacePtr = null;
+
+        this.readyToRender = true;
 
         this.type = ObjectType.TEXT_SPRITE;
         this.name = LfUtils.removeSDDirFromPath(fontPath) + "_" + text;
@@ -153,9 +156,9 @@ class LfText extends LfObject {
 
         this.readyToRender = false;
 
-        if (this.sdlSurfacePtr != null) {
-            SDL_SurfaceClass.SDL_FreeSurface(this.sdlSurfacePtr);
-            this.sdlSurfacePtr = null;
+        if (this.fontPtr == null) {
+            LeafyDebug.log("Font pointer is null, cannot set text", ERROR);
+            return;
         }
 
         this.sdlSurfacePtr = SDL_TTF.TTF_RenderText_Blended(this.fontPtr, ConstCharPtr.fromString(newText), this.sdlColor);
@@ -177,8 +180,8 @@ class LfText extends LfObject {
         }
 
         SDL_Render.SDL_SetTextureBlendMode(this.sdlTexturePtr, SDL_BLENDMODE_BLEND);
-        SDL_SurfaceClass.SDL_FreeSurface(this.sdlSurfacePtr);
-        this.sdlSurfacePtr = null;
+
+        this.setColor(this.sdlColor.r, this.sdlColor.g, this.sdlColor.b);
 
         this.width = this.sdlSurfacePtr.w;
         this.height = this.sdlSurfacePtr.h;
@@ -187,6 +190,9 @@ class LfText extends LfObject {
         this.sdlRect.y = this.y;
         this.sdlRect.w = this.width;
         this.sdlRect.h = this.height;
+
+        SDL_SurfaceClass.SDL_FreeSurface(this.sdlSurfacePtr);
+        this.sdlSurfacePtr = null;
 
         this.text = newText;
         this.length = this.text.length;

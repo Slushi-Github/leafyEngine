@@ -7,7 +7,7 @@ package leafy.utils;
 
 import Std;
 
-import wiiu.SDCardUtil;
+import leafy.system.console.SDCard;
 
 typedef LfVector2D = {
     x:Float, 
@@ -39,8 +39,7 @@ class LfUtils {
      * @return String The new path without the SD card path
      */
     public static function removeSDDirFromPath(path:String):String {
-        var sdPath = SDCardUtil.getSDCardPathFixed();
-        return LfStringUtils.stringReplacer(path, sdPath, "");
+        return LfStringUtils.stringReplacer(path, SDCard.getSDCardWiiUPath(), "");
     }
 
     /**

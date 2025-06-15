@@ -11,7 +11,7 @@ import leafy.filesystem.LfSystemPaths;
 import leafy.utils.LfStringUtils;
 
 typedef LeafyJson = {
-    var json:Ptr<Json_t>;
+    var jsonPtr:Ptr<Json_t>;
     var error:Json_error_t;
 }
 
@@ -40,7 +40,7 @@ class LfJson {
         }
 
         var jsonData:LeafyJson = {
-            json: rawJSON,
+            jsonPtr: rawJSON,
             error: rawJSONError
         };
 
@@ -79,7 +79,7 @@ class LfJson {
         }
 
         var jsonData:LeafyJson = {
-            json: rawJSON,
+            jsonPtr: rawJSON,
             error: rawJSONError
         };
 
@@ -96,12 +96,12 @@ class LfJson {
             LeafyDebug.log("JSON object cannot be null", ERROR);
             return;
         }
-        if (json.json == null) {
+        if (json.jsonPtr == null) {
             LeafyDebug.log("JSON parent is null", ERROR);
             return;
         }
 
-        Jansson.json_decref(json.json);
+        Jansson.json_decref(json.jsonPtr);
     }
 
     /////////////////////////////
@@ -117,12 +117,12 @@ class LfJson {
             LeafyDebug.log("Key cannot be null or empty", ERROR);
             return "";
         }
-        if (json.json == null) {
+        if (json.jsonPtr == null) {
             LeafyDebug.log("JSON parent is null", ERROR);
             return "";
         }
 
-        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(json.json, ConstCharPtr.fromString(key));
+        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(json.jsonPtr, ConstCharPtr.fromString(key));
         if (jsonValue == null) {
             LeafyDebug.log("Key not found in JSON: " + key, WARNING);
             return "";
@@ -147,12 +147,12 @@ class LfJson {
             LeafyDebug.log("Key cannot be null or empty", ERROR);
             return 0;
         }
-        if (json.json == null) {
+        if (json.jsonPtr == null) {
             LeafyDebug.log("JSON parent is null", ERROR);
             return 0;
         }
         /////////
-        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(json.json, ConstCharPtr.fromString(key));
+        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(json.jsonPtr, ConstCharPtr.fromString(key));
         if (jsonValue == null) {
             LeafyDebug.log("Key not found in JSON: " + key, WARNING);
             return 0;
@@ -177,12 +177,12 @@ class LfJson {
             LeafyDebug.log("Key cannot be null or empty", ERROR);
             return 0.0;
         }
-        if (json.json == null) {
+        if (json.jsonPtr == null) {
             LeafyDebug.log("JSON parent is null", ERROR);
             return 0.0;
         }
         /////////
-        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(json.json, ConstCharPtr.fromString(key));
+        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(json.jsonPtr, ConstCharPtr.fromString(key));
         if (jsonValue == null) {
             LeafyDebug.log("Key not found in JSON: " + key, WARNING);
             return 0.0;
@@ -207,12 +207,12 @@ class LfJson {
             LeafyDebug.log("Key cannot be null or empty", ERROR);
             return false;
         }
-        if (json.json == null) {
+        if (json.jsonPtr == null) {
             LeafyDebug.log("JSON parent is null", ERROR);
             return false;
         }
         /////////
-        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(json.json, ConstCharPtr.fromString(key));
+        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(json.jsonPtr, ConstCharPtr.fromString(key));
         if (jsonValue == null) {
             LeafyDebug.log("Key not found in JSON: " + key, WARNING);
             return false;
@@ -237,12 +237,12 @@ class LfJson {
             LeafyDebug.log("Key cannot be null or empty", ERROR);
             return [];
         }
-        if (json.json == null) {
+        if (json.jsonPtr == null) {
             LeafyDebug.log("JSON parent is null", ERROR);
             return [];
         }
         /////////
-        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(json.json, ConstCharPtr.fromString(key));
+        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(json.jsonPtr, ConstCharPtr.fromString(key));
         if (jsonValue == null) {
             LeafyDebug.log("Key not found in JSON: " + key, WARNING);
             return [];
@@ -275,12 +275,12 @@ class LfJson {
             LeafyDebug.log("Key cannot be null or empty", ERROR);
             return [];
         }
-        if (json.json == null) {
+        if (json.jsonPtr == null) {
             LeafyDebug.log("JSON parent is null", ERROR);
             return [];
         }
         /////////
-        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(json.json, ConstCharPtr.fromString(key));
+        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(json.jsonPtr, ConstCharPtr.fromString(key));
         if (jsonValue == null) {
             LeafyDebug.log("Key not found in JSON: " + key, WARNING);
             return [];
@@ -313,12 +313,12 @@ class LfJson {
             LeafyDebug.log("Key cannot be null or empty", ERROR);
             return [];
         }
-        if (json.json == null) {
+        if (json.jsonPtr == null) {
             LeafyDebug.log("JSON parent is null", ERROR);
             return [];
         }
         /////////
-        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(json.json, ConstCharPtr.fromString(key));
+        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(json.jsonPtr, ConstCharPtr.fromString(key));
         if (jsonValue == null) {
             LeafyDebug.log("Key not found in JSON: " + key, WARNING);
             return [];
@@ -351,12 +351,12 @@ class LfJson {
             LeafyDebug.log("Key cannot be null or empty", ERROR);
             return [];
         }
-        if (json.json == null) {
+        if (json.jsonPtr == null) {
             LeafyDebug.log("JSON parent is null", ERROR);
             return [];
         }
 
-        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(json.json, ConstCharPtr.fromString(key));
+        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(json.jsonPtr, ConstCharPtr.fromString(key));
         if (jsonValue == null || Jansson.json_is_array(jsonValue) == 0) {
             LeafyDebug.log("Key not found or not an array: " + key, WARNING);
             return [];
@@ -369,7 +369,7 @@ class LfJson {
             var element:Ptr<Json_t> = Jansson.json_array_get(jsonValue, i);
             if (element != null) {
                 array.push({
-                    json: element,
+                    jsonPtr: element,
                     error: new Json_error_t()
                 });
             } else {
@@ -391,12 +391,12 @@ class LfJson {
             LeafyDebug.log("Key cannot be null or empty", ERROR);
             return null;
         }
-        if (json.json == null) {
+        if (json.jsonPtr == null) {
             LeafyDebug.log("JSON parent is null", ERROR);
             return null;
         }
 
-        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(json.json, ConstCharPtr.fromString(key));
+        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(json.jsonPtr, ConstCharPtr.fromString(key));
         if (jsonValue == null || Jansson.json_is_object(jsonValue) == 0) {
             LeafyDebug.log("Key is not an object or not found: " + key, WARNING);
             return null;
@@ -404,7 +404,7 @@ class LfJson {
 
         var jsonResult:Ptr<Json_t> = jsonValue;
         var leafyJsonResult:LeafyJson = {
-            json: jsonValue,
+            jsonPtr: jsonValue,
             error: new Json_error_t() 
         };
 
