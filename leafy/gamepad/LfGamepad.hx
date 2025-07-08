@@ -221,18 +221,18 @@ class LfGamepad {
     }
 
     /**
-     *  Starts the rumble of the Wii U Gamepad
-     * @param intensity The intensity of the rumble, from 0.0 to 1.0
-     * @param durationSeconds The duration of the rumble in seconds, -1.0 for infinite
+     *  Starts the vibration of the Wii U Gamepad
+     * @param intensity The intensity of the vibration, from 0.0 to 1.0
+     * @param durationSeconds The duration of the vibration in seconds, -1.0 for infinite
      */
-    public function startRumble(intensity:Float = 1.0, durationSeconds:Float = -1.0):Void {
+    public function vibrate(intensity:Float = 1.0, durationSeconds:Float = -1.0):Void {
         LfGamepadInternal.startRumble(intensity, durationSeconds);
     }
 
     /**
-     * Stops the rumble of the Wii U Gamepad
+     * Stops the vibration of the Wii U Gamepad
      */
-    public function stopRumble():Void {
+    public function stopVibration():Void {
         LfGamepadInternal.stopRumble();
     }
 

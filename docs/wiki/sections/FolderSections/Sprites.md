@@ -15,7 +15,7 @@ var sprite:LfSprite = new LfSprite(100, 100);
 
 // create a graphic
 // The ``createGraphic`` function takes 3 parameters, the width, height and the color of the graphic.
-sprite.createGraphic(200, 200, [255, 0, 0, 255]);
+sprite.createGraphic(200, 200, [255, 0, 0]);
 
 // Load an image
 sprite.loadImage("GAME_PATH/image.png");
@@ -24,7 +24,7 @@ sprite.loadImage("GAME_PATH/image.png");
 addObject(sprite);
 ```
 
------
+--------
 
 ## LfText
 
@@ -41,7 +41,8 @@ var text:LfText = new LfText(100, 100, "Hello World!", 32, "GAME_PATH/FONT.ttf")
 addObject(text);
 ```
 
------
+--------
+
 See [``LfSprite``](https://github.com/Slushi-Github/leafyEngine/blob/main/leafy/objects/LfSprite.hx)
 
 See [``LfText``](https://github.com/Slushi-Github/leafyEngine/blob/main/leafy/objects/LfText.hx)

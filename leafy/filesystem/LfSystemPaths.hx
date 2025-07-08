@@ -77,7 +77,8 @@ class LfSystemPaths {
      */
     public static function initFSSystem():Void {
         SDCard.mountSDCard();
-        LeafyDebug.log("Wii U SD Card path: [" + SDCard.getSDCardWiiUPath() + "]", INFO);
+        consolePath = SDCard.getSDCardWiiUPath();
+        LeafyDebug.log("Wii U SD Card path: [" + consolePath + "]", INFO);
     }
 
     /**

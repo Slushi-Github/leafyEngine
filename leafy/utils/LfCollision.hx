@@ -22,7 +22,7 @@ class LfCollision {
      * @return Bool Whether the sprites are colliding
      */
     public static function checkCollision(a:LfObject, b:LfObject):Bool {
-        if (a == null && b == null) return false;
+        if (a == null && b == null || (a == null || b == null)) return false;
         return (a.x < b.x + b.width &&
                 a.x + a.width > b.x &&
                 a.y < b.y + b.height &&

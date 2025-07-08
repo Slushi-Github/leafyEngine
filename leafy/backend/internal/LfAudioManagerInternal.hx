@@ -5,6 +5,7 @@
 
 package leafy.backend.internal;
 
+import wut.coreinit.Debug;
 import Std;
 
 import sdl2.SDL_Audio;
@@ -28,6 +29,7 @@ import leafy.audio.LfAudio;
  * at a time, so only one audio can be used.
  * 
  * Is recomended to use the `LfAudioEngine` class instead of this one.
+ * 
  * Author: Slushi
  */
 class LfAudioManagerInternal {
@@ -153,7 +155,7 @@ class LfAudioManagerInternal {
                     break;
                 }
             } else if (ret < 0) {
-                LeafyDebug.log("Vorbis read error: " + ret, INFO);
+                LeafyDebug.log("Vorbis read error: " + ret, ERROR);
                 playing = false;
                 SDL_Stdinc.SDL_memset(stream, 0, totalBytesToRead);
                 break;
@@ -231,18 +233,18 @@ class LfAudioManagerInternal {
      */
     public static function loadOgg(audio:LfAudio):Bool {
         if (untyped __cpp__("{0} == nullptr", audio) || untyped __cpp__("{0} == nullptr", audio.file)) {
-            LeafyDebug.log("Failed to load audio, LfAudio or its file is null", INFO);
+            LeafyDebug.log("Failed to load audio, LfAudio or its file is null", ERROR);
             return false;
         }
 
         var fileInfo:Ptr<Vorbis_info> = VorbisFile.ov_info(audio.file, -1);
         if (untyped __cpp__("{0} == nullptr", fileInfo)) {
-            LeafyDebug.log("Failed to get Ogg Vorbis info for the file.", INFO);
+            LeafyDebug.log("Failed to get Ogg Vorbis info for the file.", ERROR);
             return false;
         }
 
         if (fileInfo == null) {
-            LeafyDebug.log("Failed to get Ogg Vorbis info for the file.", INFO);
+            LeafyDebug.log("Failed to get Ogg Vorbis info for the file.", ERROR);
             return false;
         }
 
@@ -263,7 +265,7 @@ class LfAudioManagerInternal {
             shutdown();
 
             if (!init(fileInfo.rate, fileInfo.channels)) {
-                LeafyDebug.log("Failed to re-open audio device with new specs. Cannot play audio.", INFO);
+                LeafyDebug.log("Failed to re-open audio device with new specs. Cannot play audio.", ERROR);
                 return false;
             }
         }
@@ -333,7 +335,7 @@ class LfAudioManagerInternal {
 
         var tempAudio:LfAudio = new LfAudio(path, loop);
         if (untyped __cpp__("{0} == nullptr", tempAudio)) {
-            LeafyDebug.log("Failed to create LfAudio object.", INFO);
+            LeafyDebug.log("Failed to create LfAudio object.", ERROR);
             return;
         }
 
@@ -361,7 +363,7 @@ class LfAudioManagerInternal {
         SDL_Audio.SDL_PauseAudioDevice(audioDevice, paused ? 1 : 0);
         currentAudio.paused = paused;
         // Leafy.audio.paused = paused;
-        LeafyDebug.log("Audio " + (paused ? "Paused" : "Resumed"), INFO);
+        LeafyDebug.log("Audio " + (paused ? "Paused" : "Resumed"), DEBUG);
     }
 
 
@@ -412,7 +414,7 @@ class LfAudioManagerInternal {
             VorbisFile.ov_time_seek(currentFile, time);
             currentTime = time;
         } else {
-            LeafyDebug.log("Cannot set current time, no audio is loaded.", INFO);
+            LeafyDebug.log("Cannot set current time, no audio is loaded.", DEBUG);
         }
     }
     
@@ -428,7 +430,7 @@ class LfAudioManagerInternal {
         currentAudio.paused = paused;
         // Leafy.audio.paused = paused;
         // Leafy.audio.playing = playing;
-        LeafyDebug.log("Audio Paused", INFO);
+        LeafyDebug.log("Audio Paused", DEBUG);
     }
 
     /**
@@ -440,7 +442,7 @@ class LfAudioManagerInternal {
         SDL_Audio.SDL_PauseAudioDevice(audioDevice, 0);
         currentAudio.paused = paused;
         // Leafy.audio.paused = paused;
-        LeafyDebug.log("Audio Resumed", INFO);
+        LeafyDebug.log("Audio Resumed", DEBUG);
     }
 
     /**
@@ -474,7 +476,7 @@ class LfAudioManagerInternal {
             stopStatic();
             SDL_Audio.SDL_CloseAudioDevice(audioDevice);
             audioDevice = 0;
-            LeafyDebug.log("Audio device closed.", INFO);
+            LeafyDebug.log("Audio device closed.", DEBUG);
         }
     }
 }

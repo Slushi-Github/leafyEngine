@@ -157,32 +157,39 @@ class LfObject extends LfBase {
      */
     public var immovable:Bool;
 
+    /**
+     * If the object is alive or not.
+     * This is used to determine if the object should be updated or rendered.
+     */
+    public var alive:Bool;
+
     ////////////////////////////////
 
     override public function update(elapsed:Float):Void {
         updateSDLRect();
 
-        if (!this.immovable) {
-            this.acceleration.y += gravity;
+        // TODO: FIX THIS (0x02025fa4 --> leafy_objects_LfObject.cpp:31)
+        // if (!this.immovable && this.alive) {
+        //     this.acceleration.y += gravity;
 
-            this.velocity.x += this.acceleration.x * elapsed;
-            this.velocity.y += this.acceleration.y * elapsed;
+        //     this.velocity.x += this.acceleration.x * elapsed;
+        //     this.velocity.y += this.acceleration.y * elapsed;
 
-            this.velocity.x -= this.drag.x * elapsed * LfUtils.sign(this.velocity.x);
-            this.velocity.y -= this.drag.y * elapsed * LfUtils.sign(this.velocity.y);
+        //     this.velocity.x -= this.drag.x * elapsed * LfUtils.sign(this.velocity.x);
+        //     this.velocity.y -= this.drag.y * elapsed * LfUtils.sign(this.velocity.y);
 
-            if (Math.abs(this.velocity.x) > this.maxVelocity.x)
-                this.velocity.x = this.maxVelocity.x * LfUtils.sign(this.velocity.x);
+        //     if (Math.abs(this.velocity.x) > this.maxVelocity.x)
+        //         this.velocity.x = this.maxVelocity.x * LfUtils.sign(this.velocity.x);
 
-            if (Math.abs(this.velocity.y) > this.maxVelocity.y)
-                this.velocity.y = this.maxVelocity.y * LfUtils.sign(this.velocity.y);
+        //     if (Math.abs(this.velocity.y) > this.maxVelocity.y)
+        //         this.velocity.y = this.maxVelocity.y * LfUtils.sign(this.velocity.y);
 
-            this.x += Std.int(this.velocity.x * elapsed);
-            this.y += Std.int(this.velocity.y * elapsed);
+        //     this.x += Std.int(this.velocity.x * elapsed);
+        //     this.y += Std.int(this.velocity.y * elapsed);
 
-            this.acceleration.x = 0;
-            this.acceleration.y = 0;
-        }
+        //     this.acceleration.x = 0;
+        //     this.acceleration.y = 0;
+        // }
     }
 
     ////////////////////////////////
@@ -192,8 +199,7 @@ class LfObject extends LfBase {
             return;
         }
 
-        // Why need need to render if the object is not ready o visible and on screen?
-        if (!this.readyToRender || !this.isVisible || this.alpha == 0 || !this.isOnScreen()) {
+        if (!this.readyToRender || !this.isVisible || this.alpha == 0 || !this.isOnScreen() || !this.alive) {
             return;
         }
 
@@ -291,6 +297,14 @@ class LfObject extends LfBase {
         this.readyToRender = true;
     }
 
+    public function disable():Void {
+        this.alive = false;
+    }
+
+    public function reset():Void {
+        this.alive = true;
+    }
+
     private function updateSDLRect():Void {
         if (this.sdlRect == null) {
             return;
@@ -299,6 +313,10 @@ class LfObject extends LfBase {
         this.sdlRect.y = this.y;
         this.sdlRect.w = this.width;
         this.sdlRect.h = this.height;
+    }
+
+    override public function destroy():Void {
+        this.alive = false;
     }
     
     /////////////////////////////////////////////

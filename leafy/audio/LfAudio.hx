@@ -72,7 +72,7 @@ class LfAudio {
         var correctPath:String = LfSystemPaths.getConsolePath() + path;
 
         if (!LfSystemPaths.exists(correctPath)) {
-            LeafyDebug.log("Failed to load OGG [" + path + "]: File not found", INFO);
+            LeafyDebug.log("Failed to load OGG [" + path + "]: File not found", ERROR);
             return;
         }
 
@@ -81,13 +81,13 @@ class LfAudio {
         file = new OggVorbis_File();
         // SDL_Stdinc.SDL_zero(currentFile.ref);
         if (VorbisFile.ov_fopen(ConstCharPtr.fromString(correctPath), file) != 0) {
-            LeafyDebug.log("Failed to load OGG [" + path + "]: " + SDL_Error.SDL_GetError().toString(), INFO);
+            LeafyDebug.log("Failed to load OGG [" + path + "]: " + SDL_Error.SDL_GetError().toString(), ERROR);
             return;
         }
 
         info = untyped __cpp__("ov_info(leafy::audio::LfAudio::file, -1)");
         if (info == null) {
-            LeafyDebug.log("Failed to get OGG info for [" + path + "]: " + SDL_Error.SDL_GetError().toString(), INFO);
+            LeafyDebug.log("Failed to get OGG info for [" + path + "]: " + SDL_Error.SDL_GetError().toString(), ERROR);
             return;
         }
 
@@ -97,7 +97,7 @@ class LfAudio {
         paused = false;
         this.loop = loop;
 
-        LeafyDebug.log("Loaded OGG: [" + path + "] with duration: " + duration + " seconds" , INFO);
+        LeafyDebug.log("Loaded OGG: [" + path + "] with duration: " + duration + " seconds" , DEBUG);
         return;
     }
 
@@ -130,17 +130,6 @@ class LfAudio {
     public function isPlaying():Bool {
         return playing;
     }
-
-    // /**
-    //  * 
-    //  */
-    // public function fadeOut(duration:Float, onComplete:Void->Void):Void {
-    //     if (fadeTween != null) LfTween.cancelTween(this.fadeTween);
-    //     fadeTween = LfTween.tweenNumber(this.);
-    // }
-
-    // public function update():Void {
-    // }
 
     /**
      * Destroys the OGG and frees memory

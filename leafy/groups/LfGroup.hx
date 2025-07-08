@@ -57,6 +57,18 @@ class LfGroup<T:LfObject> extends LfObject {
         this.length = objectsList.length;
     }
 
+    /**
+     * Get an object from the group by index
+     * @param index The index of the object
+     * @return T The object at the index, or null if the index is out of bounds
+     */
+    public function get(index:Int):T {
+        if (index < 0 || index >= objectsList.length) {
+            return null;
+        }
+        return objectsList[index];
+    }
+
     override public function create():Void {
         super.create();
 

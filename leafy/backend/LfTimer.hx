@@ -31,7 +31,7 @@ class LfTimer {
     }
 
     /**
-     * Update the delta time and timers.
+     * Update the delta time.
      */
     public static function updateDeltaTime():Void {
         var currentTime:UInt32 = SDL_Timer.SDL_GetTicks();

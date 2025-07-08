@@ -83,6 +83,8 @@ class LfText extends LfObject {
         this.sdlColor = new SDL_Color();
         this.sdlRect = new SDL_Rect();
         this.readyToRender = false;
+        this.alive = true;
+        this.immovable = true;
 
         //////////////////
 
@@ -134,7 +136,7 @@ class LfText extends LfObject {
         this.type = ObjectType.TEXT_SPRITE;
         this.name = LfUtils.removeSDDirFromPath(fontPath) + "_" + text;
 
-        LeafyDebug.log("Created text sprite: [" + this.name + "]", INFO);
+        LeafyDebug.log("Created text sprite: [" + this.name + "]", DEBUG);
     }
 
     /////////////////////////////////////////////////////////////////////
@@ -156,7 +158,7 @@ class LfText extends LfObject {
 
         this.readyToRender = false;
 
-        if (this.fontPtr == null) {
+        if (untyped __cpp__("fontPtr == nullptr")) {
             LeafyDebug.log("Font pointer is null, cannot set text", ERROR);
             return;
         }
@@ -246,6 +248,6 @@ class LfText extends LfObject {
             SDL_TTF.TTF_CloseFont(this.fontPtr);
         }
 
-        LeafyDebug.log("Text destroyed: " + this.name, INFO);
+        LeafyDebug.log("Text destroyed: " + this.name, DEBUG);
     }
 }

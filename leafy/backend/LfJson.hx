@@ -27,8 +27,8 @@ class LfJson {
      * @return LeafyJson
      */
     public static function parseJsonString(jsonStr:String):LeafyJson {
-        if (jsonStr == "") {
-            LeafyDebug.log("JSON string cannot be null or empty", ERROR);
+        if (jsonStr == "" || jsonStr == null || LfStringUtils.stringEndsWith(jsonStr, ".json")) {
+            LeafyDebug.log("JSON string cannot be null or empty, if it ends with .json extension, use parseJsonFile instead", ERROR);
             return null;
         }
 
@@ -67,7 +67,7 @@ class LfJson {
         }
 
         if (!LfSystemPaths.exists(correctPath) || !LfStringUtils.stringEndsWith(correctPath, ".json")) {
-            LeafyDebug.log("JSON file does not exist or is not a valid JSON file", ERROR);
+            LeafyDebug.log("JSON file does not exist or is not a valid JSON file: [" + correctPath + "]", ERROR);
             return null;
         }
         
@@ -137,42 +137,12 @@ class LfJson {
     }
 
     /**
-     * Get an integer from a JSON
-     * @param json The parent JSON
-     * @param key The key of the object
-     * @return Int
-     */
-    public static function getIntegerFromJson(json:LeafyJson, key:String):Int {
-        if (key == null || key == "") {
-            LeafyDebug.log("Key cannot be null or empty", ERROR);
-            return 0;
-        }
-        if (json.jsonPtr == null) {
-            LeafyDebug.log("JSON parent is null", ERROR);
-            return 0;
-        }
-        /////////
-        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(json.jsonPtr, ConstCharPtr.fromString(key));
-        if (jsonValue == null) {
-            LeafyDebug.log("Key not found in JSON: " + key, WARNING);
-            return 0;
-        }
-
-        if (Jansson.json_is_integer(jsonValue) == 0) {
-            LeafyDebug.log("Key is not an integer: " + key, WARNING);
-            return 0;
-        }
-
-        return Jansson.json_integer_value(jsonValue);
-    }
-
-    /**
-     * Get a float from a JSON
+     * Get a number from a JSON
      * @param json The parent JSON
      * @param key The key of the object
      * @return Float
      */
-    public static function getFloatFromJson(json:LeafyJson, key:String):Float {
+    public static function getNumberFromJson(json:LeafyJson, key:String):Float {
         if (key == null || key == "") {
             LeafyDebug.log("Key cannot be null or empty", ERROR);
             return 0.0;
@@ -181,20 +151,23 @@ class LfJson {
             LeafyDebug.log("JSON parent is null", ERROR);
             return 0.0;
         }
-        /////////
+    
         var jsonValue:Ptr<Json_t> = Jansson.json_object_get(json.jsonPtr, ConstCharPtr.fromString(key));
         if (jsonValue == null) {
             LeafyDebug.log("Key not found in JSON: " + key, WARNING);
             return 0.0;
         }
-
-        if (Jansson.json_is_real(jsonValue) == 0) {
-            LeafyDebug.log("Key is not a float: " + key, WARNING);
+    
+        if (Jansson.json_is_real(jsonValue) == 0 && Jansson.json_is_integer(jsonValue) == 0) {
+            LeafyDebug.log("Key is not a number: " + key, WARNING);
             return 0.0;
         }
-
-        return Jansson.json_real_value(jsonValue);
+    
+        return Jansson.json_is_real(jsonValue) == 1
+            ? Jansson.json_real_value(jsonValue)
+            : Jansson.json_integer_value(jsonValue) * 1.0;
     }
+    
 
     /**
      * Get a boolean from a JSON
@@ -226,13 +199,14 @@ class LfJson {
         return Jansson.json_boolean_value(jsonValue) != 0;
     }
     
+
     /**
      * Get an array of integers from a JSON
      * @param json The parent JSON
      * @param key The key of the object
      * @return Array<Int>
      */
-    public static function getArrayIntegerFromJson(json:LeafyJson, key:String):Array<Int> {
+     public static function getArrayIntegerFromJson(json:LeafyJson, key:String):Array<Int> {
         if (key == null || key == "") {
             LeafyDebug.log("Key cannot be null or empty", ERROR);
             return [];

@@ -188,7 +188,98 @@ class LfTween {
         }
     }
 
+    /**
+     * Get the eased value
+     * @param progress The progress of the tween
+     * @return Float The eased value
+     */
+    private function getEasedValue(progress:Float):Float {
+        switch (ease) {
+            case LINEAR: return easeLinear(progress);
+            case EASE_IN: return easeIn(progress);
+            case EASE_OUT: return easeOut(progress);
+            case EASE_IN_OUT: return easeInOut(progress);
+            case QUAD_IN: return easeQuadIn(progress);
+            case QUAD_OUT: return easeQuadOut(progress);
+            case QUAD_IN_OUT: return easeQuadInOut(progress);
+            case CUBE_IN: return easeCubeIn(progress);
+            case CUBE_OUT: return easeCubeOut(progress);
+            case CUBE_IN_OUT: return easeCubeInOut(progress);
+            case QUART_IN: return easeQuartIn(progress);
+            case QUART_OUT: return easeQuartOut(progress);
+            case QUART_IN_OUT: return easeQuartInOut(progress);
+            case SINE_IN: return easeSineIn(progress);
+            case SINE_OUT: return easeSineOut(progress);
+            case SINE_IN_OUT: return easeSineInOut(progress);
+            case EXPO_IN: return easeExpoIn(progress);
+            case EXPO_OUT: return easeExpoOut(progress);
+            case EXPO_IN_OUT: return easeExpoInOut(progress);
+            case BACK_IN: return easeBackIn(progress);
+            case BACK_OUT: return easeBackOut(progress);
+            case BACK_IN_OUT: return easeBackInOut(progress);
+            case BOUNCE_IN: return easeBounceIn(progress);
+            case BOUNCE_OUT: return bounceOut(progress);
+            case ELASTIC_IN: return easeElasticIn(progress);
+            case ELASTIC_OUT: return easeElasticOut(progress);
+            case ELASTIC_IN_OUT: return easeElasticInOut(progress);
+        }
+        return progress;
+    }
+
     //////////////////////////////////
+
+    /** Update the list of active tweens
+     * @param elapsed The elapsed time
+     */
+    public static function updateTweens(elapsed:Float):Void {
+        for (i in 0..._tweens.length) {
+            _tweens[i].update(elapsed);
+        }
+    }
+
+    /**
+     * Clear the list of active tweens
+     */
+    public static function clearTweens():Void {
+        if (_tweens == null) return;
+        _tweens = [];
+    }
+
+    /**
+     * Remove a tween
+     * @param tween The tween to remove
+     */
+    public static function removeTween(tween:LfTween):Void {
+        untyped __cpp__("
+for (size_t i = 0; i < _tweens->size(); i++) {
+    auto obj = _tweens->at(i);
+    if (obj == tween) {
+        obj->_isComplete = true;
+        _tweens->erase(_tweens->begin() + i);
+        return;
+    }
+}");
+    }
+
+    /**
+     * Cancel a active tween
+     * @param tween The tween to cancel
+     */
+    public static function cancelTween(tween:LfTween):Void {
+        for (i in 0..._tweens.length) {
+            if (_tweens[i] == tween) {
+                _tweens[i]._isComplete = true;
+                return;
+            }
+        }
+    }
+
+    //////////////////////////////////
+    /**
+     * Easing functions
+     * These functions are used to calculate the easing of the tween.
+     * Cannot be in another file otherwise Reflaxe/C++ explodes with many errors.
+     */
 
     private function easeLinear(t:Float):Float {
         return t;
@@ -307,91 +398,5 @@ class LfTween {
             return -(0.5 * (Math.pow(2, 10 * (t -= 0.5)) * Math.sin((t - (0.4 / 4)) * (2 * Math.PI) / 0.4)));
         }
         return Math.pow(2, -10 * (t -= 0.5)) * Math.sin((t - (0.4 / 4)) * (2 * Math.PI) / 0.4) * 0.5 + 1;
-    }
-
-    /**
-     * Get the eased value
-     * @param progress The progress of the tween
-     * @return Float The eased value
-     */
-    private function getEasedValue(progress:Float):Float {
-        switch (ease) {
-            case LINEAR: return easeLinear(progress);
-            case EASE_IN: return easeIn(progress);
-            case EASE_OUT: return easeOut(progress);
-            case EASE_IN_OUT: return easeInOut(progress);
-            case QUAD_IN: return easeQuadIn(progress);
-            case QUAD_OUT: return easeQuadOut(progress);
-            case QUAD_IN_OUT: return easeQuadInOut(progress);
-            case CUBE_IN: return easeCubeIn(progress);
-            case CUBE_OUT: return easeCubeOut(progress);
-            case CUBE_IN_OUT: return easeCubeInOut(progress);
-            case QUART_IN: return easeQuartIn(progress);
-            case QUART_OUT: return easeQuartOut(progress);
-            case QUART_IN_OUT: return easeQuartInOut(progress);
-            case SINE_IN: return easeSineIn(progress);
-            case SINE_OUT: return easeSineOut(progress);
-            case SINE_IN_OUT: return easeSineInOut(progress);
-            case EXPO_IN: return easeExpoIn(progress);
-            case EXPO_OUT: return easeExpoOut(progress);
-            case EXPO_IN_OUT: return easeExpoInOut(progress);
-            case BACK_IN: return easeBackIn(progress);
-            case BACK_OUT: return easeBackOut(progress);
-            case BACK_IN_OUT: return easeBackInOut(progress);
-            case BOUNCE_IN: return easeBounceIn(progress);
-            case BOUNCE_OUT: return bounceOut(progress);
-            case ELASTIC_IN: return easeElasticIn(progress);
-            case ELASTIC_OUT: return easeElasticOut(progress);
-            case ELASTIC_IN_OUT: return easeElasticInOut(progress);
-        }
-        return progress;
-    }
-
-    //////////////////////////////////
-
-    /** Update the list of active tweens
-     * @param elapsed The elapsed time
-     */
-    public static function updateTweens(elapsed:Float):Void {
-        for (i in 0..._tweens.length) {
-            _tweens[i].update(elapsed);
-        }
-    }
-
-    /**
-     * Clear the list of active tweens
-     */
-    public static function clearTweens():Void {
-        if (_tweens == null) return;
-        _tweens = [];
-    }
-
-    /**
-     * Remove a tween
-     * @param tween The tween to remove
-     */
-    public static function removeTween(tween:LfTween):Void {
-        untyped __cpp__("
-for (size_t i = 0; i < _tweens->size(); i++) {
-    auto obj = _tweens->at(i);
-    if (obj == tween) {
-        obj->_isComplete = true;
-        _tweens->erase(_tweens->begin() + i);
-        return;
-    }
-}");
-    }
-
-    /**
-     * Cancel a active tween
-     * @param tween The tween to cancel
-     */
-    public static function cancelTween(tween:LfTween):Void {
-        for (i in 0..._tweens.length) {
-            if (_tweens[i] == tween) {
-                _tweens[i]._isComplete = true;
-                return;
-            }
-        }
     }
 }

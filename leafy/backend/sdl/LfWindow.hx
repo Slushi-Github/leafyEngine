@@ -5,6 +5,7 @@
 
 package leafy.backend.sdl;
 
+import wut.coreinit.Debug;
 import Std;
 
 import sdl2.SDL_Error;
@@ -94,7 +95,7 @@ class LfWindow {
         SDL_Video.SDL_VideoQuit();
         SDL_Render.SDL_DestroyRenderer(currentRenderer);
 
-        LeafyDebug.log("Windows and renderers destroyed", INFO);
+        LeafyDebug.log("Windows and renderers destroyed", DEBUG);
     }
 
     /**

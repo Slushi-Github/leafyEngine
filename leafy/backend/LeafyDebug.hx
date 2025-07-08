@@ -24,7 +24,6 @@ enum LogLevel {
     WARNING;
     ERROR;
     DEBUG;
-    CRITICAL;
 }
 
 @:cppFileCode("
@@ -94,12 +93,28 @@ class LeafyDebug {
      * @param level The log level
      */
     @:include("haxe_PosInfos.h")
-    public static function log(msg:String, level:LogLevel, ?pos:PosInfos):Void {
-        if (level == LogLevel.CRITICAL) {
+    public static function log(msg:String = "", level:LogLevel = LogLevel.INFO, ?pos:PosInfos):Void {
+        #if !debug
+        if (level == LogLevel.DEBUG) {
             return;
         }
+        #end
 
         var formattedMessage:String = prepareText(msg, level, pos);
+
+        // Log to the Wii U console debug output (Maybe "/storage_slc/sys/logs"?)
+        switch (level) {
+            case LogLevel.INFO:
+                Debug.OSReportInfo(ConstCharPtr.fromString(formattedMessage));
+            case LogLevel.WARNING:
+                Debug.OSReportWarn(ConstCharPtr.fromString(formattedMessage));
+            case LogLevel.ERROR:
+                Debug.OSReportWarn(ConstCharPtr.fromString(formattedMessage));
+            case LogLevel.DEBUG:
+                Debug.OSReportVerbose(ConstCharPtr.fromString(formattedMessage));
+            default:
+                Debug.OSReportInfo(ConstCharPtr.fromString(formattedMessage));
+        }
 
         if (!started) {
             Sys.println("[Leafy Engine - no logger started] | " + formattedMessage);
@@ -145,7 +160,7 @@ class LeafyDebug {
             var logFile = logsDir + "leafyLog_" + currentTimeMod + "-" + currentDateMod + ".txt";
     
             if (!LfSystemPaths.exists(logFile)) {
-                LfFile.writeFile(logFile, "Leafy Engine [" + LfEngine.version + "] Log File\n" + " - " + currentDateStr + " | " + currentTimeStr + "\n-------------------\n\n");
+                LfFile.writeFile(logFile, "Leafy Engine [" + LfEngine.VERSION + "] Log File\n" + " - " + currentDateStr + " | " + currentTimeStr + "\n-------------------\n\n");
             }
     
             currentLogFile = logFile;
@@ -182,7 +197,7 @@ class LeafyDebug {
      */
     private static function getHaxeFilePos(pos:PosInfos):String {
         if (pos == null) {
-        return "UnknownLocation";
+        return "UnknownPosition";
         }
 
 		return pos.className + "/" + pos.methodName + ":" + pos.lineNumber;
@@ -195,7 +210,7 @@ class LeafyDebug {
      */
     private static function getHaxeFilePosForCrash(pos:PosInfos):String {
         if (pos == null) {
-        return "UnknownLocation";
+        return "UnknownPosition";
         }
         
 		return pos.fileName + ":\n\t" + pos.className + "." + pos.methodName + ":" + pos.lineNumber;
@@ -221,8 +236,6 @@ class LeafyDebug {
                 levelStr = "ERROR";
             case LogLevel.DEBUG:
                 levelStr = "DEBUG";
-            case LogLevel.CRITICAL:
-                levelStr = "CRITICAL";
         }
 
         str += "[" + getCurrentTime() + " (" + elapsedTime + ") | " + levelStr + " - " + getHaxeFilePos(pos) + "] " + text + "\n";
@@ -235,13 +248,14 @@ class LeafyDebug {
      * @param pos 
      */
     private static function crashConsole(crashError:String, ?pos:PosInfos):Void {
-        var strPtr:ConstCharPtr = ConstCharPtr.fromString("[Leafy Engine " + LfEngine.version + " logger - " + getCurrentTime()
+        var strPtr:ConstCharPtr = ConstCharPtr.fromString("[Leafy Engine " + LfEngine.VERSION + " logger - " + getCurrentTime()
         + " - CRASH]\n\nCall stack:\n" + getHaxeFilePosForCrash(pos) + "\n\nError: " + crashError
 		+ "\n\n\n\t\t    Please reset the console.");
 
         LfFile.appendToFile(currentLogFile, "---------------------");
         log("CRASH: " + crashError, ERROR, pos);
-        log("Stopping the engine and console due to crash...", ERROR, pos);
+        log("Call stack:\n\t" + getHaxeFilePosForCrash(pos), ERROR, pos);
+        log("Executing WUT OSFatal call for crash...", ERROR, pos);
 
         Debug.OSFatal(strPtr);
     }

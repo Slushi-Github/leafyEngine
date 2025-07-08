@@ -67,6 +67,7 @@ class LfSprite extends LfObject {
         this.maxVelocity = {x: 0, y: 0};
         this.gravity = 0;
         this.immovable = false;
+        this.alive = true; 
     }
 
     /**
@@ -136,7 +137,7 @@ class LfSprite extends LfObject {
         this.height = sdlRect.h;
 
         this.readyToRender = true;
-        LeafyDebug.log("Image loaded: " + imagePath, INFO);
+        LeafyDebug.log("Image loaded: " + imagePath, DEBUG);
     }
 
     /**
@@ -237,7 +238,7 @@ class LfSprite extends LfObject {
             this.sdlTexturePtr = null;
             this.readyToRender = false;
         }
-        LeafyDebug.log("Sprite destroyed: " + this.name, INFO);
+        LeafyDebug.log("Sprite destroyed: " + this.name, DEBUG);
     }
 
     /////////////////////////////////////////////////////////////////////

@@ -38,7 +38,7 @@ class LfButton extends LfSprite {
     override public function update(elapsed:Float):Void {
         super.update(elapsed);
         if (actionOnClick != null) {
-            if (Leafy.wiiuGamepad.touchJustPressed() && Leafy.wiiuGamepad.isTouchingSprite(this)) {
+            if (Leafy.wiiuGamepad.touchJustPressed() && Leafy.wiiuGamepad.isTouchingAObject(this)) {
                 actionOnClick();
             }
         }

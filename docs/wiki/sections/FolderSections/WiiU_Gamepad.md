@@ -67,6 +67,8 @@ var touchPos:LfVector2D = Leafy.wiiuGamepad.getTouch();
 var isTouchObject:Bool = Leafy.wiiuGamepad.isTouchingAObject(object:LfObject);
 ```
 
+--------
+
 You can use the gyroscope and accelerometer:
 ```haxe
 // import the Leafy class
@@ -86,15 +88,15 @@ For use the rumble, it would be done in this way:
 // import the Leafy class
 import leafy.Leafy;
 
-// start the rumble
+// start the vibration of the Wii U Gamepad
 /*
-    The first parameter is the intensity of the rumble, from 0 to 1
-    The second parameter is the duration of the rumble, in seconds, -1 for infinite
+    The first parameter is the intensity of the vibration, from 0 to 1
+    The second parameter is the duration of the vibration, in seconds, -1 for infinite
 */
-Leafy.wiiuGamepad.startRumble(1, -1);
+Leafy.wiiuGamepad.vibrate(1, -1);
 
-// stop the rumble
-Leafy.wiiuGamepad.stopRumble();
+// stop the vibration
+Leafy.wiiuGamepad.stopVibration();
 ```
 
 <!-- --------

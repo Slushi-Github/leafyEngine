@@ -15,5 +15,6 @@ var tween:LfTween = new LfTween(sprite, LfTweenProperty.X, sprite.x, 200, 3, LfT
 LfTween.cancelTween(tween);
 ```
 
------
+--------
+
 See [``LfTween``](https://github.com/Slushi-Github/leafyEngine/blob/main/leafy/tweens/LfTween.hx)

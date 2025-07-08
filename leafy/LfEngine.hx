@@ -30,7 +30,7 @@ class LfEngine {
     /**
      * The current version of the engine
      */
-    public static var version:String = "1.4.3";
+    public static var VERSION:String = "1.4.6";
 
     /**
      * Function to be called when the engine exits
@@ -61,7 +61,7 @@ class LfEngine {
         Proc.WHBProcInit();
         Crash.WHBInitCrashHandler(); // This really works?
 
-        Sys.println("[Leafy Engine initial state - no logger started] Starting Leafy Engine " + version);
+        Sys.println("[Leafy Engine initial state - no logger started] Starting Leafy Engine [" + VERSION + "]");
 
         if (renderMode == null) {
             Sys.println("[Leafy Engine initial state - no logger started -> WARNING] Render mode cannot be null, defaulting to DRC mode");
@@ -86,7 +86,7 @@ class LfEngine {
         // Initialize the Wii U Gamepad
         LfGamepadInternal.initDRC();
 
-        LeafyDebug.log("Leafy Engine [" + version + "] initialized", INFO);
+        LeafyDebug.log("Leafy Engine [" + VERSION + "] initialized", INFO);
         
         // Set and initialize the initial state
         LfStateHandler.initFirstState(state);
@@ -108,7 +108,7 @@ class LfEngine {
             onEngineExit();
         }
 
-        LeafyDebug.log("Shutting down Leafy Engine " + version, INFO);
+        LeafyDebug.log("Shutting down Leafy Engine [" + VERSION + "]", INFO);
 
         LfStateHandler.destroyCurrentState();
         SubEngines.shutdownSDL();
