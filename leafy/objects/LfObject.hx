@@ -34,6 +34,7 @@ enum ObjectType {
 enum CenterMode {
     CENTER_X;
     CENTER_Y;
+    CENTER_XY;
 }
 
 /**
@@ -245,7 +246,7 @@ class LfObject extends LfBase {
      *  Center the object in the screen
      * @param centerMode The mode to center the object
      */
-    public function center(?centerMode:CenterMode):Void {
+    public function center(?centerMode:CenterMode = CenterMode.CENTER_XY):Void {
         if (this.width <= 0 || this.height <= 0) {
             LeafyDebug.log("Object dimensions invalid before centering", ERROR);
             return;
@@ -256,9 +257,12 @@ class LfObject extends LfBase {
                 this.x = Std.int((Leafy.screenWidth - this.width) / 2);
             case CenterMode.CENTER_Y:
                 this.y = Std.int((Leafy.screenHeight - this.height) / 2);
-            default:
+            case CenterMode.CENTER_XY:
                 this.x = Std.int((Leafy.screenWidth - this.width) / 2);
                 this.y = Std.int((Leafy.screenHeight - this.height) / 2);
+            default:
+                LeafyDebug.log("Invalid center mode!", ERROR);
+                return;
         }
     }
 

@@ -85,7 +85,7 @@ class LfSprite extends LfObject {
             LeafyDebug.log("Image must be a PNG file", ERROR);
             return;
         }
-        if (!LfSystemPaths.exists(correctPath) ) {
+        if (!LfSystemPaths.exists(correctPath)) {
             LeafyDebug.log("Image path does not exist: " + imgPath, ERROR);
             return;
         }

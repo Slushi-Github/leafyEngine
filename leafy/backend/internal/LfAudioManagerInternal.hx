@@ -248,7 +248,7 @@ class LfAudioManagerInternal {
             return false;
         }
 
-        LeafyDebug.log("Ogg File Info: Rate=" + fileInfo.rate + ", Channels=" + fileInfo.channels, INFO);
+        LeafyDebug.log("Ogg File Info: Rate=" + fileInfo.rate + ", Channels=" + fileInfo.channels, DEBUG);
 
         var needsReopen:Bool = false;
         if (audioDevice <= 0) {

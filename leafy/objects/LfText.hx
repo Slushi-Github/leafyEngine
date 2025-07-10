@@ -92,6 +92,12 @@ class LfText extends LfObject {
         this.size = size;
         this.fontPath = fontPath;
 
+        // Set the default color to white 
+        this.sdlColor.r = 255;
+        this.sdlColor.g = 255;
+        this.sdlColor.b = 255;
+        this.sdlColor.a = 255;
+
         this.fontPtr = SDL_TTF.TTF_OpenFont(ConstCharPtr.fromString(correctPath), size);
         if (untyped __cpp__("fontPtr == nullptr")) {
             LeafyDebug.log("Failed to load font: " + LfUtils.removeSDDirFromPath(fontPath) + " with size: " + size, ERROR);
@@ -123,6 +129,11 @@ class LfText extends LfObject {
 
         this.sdlRect.x = this.x;
         this.sdlRect.y = this.y;
+
+        if (this.width <= 0 || this.height <= 0) {
+            LeafyDebug.log("Invalid dimensions for text: " + text, ERROR);
+        }
+
         this.sdlRect.w = this.width;
         this.sdlRect.h = this.height;
 
