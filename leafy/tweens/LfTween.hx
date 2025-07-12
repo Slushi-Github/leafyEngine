@@ -14,8 +14,9 @@ import leafy.objects.LfObject;
 enum LfTweenProperty {
     X;
     Y;
-    SCALEX;
-    SCALEY;
+    // SCALE; // BROKEN
+    WIDTH;
+    HEIGHT;
     ALPHA;
     ANGLE;
 }
@@ -96,6 +97,11 @@ class LfTween {
      */
     public var onComplete:Void->Void;
 
+    // /**
+    //  * The function to call when the tween is updated
+    //  */
+    // public var onUpdate:Void->Void;
+
     /**
      * The easing function
      */
@@ -106,8 +112,13 @@ class LfTween {
      */
     private var _isComplete:Bool = false;
 
+    /*
+     * Whether the tween is a number tween
+     */
     private var _isNumber:Bool = false;
-
+    /**
+     * Whether the tween should be automatically destroyed when complete
+     */
     private var _autoDestroy:Bool;
 
     /**
@@ -132,6 +143,7 @@ class LfTween {
         _isComplete = false;
         _isNumber = isNumber;
         _autoDestroy = autoDestroy;
+        // this.onUpdate = onUpdate;
 
         _tweens.push(this);
     }
@@ -163,6 +175,10 @@ class LfTween {
 
             var value = startValue + (endValue - startValue) * easedProgress;
 
+            // if (onUpdate != null) {
+            //     onUpdate();
+            // }
+
             if (_isNumber) {
                 value = Std.int(value);
             }
@@ -170,8 +186,11 @@ class LfTween {
                 switch (valueType) {
                     case LfTweenProperty.X: target.x = Std.int(value);
                     case LfTweenProperty.Y: target.y = Std.int(value);
-                    case LfTweenProperty.SCALEX: target.scale.x = value;
-                    case LfTweenProperty.SCALEY: target.scale.y = value;
+                    // case LfTweenProperty.SCALE:
+                    //     target.scale.x = value;
+                    //     target.scale.y = value;
+                    case LfTweenProperty.WIDTH: target.width = Std.int(value);
+                    case LfTweenProperty.HEIGHT: target.height = Std.int(value);
                     case LfTweenProperty.ALPHA: target.alpha = value;
                     case LfTweenProperty.ANGLE: target.angle = Std.int(value);
                 }
@@ -274,12 +293,15 @@ for (size_t i = 0; i < _tweens->size(); i++) {
         }
     }
 
-    //////////////////////////////////
+    ////////////////////////////////////////////////////////////////////
     /**
      * Easing functions
      * These functions are used to calculate the easing of the tween.
      * Cannot be in another file otherwise Reflaxe/C++ explodes with many errors.
+     * 
+     * @see https://github.com/HaxeFlixel/flixel/blob/master/flixel/tweens/FlxEase.hx
      */
+    //////////////////////////////////
 
     private function easeLinear(t:Float):Float {
         return t;

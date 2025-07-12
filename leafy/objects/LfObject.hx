@@ -46,39 +46,39 @@ class LfObject extends LfBase {
     /**
      * Name of the object
      */
-    public var name:String;
+    public var name:String = "";
 
     /**
      * Type of the object
      */
-    public var type:ObjectType;
+    public var type:ObjectType = ObjectType.OTHER;
 
     /**
      * If the object is ready to be rendered
      */
-    public var readyToRender:Bool;
+    public var readyToRender:Bool = false;
 
     // SDL variables //////////////////////////////
 
     /**
      * Pointer to the SDL_Surface.
      */
-    public var sdlSurfacePtr:Ptr<SDL_Surface>;
+    public var sdlSurfacePtr:Ptr<SDL_Surface> = null;
 
     /**
      * Pointer to the SDL_Texture.
      */
-    public var sdlTexturePtr:Ptr<SDL_Texture>;
+    public var sdlTexturePtr:Ptr<SDL_Texture> = null;
 
     /**
      * Color of the object.
      */
-    public var sdlColor:SDL_Color;
+    public var sdlColor:SDL_Color = new SDL_Color();
 
     /**
      * Rect of the object.
      */
-    public var sdlRect:SDL_Rect;
+    public var sdlRect:SDL_Rect = new SDL_Rect();
 
     /**
      * Used to determine if the object can be rendered or not
@@ -86,111 +86,118 @@ class LfObject extends LfBase {
      */
     public var omitDefaultRenderMethod:Bool = false;
 
+    // public var angle3D:LfVector3D = {
+    //     x: 0,
+    //     y: 0,
+    //     z: 0
+    // };
+
+    // public var use3D:Bool = false;
+
     // General Data //////////////////////////
 
     /**
      * X coordinate of the object.
      */
-    public var x:Int;
+    public var x:Int = 0;
 
     /**
      * Y coordinate of the object.
      */
-    public var y:Int;
+    public var y:Int = 0;
 
     /**
      * Width of the object.
      */
-    public var width:Int;
+    public var width:Int = 0;
 
     /**
      * Height of the object.
      */
-    public var height:Int;
+    public var height:Int = 0;
 
     /**
      * Angle of the object.
      */
-    public var angle:Int;
+    public var angle:Int = 0;
 
     /**
      * Scale of the object.
      */
-    public var scale:LfVector2D;
+    public var scale:LfVector2D = {x: 1, y: 1};
 
     /**
      * Alpha of the object.
      */
-    public var alpha:Float;
+    public var alpha:Float = 1.0;
 
     /**
      * If the object is visible.
      */
-    public var isVisible:Bool;
+    public var isVisible:Bool = true;
 
     /**
-     * Velocity of the sprite
+     * Velocity of the object
      */
-    public var velocity:LfVector2D;
+    public var velocity:LfVector2D = {x: 0, y: 0};
 
     /**
-     * Acceleration of the sprite
+     * Acceleration of the object
      */
-    public var acceleration:LfVector2D;
+    public var acceleration:LfVector2D = {x: 0, y: 0};
 
     /**
-     * Drag of the sprite
+     * Drag of the object
      */
-    public var drag:LfVector2D;
+    public var drag:LfVector2D = {x: 0, y: 0};
 
     /**
-     * Max velocity of the sprite
+     * Max velocity of the object
      */
-    public var maxVelocity:LfVector2D;
+    public var maxVelocity:LfVector2D = {x: 0, y: 0};
 
     /**
-     * Gravity of the sprite
+     * Gravity of the object
      */
-    public var gravity:Float;
+    public var gravity:Float = 0.0;
 
     /**
-     * Can the sprite be moved by the gravity?
+     * Can the object be affected by the gravity?
      */
-    public var immovable:Bool;
+    public var immovable:Bool = false;
 
     /**
      * If the object is alive or not.
      * This is used to determine if the object should be updated or rendered.
      */
-    public var alive:Bool;
+    public var alive:Bool = true;
 
     ////////////////////////////////
 
     override public function update(elapsed:Float):Void {
         updateSDLRect();
 
-        // TODO: FIX THIS (0x02025fa4 --> leafy_objects_LfObject.cpp:31)
-        // if (!this.immovable && this.alive) {
-        //     this.acceleration.y += gravity;
+        if (!this.immovable && this.alive) {
+            this.acceleration.y += gravity;
 
-        //     this.velocity.x += this.acceleration.x * elapsed;
-        //     this.velocity.y += this.acceleration.y * elapsed;
+            this.velocity.x += this.acceleration.x * elapsed;
+            this.velocity.y += this.acceleration.y * elapsed;
 
-        //     this.velocity.x -= this.drag.x * elapsed * LfUtils.sign(this.velocity.x);
-        //     this.velocity.y -= this.drag.y * elapsed * LfUtils.sign(this.velocity.y);
+            this.velocity.x -= this.drag.x * elapsed * LfUtils.sign(this.velocity.x);
+            this.velocity.y -= this.drag.y * elapsed * LfUtils.sign(this.velocity.y);
 
-        //     if (Math.abs(this.velocity.x) > this.maxVelocity.x)
-        //         this.velocity.x = this.maxVelocity.x * LfUtils.sign(this.velocity.x);
+            if (Math.abs(this.velocity.x) > this.maxVelocity.x)
+                this.velocity.x = this.maxVelocity.x * LfUtils.sign(this.velocity.x);
 
-        //     if (Math.abs(this.velocity.y) > this.maxVelocity.y)
-        //         this.velocity.y = this.maxVelocity.y * LfUtils.sign(this.velocity.y);
+            if (Math.abs(this.velocity.y) > this.maxVelocity.y)
+                this.velocity.y = this.maxVelocity.y * LfUtils.sign(this.velocity.y);
 
-        //     this.x += Std.int(this.velocity.x * elapsed);
-        //     this.y += Std.int(this.velocity.y * elapsed);
+            this.x += Std.int(this.velocity.x * elapsed);
+            this.y += Std.int(this.velocity.y * elapsed);
 
-        //     this.acceleration.x = 0;
-        //     this.acceleration.y = 0;
-        // }
+            this.acceleration.x = 0;
+            this.acceleration.y = 0;
+        }
     }
 
     ////////////////////////////////
@@ -215,6 +222,12 @@ class LfObject extends LfBase {
         else if (this.alpha > 1) {
             this.alpha = 1;
         }
+
+        // Render as 3D object if needed
+        // if ((angle3D.x != 0 || angle3D.y != 0 || angle3D.z != 0) && use3D) {
+        //     renderAs3D();
+        //     return;
+        // }
 
         SDL_Render.SDL_SetTextureAlphaMod(this.sdlTexturePtr, Std.int(this.alpha * 255));
         SDL_Render.SDL_RenderCopyEx(LfWindow.currentRenderer, this.sdlTexturePtr, null, this.sdlRect, this.angle, null, SDL_FLIP_NONE);
@@ -290,7 +303,7 @@ class LfObject extends LfBase {
         this.sdlColor.r = r;
         this.sdlColor.g = g;
         this.sdlColor.b = b;
-        this.sdlColor.a = 255; // Alpha is always 255 for color mod
+        this.sdlColor.a = Std.int(this.alpha * 255);
 
         var result:Int = SDL_Render.SDL_SetTextureColorMod(this.sdlTexturePtr, this.sdlColor.r, this.sdlColor.g, this.sdlColor.b);
         if (result != 0) {
@@ -309,6 +322,19 @@ class LfObject extends LfBase {
         this.alive = true;
     }
 
+    public function resizeToFitScreen():Void {
+        if (this.width <= 0 || this.height <= 0) {
+            LeafyDebug.log("Object dimensions invalid before resizing to fit screen", ERROR);
+            return;
+        }
+
+        var scaleX = Leafy.screenWidth / this.width;
+        var scaleY = Leafy.screenHeight / this.height;
+
+        this.resize(scaleX, scaleY);
+        this.center();
+    }
+
     private function updateSDLRect():Void {
         if (this.sdlRect == null) {
             return;
@@ -324,6 +350,91 @@ class LfObject extends LfBase {
     }
     
     /////////////////////////////////////////////
+
+    // 3D functions
+    // private function renderAs3D():Void {
+    // var tex = this.sdlTexturePtr;
+    // if (tex == null) return;
+
+    // var cx:Float = this.x + this.width * 0.5;
+    // var cy:Float = this.y + this.height * 0.5;
+    // var w = this.width;
+    // var h = this.height;
+
+    // // Define cuadrado local en 3D
+    // var quad:Array<LfVector3D> = [
+    //     { x: -w / 2, y: -h / 2, z: 0 },
+    //     { x:  w / 2, y: -h / 2, z: 0 },
+    //     { x:  w / 2, y:  h / 2, z: 0 },
+    //     { x: -w / 2, y:  h / 2, z: 0 }
+    // ];
+
+    // // Rotación estilo Flx3DTransforms con matrices
+    // function rotate(v:LfVector3D, r:LfVector3D):LfVector3D {
+    //     final rx = r.x, ry = r.y, rz = r.z;
+    //     final sinX = Math.sin(rx), cosX = Math.cos(rx);
+    //     final sinY = Math.sin(ry), cosY = Math.cos(ry);
+    //     final sinZ = Math.sin(rz), cosZ = Math.cos(rz);
+
+    //     // Aplicar rotación matricial ZYX
+    //     var x = v.x, y = v.y, z = v.z;
+
+    //     // Rotación Z
+    //     var x1 = x * cosZ - y * sinZ;
+    //     var y1 = x * sinZ + y * cosZ;
+    //     x = x1; y = y1;
+
+    //     // Rotación Y
+    //     var x2 = x * cosY + z * sinY;
+    //     var z1 = -x * sinY + z * cosY;
+    //     x = x2; z = z1;
+
+    //     // Rotación X
+    //     var y2 = y * cosX - z * sinX;
+    //     var z2 = y * sinX + z * cosX;
+    //     y = y2; z = z2;
+
+    //     return { x: x, y: y, z: z };
+    // }
+
+    // // Proyección estilo Flx3DTransforms
+    // function project(v:LfVector3D):LfVector2D {
+    //     var z = v.z + 1.0; // evitar divisor 0
+    //     var fov = 1.0 / Math.tan(Math.PI / 4); // ~45°
+    //     var scale = fov / z;
+    //     return {
+    //         x: cx + v.x * scale,
+    //         y: cy + v.y * scale
+    //     };
+    // }
+
+    // var verts:Array<SDL_Vertex> = [];
+    // var color = this.sdlColor;
+
+    // for (i in 0...4) {
+    //     var rot = rotate(quad[i], this.angle3D);
+    //     var proj = project(rot);
+
+    //     var vertex = new SDL_Vertex();
+    //     vertex.position.x = proj.x;
+    //     vertex.position.y = proj.y;
+    //     vertex.color = color;
+
+    //     vertex.tex_coord.x = (i == 1 || i == 2) ? 1.0 : 0.0;
+    //     vertex.tex_coord.y = (i >= 2) ? 1.0 : 0.0;
+
+    //     verts.push(vertex);
+    // }
+
+    // // Triángulo 1: 0-1-2 | Triángulo 2: 0-2-3
+    // verts.push(verts[2]);
+    // verts.push(verts[3]);
+
+    // var vertsPtr = untyped __cpp__("&{0}", verts[0]);
+
+    // SDL_Render.SDL_SetTextureAlphaMod(tex, Std.int(this.alpha * 255));
+    // SDL_Render.SDL_RenderGeometry(LfWindow.currentRenderer, tex, vertsPtr, verts.length, 0, 0);
+    // }
 
     /**
      * Reflaxe/C++ internal function

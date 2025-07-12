@@ -59,7 +59,7 @@ class LfWindow {
 
         switch(type) {
             case LfWindowType.DRC:
-                _drcWindow = SDL_Video.SDL_CreateWindow(ConstCharPtr.fromString("Wii_U_Gamepad_Window"), SDL_Video.SDL_WINDOWPOS_UNDEFINED, SDL_Video.SDL_WINDOWPOS_UNDEFINED, _drcResolution.x, _drcResolution.y, untyped __cpp__("SDL_WINDOW_SHOWN | SDL_WINDOW_WIIU_GAMEPAD_ONLY | SDL_WINDOW_FULLSCREEN"));
+                _drcWindow = SDL_Video.SDL_CreateWindow(ConstCharPtr.fromString("Wii_U_Gamepad_Window"), SDL_Video.SDL_WINDOWPOS_UNDEFINED, SDL_Video.SDL_WINDOWPOS_UNDEFINED, _drcResolution.x, _drcResolution.y, untyped __cpp__("SDL_WINDOW_SHOWN | SDL_WINDOW_WIIU_GAMEPAD_ONLY"));
                 _drcRenderer = SDL_Render.SDL_CreateRenderer(_drcWindow, -1, SDL_RendererFlags.SDL_RENDERER_ACCELERATED);
                 SDL_Render.SDL_SetRenderDrawBlendMode(_drcRenderer, SDL_BLENDMODE_BLEND);
                 SDL_Render.SDL_SetRenderDrawColor(_drcRenderer, 0, 0, 0, 255);
@@ -84,7 +84,7 @@ class LfWindow {
         Leafy.screenWidth = getScreenWidth();
         Leafy.screenHeight = getScreenHeight();
 
-        LeafyDebug.log("Windows and renderers initialized in " + Std.string(type) + " mode", INFO);
+        LeafyDebug.log("Windows and renderers initialized in " + Std.string(type) + " mode (" + Std.string(getScreenWidth()) + "x" + Std.string(getScreenHeight()) + ")", INFO);
     }
 
     /**
@@ -129,5 +129,4 @@ class LfWindow {
 
         return height;
     }
-
 }

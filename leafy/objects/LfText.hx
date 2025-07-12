@@ -86,6 +86,12 @@ class LfText extends LfObject {
         this.alive = true;
         this.immovable = true;
 
+        this.velocity = {x: 0, y: 0};
+        this.acceleration = {x: 0, y: 0};
+        this.drag = {x: 0, y: 0};
+        this.maxVelocity = {x: 0, y: 0};
+        this.gravity = 0;
+
         //////////////////
 
         this.text = text;
@@ -96,7 +102,7 @@ class LfText extends LfObject {
         this.sdlColor.r = 255;
         this.sdlColor.g = 255;
         this.sdlColor.b = 255;
-        this.sdlColor.a = 255;
+        this.sdlColor.a = Std.int(this.alpha * 255);
 
         this.fontPtr = SDL_TTF.TTF_OpenFont(ConstCharPtr.fromString(correctPath), size);
         if (untyped __cpp__("fontPtr == nullptr")) {

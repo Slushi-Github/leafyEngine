@@ -30,7 +30,7 @@ class LfEngine {
     /**
      * The current version of the engine
      */
-    public static var VERSION:String = "1.4.6";
+    public static var VERSION:String = "1.5.0";
 
     /**
      * Function to be called when the engine exits
@@ -85,6 +85,10 @@ class LfEngine {
 
         // Initialize the Wii U Gamepad
         LfGamepadInternal.initDRC();
+
+        #if debug
+        LeafyDebug.log("Debug mode is enabled in this build, lag may occur when printing many more logs!", WARNING);
+        #end
 
         LeafyDebug.log("Leafy Engine [" + VERSION + "] initialized", INFO);
         
