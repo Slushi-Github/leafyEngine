@@ -37,6 +37,12 @@ enum CenterMode {
     CENTER_XY;
 }
 
+enum ScaleMode {
+    NEAREST;
+    LINEAR;
+    BEST;
+}
+
 /**
  * Base class for all objects
  * 
@@ -172,6 +178,11 @@ class LfObject extends LfBase {
      */
     public var alive:Bool = true;
 
+    /**
+     * SCale mode of the object
+     */
+    public var scaleMode:ScaleMode = null;
+
     ////////////////////////////////
 
     override public function update(elapsed:Float):Void {
@@ -207,7 +218,7 @@ class LfObject extends LfBase {
             return;
         }
 
-        if (!this.readyToRender || !this.isVisible || this.alpha == 0 || !this.isOnScreen() || !this.alive) {
+        if (!this.readyToRender || !this.isVisible || this.alpha == 0.0 || !this.isOnScreen() || !this.alive) {
             return;
         }
 
@@ -284,12 +295,12 @@ class LfObject extends LfBase {
     }
 
     /**
-     *  Set the object color
+     * Set the object color
      * @param newColor The new color
      */
     public function setColor(r:UInt8, g:UInt8, b:UInt8):Void {
         if (this.sdlColor == null) {
-            LeafyDebug.log("Object color is null, cannot update text color", ERROR);
+            LeafyDebug.log("Object color is null, cannot update object texture color", ERROR);
             return;
         }
 
@@ -314,14 +325,23 @@ class LfObject extends LfBase {
         this.readyToRender = true;
     }
 
+    /*
+     * Disable the object
+     */
     public function disable():Void {
         this.alive = false;
     }
 
+    /**
+     * Reset the object (alive)
+     */
     public function reset():Void {
         this.alive = true;
     }
 
+    /**
+     * Resize the object to fit the screen
+     */
     public function resizeToFitScreen():Void {
         if (this.width <= 0 || this.height <= 0) {
             LeafyDebug.log("Object dimensions invalid before resizing to fit screen", ERROR);
@@ -335,6 +355,40 @@ class LfObject extends LfBase {
         this.center();
     }
 
+    /*
+     * Set the scale mode of the object texture
+     * @param scaleMode 
+     */
+    public function setScaleMode(scaleMode:ScaleMode):Void {
+        if (this.sdlTexturePtr == null) {
+            LeafyDebug.log("Failed to set scale mode for object: [" + this.name + "] - Texture is null (" + SDL_Image.IMG_GetError().toString() + ")", ERROR);
+            return;
+        }
+        SDL_Render.SDL_SetTextureScaleMode(this.sdlTexturePtr, convertScaleModeToSDL(scaleMode));
+        this.scaleMode = scaleMode;
+    }
+
+    /**
+     * Convert a Leafy object scale mode to an SDL scale mode
+     * @param scaleMode 
+     * @return SDL_ScaleMode
+     */
+    private function convertScaleModeToSDL(scaleMode:ScaleMode):SDL_ScaleMode {
+        switch (scaleMode) {
+            case ScaleMode.LINEAR:
+                return SDL_ScaleMode.SDL_ScaleModeLinear;
+            case ScaleMode.NEAREST:
+                return SDL_ScaleMode.SDL_ScaleModeNearest;
+            case ScaleMode.BEST:
+                return SDL_ScaleMode.SDL_ScaleModeBest;
+            default:
+                return SDL_ScaleMode.SDL_ScaleModeNearest;
+        }
+    }
+
+    /**
+     * Update the SDL rect of the object
+     */
     private function updateSDLRect():Void {
         if (this.sdlRect == null) {
             return;
@@ -350,83 +404,6 @@ class LfObject extends LfBase {
     }
     
     /////////////////////////////////////////////
-
-    // 3D functions
-    private function renderAs3D():Void {
-    var tex = this.sdlTexturePtr;
-    if (tex == null) return;
-
-    var cx:Float = this.x + this.width * 0.5;
-    var cy:Float = this.y + this.height * 0.5;
-    var w = this.width;
-    var h = this.height;
-
-    var quad:Array<LfVector3D> = [
-        { x: -w / 2, y: -h / 2, z: 0 },
-        { x:  w / 2, y: -h / 2, z: 0 },
-        { x:  w / 2, y:  h / 2, z: 0 },
-        { x: -w / 2, y:  h / 2, z: 0 }
-    ];
-
-    function rotate(v:LfVector3D, r:LfVector3D):LfVector3D {
-        final rx = r.x, ry = r.y, rz = r.z;
-        final sinX = Math.sin(rx), cosX = Math.cos(rx);
-        final sinY = Math.sin(ry), cosY = Math.cos(ry);
-        final sinZ = Math.sin(rz), cosZ = Math.cos(rz);
-
-        var x = v.x, y = v.y, z = v.z;
-
-        var x1 = x * cosZ - y * sinZ;
-        var y1 = x * sinZ + y * cosZ;
-        x = x1; y = y1;
-
-        var x2 = x * cosY + z * sinY;
-        var z1 = -x * sinY + z * cosY;
-        x = x2; z = z1;
-
-        var y2 = y * cosX - z * sinX;
-        var z2 = y * sinX + z * cosX;
-        y = y2; z = z2;
-
-        return { x: x, y: y, z: z };
-    }
-
-    function project(v:LfVector3D):LfVector2D {
-        var z = v.z + 1.0;
-        var fov = 1.0 / Math.tan(Math.PI / 4);
-        var scale = fov / z;
-        return {
-            x: cx + v.x * scale,
-            y: cy + v.y * scale
-        };
-    }
-
-    var verts:Array<SDL_Vertex> = [];
-    var color = this.sdlColor;
-
-    for (i in 0...4) {
-        var rot = rotate(quad[i], this.angle3D);
-        var proj = project(rot);
-
-        var vertex = new SDL_Vertex();
-        vertex.position.x = proj.x;
-        vertex.position.y = proj.y;
-        vertex.color = color;
-
-        vertex.tex_coord.x = (i == 1 || i == 2) ? 1.0 : 0.0;
-        vertex.tex_coord.y = (i >= 2) ? 1.0 : 0.0;
-
-        verts.push(vertex);
-    }
-
-    verts.push(verts[2]);
-    verts.push(verts[3]);
-
-    var vertsPtr = untyped __cpp__("&{0}", verts[0]);
-
-    SDL_Render.SDL_SetTextureAlphaMod(tex, Std.int(this.alpha * 255));
-    SDL_Render.SDL_RenderGeometry(LfWindow.currentRenderer, tex, vertsPtr, verts.length, 0, 0);
-    }
 
     /**
      * Reflaxe/C++ internal function

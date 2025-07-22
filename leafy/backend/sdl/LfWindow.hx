@@ -57,24 +57,34 @@ class LfWindow {
             return;
         }
 
+        /*
+         * Slushi note:
+         * Without "SDL_RENDERER_PRESENTVSYNC" the engine runs at 300 FPS, when it should be 60 FPS.
+         * The engine is not made to run above 60 FPS, and even these are not visible in any
+         * case due to hardware limitations of the Wii U console.
+         * 
+         * If this was made for a Nintendo Switch, the dock should be able to deliver more than 60 Hz 
+         * so with a compatible TV or monitor so.. maybe they should be visible (or... have a Switch 2?).
+         * But... This is a Wii U project, hehe.
+         */
         switch(type) {
             case LfWindowType.DRC:
-                _drcWindow = SDL_Video.SDL_CreateWindow(ConstCharPtr.fromString("Wii_U_Gamepad_Window"), SDL_Video.SDL_WINDOWPOS_UNDEFINED, SDL_Video.SDL_WINDOWPOS_UNDEFINED, _drcResolution.x, _drcResolution.y, untyped __cpp__("SDL_WINDOW_SHOWN | SDL_WINDOW_WIIU_GAMEPAD_ONLY"));
-                _drcRenderer = SDL_Render.SDL_CreateRenderer(_drcWindow, -1, SDL_RendererFlags.SDL_RENDERER_ACCELERATED);
+                _drcWindow = SDL_Video.SDL_CreateWindow(ConstCharPtr.fromString("Wii_U_Gamepad_Window"), SDL_Video.SDL_WINDOWPOS_UNDEFINED, SDL_Video.SDL_WINDOWPOS_UNDEFINED, _drcResolution.x, _drcResolution.y, untyped __cpp__("SDL_WINDOW_SHOWN | SDL_WINDOW_WIIU_GAMEPAD_ONLY | SDL_WINDOW_ALLOW_HIGHDPI"));
+                _drcRenderer = SDL_Render.SDL_CreateRenderer(_drcWindow, -1, untyped __cpp__("SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC"));
                 SDL_Render.SDL_SetRenderDrawBlendMode(_drcRenderer, SDL_BLENDMODE_BLEND);
                 SDL_Render.SDL_SetRenderDrawColor(_drcRenderer, 0, 0, 0, 255);
                 _currentWindow = _drcWindow;
                 currentRenderer = _drcRenderer;
             case LfWindowType.TV:
                 _tvWindow = SDL_Video.SDL_CreateWindow(ConstCharPtr.fromString("Wii_U_TV_Window"), SDL_Video.SDL_WINDOWPOS_UNDEFINED, SDL_Video.SDL_WINDOWPOS_UNDEFINED, _tvResolution.x, _tvResolution.y, untyped __cpp__("SDL_WINDOW_SHOWN | SDL_WINDOW_WIIU_TV_ONLY"));
-                _tvRenderer = SDL_Render.SDL_CreateRenderer(_tvWindow, -1, SDL_RendererFlags.SDL_RENDERER_ACCELERATED);
+                _tvRenderer = SDL_Render.SDL_CreateRenderer(_tvWindow, -1, untyped __cpp__("SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC"));
                 SDL_Render.SDL_SetRenderDrawBlendMode(_tvRenderer, SDL_BLENDMODE_BLEND);
                 SDL_Render.SDL_SetRenderDrawColor(_tvRenderer, 0, 0, 0, 255);
                 _currentWindow = _tvWindow;
                 currentRenderer = _tvRenderer;
             case LfWindowType.UNIQUE:
                 _mainWindow = SDL_Video.SDL_CreateWindow(ConstCharPtr.fromString("Wii_U_Main_Window"), SDL_Video.SDL_WINDOWPOS_UNDEFINED, SDL_Video.SDL_WINDOWPOS_UNDEFINED, _drcResolution.x, _drcResolution.y, untyped __cpp__("SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI"));
-                _mainRenderer = SDL_Render.SDL_CreateRenderer(_mainWindow, -1, SDL_RendererFlags.SDL_RENDERER_ACCELERATED);
+                _mainRenderer = SDL_Render.SDL_CreateRenderer(_mainWindow, -1, untyped __cpp__("SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC"));
                 SDL_Render.SDL_SetRenderDrawBlendMode(_mainRenderer, SDL_BLENDMODE_BLEND);
                 SDL_Render.SDL_SetRenderDrawColor(_mainRenderer, 0, 0, 0, 255);
                 _currentWindow = _mainWindow;

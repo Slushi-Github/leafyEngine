@@ -54,6 +54,11 @@ class Leafy {
      */
     public static var audio:LfAudioEngine;
 
+    /**
+     * Is the engine paused
+     */
+    public static var paused:Bool = false;
+
     //////////////////////////////////
 
     public static function switchState(newState:LfState):Void {

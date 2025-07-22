@@ -88,4 +88,81 @@ class LfUtils {
         return dividend - Math.floor(dividend / divisor) * divisor;
     }
 
+    // 3D functions
+    // private function renderAs3D():Void {
+    // var tex = this.sdlTexturePtr;
+    // if (tex == null) return;
+
+    // var cx:Float = this.x + this.width * 0.5;
+    // var cy:Float = this.y + this.height * 0.5;
+    // var w = this.width;
+    // var h = this.height;
+
+    // var quad:Array<LfVector3D> = [
+    //     { x: -w / 2, y: -h / 2, z: 0 },
+    //     { x:  w / 2, y: -h / 2, z: 0 },
+    //     { x:  w / 2, y:  h / 2, z: 0 },
+    //     { x: -w / 2, y:  h / 2, z: 0 }
+    // ];
+
+    // function rotate(v:LfVector3D, r:LfVector3D):LfVector3D {
+    //     final rx = r.x, ry = r.y, rz = r.z;
+    //     final sinX = Math.sin(rx), cosX = Math.cos(rx);
+    //     final sinY = Math.sin(ry), cosY = Math.cos(ry);
+    //     final sinZ = Math.sin(rz), cosZ = Math.cos(rz);
+
+    //     var x = v.x, y = v.y, z = v.z;
+
+    //     var x1 = x * cosZ - y * sinZ;
+    //     var y1 = x * sinZ + y * cosZ;
+    //     x = x1; y = y1;
+
+    //     var x2 = x * cosY + z * sinY;
+    //     var z1 = -x * sinY + z * cosY;
+    //     x = x2; z = z1;
+
+    //     var y2 = y * cosX - z * sinX;
+    //     var z2 = y * sinX + z * cosX;
+    //     y = y2; z = z2;
+
+    //     return { x: x, y: y, z: z };
+    // }
+
+    // function project(v:LfVector3D):LfVector2D {
+    //     var z = v.z + 1.0;
+    //     var fov = 1.0 / Math.tan(Math.PI / 4);
+    //     var scale = fov / z;
+    //     return {
+    //         x: cx + v.x * scale,
+    //         y: cy + v.y * scale
+    //     };
+    // }
+
+    // var verts:Array<SDL_Vertex> = [];
+    // var color = this.sdlColor;
+
+    // for (i in 0...4) {
+    //     var rot = rotate(quad[i], this.angle3D);
+    //     var proj = project(rot);
+
+    //     var vertex = new SDL_Vertex();
+    //     vertex.position.x = proj.x;
+    //     vertex.position.y = proj.y;
+    //     vertex.color = color;
+
+    //     vertex.tex_coord.x = (i == 1 || i == 2) ? 1.0 : 0.0;
+    //     vertex.tex_coord.y = (i >= 2) ? 1.0 : 0.0;
+
+    //     verts.push(vertex);
+    // }
+
+    // verts.push(verts[2]);
+    // verts.push(verts[3]);
+
+    // var vertsPtr = untyped __cpp__("&{0}", verts[0]);
+
+    // SDL_Render.SDL_SetTextureAlphaMod(tex, Std.int(this.alpha * 255));
+    // SDL_Render.SDL_RenderGeometry(LfWindow.currentRenderer, tex, vertsPtr, verts.length, 0, 0);
+    // }
+
 }

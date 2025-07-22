@@ -110,7 +110,7 @@ class LfTween {
     /**
      * Whether the tween is complete
      */
-    private var _isComplete:Bool = false;
+    public var isComplete:Bool = false;
 
     /*
      * Whether the tween is a number tween
@@ -131,7 +131,7 @@ class LfTween {
      * @param ease The easing function
      * @param onComplete The function to call when the tween is complete
      */
-    public function new(target:LfObject, valueType:LfTweenProperty, startValue:Float, endValue:Float, duration:Float, ease:LfTweenEase = LfTweenEase.LINEAR, ?onComplete:Void->Void = null, autoDestroy:Bool = true, ?isNumber:Bool = false) {
+    public function new(target:LfObject = null, valueType:LfTweenProperty = LfTweenProperty.X, startValue:Float = 0.0, endValue:Float = 0.0, duration:Float = 0.0, ease:LfTweenEase = LfTweenEase.LINEAR, ?onComplete:Void->Void = null, autoDestroy:Bool = true, ?isNumber:Bool = false) {
         this.target = target;
         this.valueType = valueType;
         this.startValue = startValue;
@@ -140,7 +140,7 @@ class LfTween {
         this.elapsed = 0;
         this.ease = ease;
         this.onComplete = onComplete;
-        _isComplete = false;
+        isComplete = false;
         _isNumber = isNumber;
         _autoDestroy = autoDestroy;
         // this.onUpdate = onUpdate;
@@ -166,7 +166,7 @@ class LfTween {
      * @param dt The delta time
      */
     public function update(dt:Float):Void {
-        if (_isComplete) return;
+        if (isComplete) return;
 
         if (elapsed < duration) {
             elapsed += dt;
@@ -175,7 +175,7 @@ class LfTween {
 
             var value = startValue + (endValue - startValue) * easedProgress;
 
-            // if (onUpdate != null) {
+            // if (untyped __cpp__("onUpdate != nullptr")) {
             //     onUpdate();
             // }
 
@@ -196,7 +196,7 @@ class LfTween {
                 }
             }
         } else {
-            _isComplete = true;
+            isComplete = true;
             if (untyped __cpp__("onComplete != NULL")) {
                 onComplete();
             }
@@ -273,7 +273,7 @@ class LfTween {
 for (size_t i = 0; i < _tweens->size(); i++) {
     auto obj = _tweens->at(i);
     if (obj == tween) {
-        obj->_isComplete = true;
+        obj->isComplete = true;
         _tweens->erase(_tweens->begin() + i);
         return;
     }
@@ -287,7 +287,7 @@ for (size_t i = 0; i < _tweens->size(); i++) {
     public static function cancelTween(tween:LfTween):Void {
         for (i in 0..._tweens.length) {
             if (_tweens[i] == tween) {
-                _tweens[i]._isComplete = true;
+                _tweens[i].isComplete = true;
                 return;
             }
         }

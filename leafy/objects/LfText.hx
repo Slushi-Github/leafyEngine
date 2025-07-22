@@ -104,6 +104,8 @@ class LfText extends LfObject {
         this.sdlColor.b = 255;
         this.sdlColor.a = Std.int(this.alpha * 255);
 
+        LeafyDebug.log("Loading font: " + LfUtils.removeSDDirFromPath(fontPath) + " with size: " + size + " for text: [" + text + "]", DEBUG);
+
         this.fontPtr = SDL_TTF.TTF_OpenFont(ConstCharPtr.fromString(correctPath), size);
         if (untyped __cpp__("fontPtr == nullptr")) {
             LeafyDebug.log("Failed to load font: " + LfUtils.removeSDDirFromPath(fontPath) + " with size: " + size, ERROR);
@@ -112,14 +114,16 @@ class LfText extends LfObject {
         }
 
         this.sdlSurfacePtr = SDL_TTF.TTF_RenderText_Blended(this.fontPtr, ConstCharPtr.fromString(text), this.sdlColor);
-        if (this.sdlSurfacePtr == null) {
+        if (untyped __cpp__("sdlSurfacePtr == nullptr")) {
             LeafyDebug.log("Failed to create surface for text: " + SDL_TTF.TTF_GetError().toString(), ERROR);
             SDL_TTF.TTF_CloseFont(this.fontPtr);
             return;
         }
 
+        LeafyDebug.log("Creating texture from surface for text: [" + text + "]", DEBUG);
+
         this.sdlTexturePtr = SDL_Render.SDL_CreateTextureFromSurface(LfWindow.currentRenderer, this.sdlSurfacePtr);
-        if (this.sdlTexturePtr == null) {
+        if (untyped __cpp__("sdlTexturePtr == nullptr")) {
             LeafyDebug.log("Failed to create texture from surface: " + SDL_TTF.TTF_GetError().toString(), ERROR);
             SDL_SurfaceClass.SDL_FreeSurface(this.sdlSurfacePtr);
             SDL_TTF.TTF_CloseFont(this.fontPtr);
@@ -145,12 +149,13 @@ class LfText extends LfObject {
 
         this.length = this.text.length;
 
+        LeafyDebug.log("Created texture from surface for text: [" + text + "], destroying surface", DEBUG);
+
         SDL_SurfaceClass.SDL_FreeSurface(this.sdlSurfacePtr);
         this.sdlSurfacePtr = null;
 
         this.readyToRender = true;
 
-        this.type = ObjectType.TEXT_SPRITE;
         this.name = LfUtils.removeSDDirFromPath(fontPath) + "_" + text;
 
         LeafyDebug.log("Created text sprite: [" + this.name + "]", DEBUG);

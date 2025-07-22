@@ -30,7 +30,7 @@ class LfEngine {
     /**
      * The current version of the engine
      */
-    public static var VERSION:String = "1.5.0";
+    public static final VERSION:String = "1.5.0";
 
     /**
      * Function to be called when the engine exits
@@ -38,9 +38,14 @@ class LfEngine {
     public static var onEngineExit:Void->Void;
 
     /**
+     * Function to be called when the engine is initialized
+     */
+    public static var onEngineInitFinished:Void->Void;
+
+    /**
      * The window mode of the engine
      */
-    public static var windowMode:LfWindowType;
+    public static var windowMode:LfWindowType = LfWindowType.DRC;
 
     /**
      * The initial state
@@ -54,11 +59,14 @@ class LfEngine {
 
     /**
      * Initialize the engine, and start the state
+     * 
+     * @param gamePath The path to the game folder ("LEAFY_GAME" by default)
+     * @param renderMode The render mode of the engine
      * @param state The initial state
      */
     public static function initEngine(gamePath:String, renderMode:LfWindowType = LfWindowType.DRC, state:LfState):Void {
-        Log_udp.WHBLogUdpInit();
         Proc.WHBProcInit();
+        Log_udp.WHBLogUdpInit();
         Crash.WHBInitCrashHandler(); // This really works?
 
         Sys.println("[Leafy Engine initial state - no logger started] Starting Leafy Engine [" + VERSION + "]");
@@ -68,7 +76,7 @@ class LfEngine {
             renderMode = LfWindowType.DRC;
         }
 
-        if (gamePath == null) {
+        if (gamePath == null || gamePath == "") {
             Sys.println("[Leafy Engine initial state - no logger started -> WARNING] Game path cannot be null, defaulting to LEAFY_GAME");
             gamePath = "LEAFY_GAME";
         }
@@ -87,13 +95,22 @@ class LfEngine {
         LfGamepadInternal.initDRC();
 
         #if debug
-        LeafyDebug.log("Debug mode is enabled in this build, lag may occur when printing many more logs!", WARNING);
+        LeafyDebug.log("Haxe debug mode is enabled in this build, lag may occur when printing many more logs!", WARNING);
         #end
 
         LeafyDebug.log("Leafy Engine [" + VERSION + "] initialized", INFO);
+
+        // Call the onEngineInitFinished function
+        if (untyped __cpp__("onEngineInitFinished != NULL")) {
+            onEngineInitFinished();
+        }
         
         // Set and initialize the initial state
+        if (state == null) {
+            LeafyDebug.criticalError("initial state cannot be null.");
+        }
         LfStateHandler.initFirstState(state);
+        initState = state;
         Leafy.currentState = state;
 
         ///////////////////////////////////////////
@@ -105,9 +122,14 @@ class LfEngine {
             LfWindowRender.updateRenderers();
             LeafyDebug.updateLogTime();
             Leafy.update();
+
+            if (!_isRunning) {
+                Leafy.paused = true;
+            }
         };
 
-        // Shutdown the engine
+        // Shutdown the engine //////////
+        // Call the onEngineExit function
         if (onEngineExit != null) {
             onEngineExit();
         }
