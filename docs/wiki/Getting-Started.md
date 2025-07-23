@@ -24,7 +24,7 @@ haxelib git hxu_vorbis https://github.com/Haxe-WiiU/HxU_Vorbis.git
 haxelib git hxu_jansson https://github.com/Haxe-WiiU/HxU_Jansson.git
 ```
 
-Now get or compile the compiler, [HxCompileU](https://github.com/Slushi-Github/hxCompileU) in version 1.4.0 or higher, and add the executable to your project folder.
+Now get or compile the compiler, [HxCompileU](https://github.com/Slushi-Github/hxCompileU) in version 1.5.0 or higher, and add the executable to your project folder.
 
 Now you need the DevKitPro dependencies:
 
@@ -52,7 +52,11 @@ When you have everything, install the following:
 Now you're ready to start coding!
 
 # Using the engine
-First, copy the required ``hxCompileUConfig.json`` file to your project folder, [you can find it here](https://github.com/Slushi-Github/leafyEngine/blob/main/setup/hxCompileUConfig.json)
+You can copy the required ``hxCompileUConfig.json`` file to your project folder, [you can find it here](https://github.com/Slushi-Github/leafyEngine/blob/main/hxCompileUConfig.json), or you can implement it yourself using the following command:
+
+```bash
+haxeCompileU --import leafyEngine
+```
 
 Make a new folder called ``src`` (or whatever you want, if you change it, don't forget to change it in the ``hxCompileUConfig.json`` -> ``sourceDir``)
 
