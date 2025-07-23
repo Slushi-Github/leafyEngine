@@ -1,24 +1,27 @@
 {
 	"extraLibs": [
-		"curl",
-		"SDL2",
-		"leafyEngine",
-		"jansson",
-		"vorbis"
+		"leafyEngine"
 	],
-	"programVersion": "1.4.0",
+	"programVersion": "1.5.0",
 	"projectDefines": [],
 	"haxeConfig": {
+		"errorReportingStyle": "pretty",
 		"othersOptions": [],
 		"hxMain": "src.Main",
 		"outDir": "output",
 		"debugMode": false,
-		"sourceDir": "src",
-		"errorReportingStyle": "pretty"
+		"sourceDir": "src"
 	},
 	"wiiuConfig": {
+		"convertToWUHB": false,
+		"wuhbConfig": {
+			"shortName": "lfeTest",
+			"name": "leafyEngineTest",
+			"author": "NULL"
+		},
 		"projectName": "leafyEngineTest",
-		"consoleIP": ""
+		"isAPlugin": false,
+		"consoleIP": "0.0.0.0"
 	},
-	"deleteTempFiles": false
+	"deleteTempFiles": true
 }
