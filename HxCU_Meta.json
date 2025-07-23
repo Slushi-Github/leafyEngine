@@ -1,0 +1,11 @@
+{
+    "libVersion": "1.5.0",
+    "haxeLibs": [
+        "curl",
+        "sdl2",
+        "jansson",
+        "vorbis"
+    ],
+    "wiiuLibs": [],
+    "mainDefines": []
+}
