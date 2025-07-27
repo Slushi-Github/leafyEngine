@@ -8,6 +8,8 @@ package leafy.backend;
 import haxe.PosInfos; 
 import Std;
 import cxx.std.Exception;
+import haxe.Exception;
+import haxe.CallStack;
 
 import wut.coreinit.Debug;
 
@@ -258,5 +260,36 @@ class LeafyDebug {
         log("Executing WUT OSFatal call for crash...", ERROR, pos);
 
         Debug.OSFatal(strPtr);
+    }
+
+    /**
+     * A crash handler that logs the Haxe call stack and error message
+     * @param e The error message 
+     */
+    public static function crashHandler(e:String):Void {
+        var callStack:Array<StackItem> = CallStack.exceptionStack(true);
+        var callStackText:String = "Call stack:\n";
+
+        for (stackItem in callStack)
+		{
+			switch (stackItem)
+			{
+				case FilePos(s, file, line, column):
+					callStackText += file + ":" + line + "\n";
+				case CFunction:
+					callStackText += "Non-Haxe (C++) Function";
+				case Module(c):
+					callStackText += 'Module ${c}';
+				default:
+					callStackText += "Unknown stack item: " + Std.string(stackItem) + "\n";
+			}
+		}
+
+        callStackText += "\nError: " + LfStringUtils.stringReplacer(e, "Error: ", "");
+        LfFile.appendToFile(currentLogFile, "-- CRASH ------------");
+        log(callStackText, ERROR);
+        LfFile.appendToFile(currentLogFile, "---------------------");
+        log("Executing WUT OSFatal call for crash...", ERROR);
+        Debug.OSFatal(ConstCharPtr.fromString("[Leafy Engine " + LfEngine.VERSION + " logger - " + getCurrentTime() + " - CRASH]\n\n" + callStackText));
     }
 }

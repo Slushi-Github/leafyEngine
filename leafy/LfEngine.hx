@@ -30,7 +30,7 @@ class LfEngine {
     /**
      * The current version of the engine
      */
-    public static final VERSION:String = "1.5.0";
+    public static final VERSION:String = "1.5.1";
 
     /**
      * Function to be called when the engine exits
@@ -65,81 +65,86 @@ class LfEngine {
      * @param state The initial state
      */
     public static function initEngine(gamePath:String, renderMode:LfWindowType = LfWindowType.DRC, state:LfState):Void {
-        Proc.WHBProcInit();
-        Log_udp.WHBLogUdpInit();
-        Crash.WHBInitCrashHandler(); // This really works?
+        try {
+            Proc.WHBProcInit();
+            Log_udp.WHBLogUdpInit();
+            Crash.WHBInitCrashHandler(); // This really works?
 
-        Sys.println("[Leafy Engine initial state - no logger started] Starting Leafy Engine [" + VERSION + "]");
+            Sys.println("[Leafy Engine initial state - no logger started] Starting Leafy Engine [" + VERSION + "]");
 
-        if (renderMode == null) {
-            Sys.println("[Leafy Engine initial state - no logger started -> WARNING] Render mode cannot be null, defaulting to DRC mode");
-            renderMode = LfWindowType.DRC;
-        }
-
-        if (gamePath == null || gamePath == "") {
-            Sys.println("[Leafy Engine initial state - no logger started -> WARNING] Game path cannot be null, defaulting to LEAFY_GAME");
-            gamePath = "LEAFY_GAME";
-        }
-
-        windowMode = renderMode;
-
-        // initialize the engine systems
-        LfSystemPaths.initFSSystem();
-        LeafyDebug.initLogger();
-        SubEngines.startSDL();
-
-        // Set the engine main path
-        LfSystemPaths.setEngineMainPath(gamePath);
-
-        // Initialize the Wii U Gamepad
-        LfGamepadInternal.initDRC();
-
-        #if debug
-        LeafyDebug.log("Haxe debug mode is enabled in this build, lag may occur when printing many more logs!", WARNING);
-        #end
-
-        LeafyDebug.log("Leafy Engine [" + VERSION + "] initialized", INFO);
-
-        // Call the onEngineInitFinished function
-        if (untyped __cpp__("onEngineInitFinished != NULL")) {
-            onEngineInitFinished();
-        }
-        
-        // Set and initialize the initial state
-        if (state == null) {
-            LeafyDebug.criticalError("initial state cannot be null.");
-        }
-        LfStateHandler.initFirstState(state);
-        initState = state;
-        Leafy.currentState = state;
-
-        ///////////////////////////////////////////
-
-        _isRunning = Proc.WHBProcIsRunning();
-        // Start the main loop, the engine will shutdown when the main loop ends
-        while(_isRunning) {
-            _isRunning = Proc.WHBProcIsRunning();
-            LfWindowRender.updateRenderers();
-            LeafyDebug.updateLogTime();
-            Leafy.update();
-
-            if (!_isRunning) {
-                Leafy.paused = true;
+            if (renderMode == null) {
+                Sys.println("[Leafy Engine initial state - no logger started -> WARNING] Render mode cannot be null, defaulting to DRC mode");
+                renderMode = LfWindowType.DRC;
             }
-        };
 
-        // Shutdown the engine //////////
-        // Call the onEngineExit function
-        if (onEngineExit != null) {
-            onEngineExit();
+            if (gamePath == null || gamePath == "") {
+                Sys.println("[Leafy Engine initial state - no logger started -> WARNING] Game path cannot be null, defaulting to LEAFY_GAME");
+                gamePath = "LEAFY_GAME";
+            }
+
+            windowMode = renderMode;
+
+            // initialize the engine systems
+            LfSystemPaths.initFSSystem();
+            LeafyDebug.initLogger();
+            SubEngines.startSDL();
+
+            // Set the engine main path
+            LfSystemPaths.setEngineMainPath(gamePath);
+
+            // Initialize the Wii U Gamepad
+            LfGamepadInternal.initDRC();
+
+            #if debug
+            LeafyDebug.log("Haxe debug mode is enabled in this build, lag may occur when printing many more logs!", WARNING);
+            #end
+
+            LeafyDebug.log("Leafy Engine [" + VERSION + "] initialized", INFO);
+
+            // Call the onEngineInitFinished function
+            if (untyped __cpp__("onEngineInitFinished != NULL")) {
+                onEngineInitFinished();
+            }
+            
+            // Set and initialize the initial state
+            if (state == null) {
+                LeafyDebug.criticalError("initial state cannot be null.");
+            }
+            LfStateHandler.initFirstState(state);
+            initState = state;
+            Leafy.currentState = state;
+
+            ///////////////////////////////////////////
+
+            _isRunning = Proc.WHBProcIsRunning();
+            // Start the main loop, the engine will shutdown when the main loop ends
+            while(_isRunning) {
+                _isRunning = Proc.WHBProcIsRunning();
+                LfWindowRender.updateRenderers();
+                LeafyDebug.updateLogTime();
+                Leafy.update();
+
+                if (!_isRunning) {
+                    Leafy.paused = true;
+                }
+            };
+
+            // Shutdown the engine //////////
+            // Call the onEngineExit function
+            if (onEngineExit != null) {
+                onEngineExit();
+            }
+
+            LeafyDebug.log("Shutting down Leafy Engine [" + VERSION + "]", INFO);
+
+            LfStateHandler.destroyCurrentState();
+            SubEngines.shutdownSDL();
+            LfSystemPaths.deinitFSSystem();
+            Log_udp.WHBLogUdpDeinit();
+            Proc.WHBProcShutdown();
         }
-
-        LeafyDebug.log("Shutting down Leafy Engine [" + VERSION + "]", INFO);
-
-        LfStateHandler.destroyCurrentState();
-        SubEngines.shutdownSDL();
-        LfSystemPaths.deinitFSSystem();
-        Log_udp.WHBLogUdpDeinit();
-        Proc.WHBProcShutdown();
+        catch (e) {
+            LeafyDebug.crashHandler(e.message);
+        }
     }
 }
