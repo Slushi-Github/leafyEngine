@@ -24,7 +24,7 @@ haxelib git hxu_vorbis https://github.com/Haxe-WiiU/HxU_Vorbis.git
 haxelib git hxu_jansson https://github.com/Haxe-WiiU/HxU_Jansson.git
 ```
 
-Now get or compile the compiler, [HxCompileU](https://github.com/Slushi-Github/hxCompileU) in version 1.5.0 or higher, and add the executable to your project folder.
+Now get or compile the compiler, [HxCompileU](https://github.com/Slushi-Github/hxCompileU) in version 1.5.1 or higher, and add the executable to your project folder.
 
 Now you need the DevKitPro dependencies:
 
@@ -52,7 +52,7 @@ When you have everything, install the following:
 Now you're ready to start coding!
 
 # Using the engine
-You can copy the required ``hxCompileUConfig.json`` file to your project folder, [you can find it here](https://github.com/Slushi-Github/leafyEngine/blob/main/hxCompileUConfig.json), or you can implement it yourself using the following command:
+You can copy the required ``hxCompileUConfig.json`` file to your project folder, [you can find it here](https://github.com/Slushi-Github/leafyEngine/blob/main/hxCompileUConfig.json), or you can import it yourself using the following command:
 
 ```bash
 haxeCompileU --import leafyEngine
@@ -71,9 +71,10 @@ class Main {
     public static function main() {
         /*
             "YOUR_GAME" = The name of your game, this will be the name of the folder where you'll find your assets
-            DRC = Display the game on the Wii U Gamepad
-            TV = Display the game on the TV
-            UNIQUE = Display the game on a unique screen (Gamepad and TV)
+            Engine render modes:
+                DRC = Display the game on the Wii U Gamepad
+                TV = Display the game on the TV
+                UNIQUE = Display the game on a unique screen (Gamepad and TV)
             ``YOUR_STATE()`` = The class of the state (LfState) you want to start the game in
         */
         LfEngine.initEngine("YOUR_GAME", DRC, new YOUR_STATE());

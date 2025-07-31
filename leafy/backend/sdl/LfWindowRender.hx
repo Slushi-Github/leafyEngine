@@ -14,7 +14,6 @@ import leafy.states.LfState;
 import leafy.backend.sdl.LfWindow;
 import leafy.objects.LfObject;
 
-
 /**
  * A class for rendering the objects on the screen
  * Author: Slushi
@@ -25,11 +24,11 @@ class LfWindowRender {
      */
     public static function updateRenderers():Void {
         switch (LfEngine.windowMode) {
-            case LfWindowType.TV:
+            case LfRenderType.TV:
                 SDL_Render.SDL_RenderClear(LfWindow._tvRenderer);
-            case LfWindowType.DRC:
+            case LfRenderType.DRC:
                 SDL_Render.SDL_RenderClear(LfWindow._drcRenderer);
-            case LfWindowType.UNIQUE:
+            case LfRenderType.UNIQUE:
                 SDL_Render.SDL_RenderClear(LfWindow._mainRenderer);
         }
 
@@ -39,11 +38,11 @@ class LfWindowRender {
         }
 
         switch (LfEngine.windowMode) {
-            case LfWindowType.TV:
+            case LfRenderType.TV:
                 SDL_Render.SDL_RenderPresent(LfWindow._tvRenderer);
-            case LfWindowType.DRC:
+            case LfRenderType.DRC:
                 SDL_Render.SDL_RenderPresent(LfWindow._drcRenderer);
-            case LfWindowType.UNIQUE:
+            case LfRenderType.UNIQUE:
                 SDL_Render.SDL_RenderPresent(LfWindow._mainRenderer);
         }
     }

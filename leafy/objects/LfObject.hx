@@ -351,6 +351,11 @@ class LfObject extends LfBase {
         var scaleX = Leafy.screenWidth / this.width;
         var scaleY = Leafy.screenHeight / this.height;
 
+        if (scaleX <= 0 || scaleY <= 0) {
+            LeafyDebug.log("Invalid scale values for resizing to fit screen", ERROR);
+            return;
+        }
+
         this.resize(scaleX, scaleY);
         this.center();
     }

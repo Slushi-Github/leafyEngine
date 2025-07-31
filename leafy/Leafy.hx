@@ -5,6 +5,8 @@
 
 package leafy;
 
+import sdl2.SDL_Render;
+
 import leafy.audio.LfAudioEngine;
 import leafy.backend.sdl.LfWindow;
 import leafy.backend.LfTimer;
@@ -14,6 +16,7 @@ import leafy.gamepad.LfGamepad;
 import leafy.objects.LfSprite;
 import leafy.tweens.LfTween;
 import leafy.states.LfState;
+import leafy.LfBase;
 
 /**
  * Leafy main class
@@ -40,12 +43,12 @@ class Leafy {
     /////////////////////////////
 
     /**
-     * The width of the screen
+     * The width of the default screen
      */
     public static var screenWidth:Int = 0;
 
     /**
-     * The height of the screen
+     * The height of the default screen
      */
     public static var screenHeight:Int = 0;
 
@@ -61,6 +64,10 @@ class Leafy {
 
     //////////////////////////////////
 
+    /**
+     * Switches to a new state
+     * @param newState 
+     */
     public static function switchState(newState:LfState):Void {
         LfStateHandler.changeState(newState);
     }

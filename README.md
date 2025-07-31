@@ -68,9 +68,9 @@ A code probably similar to one from [HaxeFlixel](https://haxeflixel.com) right?
 	- [x] Wii U Gamepad Gyroscope
 	- [x] Wii U Gamepad Touchscreen
 		- [x] Wii U Gamepad Touchscreen touch position and click
-		- [ ] Wii U Gamepad Touchscreen LCD brightness control
-	- [ ] Wii U Gamepad Camera
-	- [ ] Wii U Gamepad Microphone
+		- [ ] Wii U Gamepad Touchscreen LCD brightness control (Not necessary for now)
+	- [ ] Wii U Gamepad Camera (not necessary for now)
+	- [ ] Wii U Gamepad Microphone (Not necessary for now)
 	- [x] Wii U Gamepad home button control
 - Objects
 	- [x] Sprites
@@ -83,13 +83,13 @@ A code probably similar to one from [HaxeFlixel](https://haxeflixel.com) right?
 - [x] Sprites basic physics
 - [x] Tweens and easing functions
 - [x] JSONs file support (Only decoding)
-- [x] Timers (Using [``haxe.Timer``](https://api.haxe.org/haxe/Timer.html))
+- [x] Timers
 - [x] HTTP requests (Via CURL)
 - Engine rendering modes
 	- [x] Only on the Wii U Gamepad (-> ``DRC``)
 	- [x] Only on the TV (-> ``TV``)
 	- [x] Both (-> ``UNIQUE``)
-	- [ ] Separate rendering (Wii U Gamepad and TV independent at the same time)
+	- [ ] Separate rendering (Wii U Gamepad and TV independent at the same time -> ``DUAL``)
 - [x] FileSystem manipulation
 - [ ] Engine cameras
 

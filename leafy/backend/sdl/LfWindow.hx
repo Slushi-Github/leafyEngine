@@ -17,7 +17,7 @@ import sdl2.SDL_Render;
 /**
  * Enum that defines the window types
  */
-enum LfWindowType {
+enum LfRenderType {
     DRC;
     TV;
     UNIQUE;
@@ -49,9 +49,10 @@ class LfWindow {
     public static var _mainRenderer:Ptr<SDL_Renderer> = untyped __cpp__("nullptr");
 
     private static var _currentWindow:Ptr<SDL_Window> = untyped __cpp__("nullptr");
+
     public static var currentRenderer:Ptr<SDL_Renderer> = untyped __cpp__("nullptr");
 
-    public static function initEngineWindows(type:LfWindowType):Void {
+    public static function initEngineWindows(type:LfRenderType):Void {
         if (SDL.SDL_Init(SDL.SDL_INIT_VIDEO) < 0) {
             LeafyDebug.criticalError("SDL_Init failed: " + SDL_Error.SDL_GetError().toString());
             return;
@@ -68,21 +69,21 @@ class LfWindow {
          * But... This is a Wii U project, hehe.
          */
         switch(type) {
-            case LfWindowType.DRC:
+            case LfRenderType.DRC:
                 _drcWindow = SDL_Video.SDL_CreateWindow(ConstCharPtr.fromString("Wii_U_Gamepad_Window"), SDL_Video.SDL_WINDOWPOS_UNDEFINED, SDL_Video.SDL_WINDOWPOS_UNDEFINED, _drcResolution.x, _drcResolution.y, untyped __cpp__("SDL_WINDOW_SHOWN | SDL_WINDOW_WIIU_GAMEPAD_ONLY | SDL_WINDOW_ALLOW_HIGHDPI"));
                 _drcRenderer = SDL_Render.SDL_CreateRenderer(_drcWindow, -1, untyped __cpp__("SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC"));
                 SDL_Render.SDL_SetRenderDrawBlendMode(_drcRenderer, SDL_BLENDMODE_BLEND);
                 SDL_Render.SDL_SetRenderDrawColor(_drcRenderer, 0, 0, 0, 255);
                 _currentWindow = _drcWindow;
                 currentRenderer = _drcRenderer;
-            case LfWindowType.TV:
+            case LfRenderType.TV:
                 _tvWindow = SDL_Video.SDL_CreateWindow(ConstCharPtr.fromString("Wii_U_TV_Window"), SDL_Video.SDL_WINDOWPOS_UNDEFINED, SDL_Video.SDL_WINDOWPOS_UNDEFINED, _tvResolution.x, _tvResolution.y, untyped __cpp__("SDL_WINDOW_SHOWN | SDL_WINDOW_WIIU_TV_ONLY"));
                 _tvRenderer = SDL_Render.SDL_CreateRenderer(_tvWindow, -1, untyped __cpp__("SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC"));
                 SDL_Render.SDL_SetRenderDrawBlendMode(_tvRenderer, SDL_BLENDMODE_BLEND);
                 SDL_Render.SDL_SetRenderDrawColor(_tvRenderer, 0, 0, 0, 255);
                 _currentWindow = _tvWindow;
                 currentRenderer = _tvRenderer;
-            case LfWindowType.UNIQUE:
+            case LfRenderType.UNIQUE:
                 _mainWindow = SDL_Video.SDL_CreateWindow(ConstCharPtr.fromString("Wii_U_Main_Window"), SDL_Video.SDL_WINDOWPOS_UNDEFINED, SDL_Video.SDL_WINDOWPOS_UNDEFINED, _drcResolution.x, _drcResolution.y, untyped __cpp__("SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI"));
                 _mainRenderer = SDL_Render.SDL_CreateRenderer(_mainWindow, -1, untyped __cpp__("SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC"));
                 SDL_Render.SDL_SetRenderDrawBlendMode(_mainRenderer, SDL_BLENDMODE_BLEND);
@@ -94,7 +95,7 @@ class LfWindow {
         Leafy.screenWidth = getScreenWidth();
         Leafy.screenHeight = getScreenHeight();
 
-        LeafyDebug.log("Windows and renderers initialized in " + Std.string(type) + " mode (" + Std.string(getScreenWidth()) + "x" + Std.string(getScreenHeight()) + ")", INFO);
+        LeafyDebug.log("Window and renderer initialized in " + Std.string(type) + " mode (" + Std.string(getScreenWidth()) + "x" + Std.string(getScreenHeight()) + ")", INFO);
     }
 
     /**

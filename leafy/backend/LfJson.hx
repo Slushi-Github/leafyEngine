@@ -206,7 +206,7 @@ class LfJson {
      * @param key The key of the object
      * @return Array<Int>
      */
-     public static function getArrayIntegerFromJson(json:LeafyJson, key:String):Array<Int> {
+    public static function getArrayIntegerFromJson(json:LeafyJson, key:String):Array<Int> {
         if (key == null || key == "") {
             LeafyDebug.log("Key cannot be null or empty", ERROR);
             return [];

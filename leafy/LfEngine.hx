@@ -30,7 +30,7 @@ class LfEngine {
     /**
      * The current version of the engine
      */
-    public static final VERSION:String = "1.5.1";
+    public static final VERSION:String = "1.5.3";
 
     /**
      * Function to be called when the engine exits
@@ -45,7 +45,7 @@ class LfEngine {
     /**
      * The window mode of the engine
      */
-    public static var windowMode:LfWindowType = LfWindowType.DRC;
+    public static var windowMode:LfRenderType = LfRenderType.DRC;
 
     /**
      * The initial state
@@ -64,7 +64,7 @@ class LfEngine {
      * @param renderMode The render mode of the engine
      * @param state The initial state
      */
-    public static function initEngine(gamePath:String, renderMode:LfWindowType = LfWindowType.DRC, state:LfState):Void {
+    public static function initEngine(gamePath:String, renderMode:LfRenderType = LfRenderType.DRC, state:LfState):Void {
         try {
             Proc.WHBProcInit();
             Log_udp.WHBLogUdpInit();
@@ -74,7 +74,7 @@ class LfEngine {
 
             if (renderMode == null) {
                 Sys.println("[Leafy Engine initial state - no logger started -> WARNING] Render mode cannot be null, defaulting to DRC mode");
-                renderMode = LfWindowType.DRC;
+                renderMode = LfRenderType.DRC;
             }
 
             if (gamePath == null || gamePath == "") {

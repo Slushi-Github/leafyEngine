@@ -7,7 +7,7 @@ Tweens are used to move objects with a ease in the game.
 import leafy.tweens.LfTween;
 
 // create and start a tween 
-var tween:LfTween = new LfTween(sprite, LfTweenProperty.X, sprite.x, 200, 3, LfTweenEase.ELASTIC_IN_OUT, function () {
+var tween:LfTween = new LfTween(sprite, LfTweenProperty.X, sprite.x, 200, 3, LfTweenEase.LINEAR, function ():Void {
     // do something when the tween is complete
 });
 

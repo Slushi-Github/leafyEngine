@@ -2,7 +2,7 @@
 	"extraLibs": [
 		"leafyEngine"
 	],
-	"programVersion": "1.5.0",
+	"programVersion": "1.5.1",
 	"projectDefines": [],
 	"haxeConfig": {
 		"errorReportingStyle": "pretty",
@@ -23,5 +23,5 @@
 		"isAPlugin": false,
 		"consoleIP": "0.0.0.0"
 	},
-	"deleteTempFiles": true
+	"deleteTempFiles": false
 }

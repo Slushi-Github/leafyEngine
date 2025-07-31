@@ -5,9 +5,6 @@
 
 package leafy.backend;
 
-import Std;
-import haxe.Timer;
-
 import sdl2.SDL_Timer;
 
 typedef LfTimerObject = {
@@ -54,7 +51,9 @@ class LfTimer {
             var timer = _timers[i];
             timer.time -= _deltaTime;
             if (timer.time <= 0) {
-                timer.callback();
+                if (untyped __cpp__("timer->callback != NULL")) {
+                    timer.callback();
+                }
                 _timers.splice(i, 1); // Remove the timer after it has been executed
             }
         }

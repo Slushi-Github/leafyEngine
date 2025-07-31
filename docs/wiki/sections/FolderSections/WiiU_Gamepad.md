@@ -99,22 +99,6 @@ Leafy.wiiuGamepad.vibrate(1, -1);
 Leafy.wiiuGamepad.stopVibration();
 ```
 
-<!-- --------
-
-For the screen brightness, it would be done in this way:
-```haxe
-// import the Leafy class
-import leafy.Leafy;
-
-// set the brightness of the screen
-Leafy.wiiuGamepad.setScreenBrightness(brightness:LfGamepadScreenBrightness);
-Leafy.wiiuGamepad.setScreenBrightness(BRIGHTNESS_3);
-
-// get the brightness of the screen
-var brightness:LfGamepadScreenBrightness = Leafy.wiiuGamepad.getScreenBrightness();
-```
-The brightness modes can be found on the enum [``leafy.gamepad.LfGamepad.LfGamepadScreenBrightness``](https://github.com/Slushi-Github/leafyEngine/blob/main/leafy/gamepad/LfGamepad.hx) -->
-
 --------
 
 See [``LfGamepad``](https://github.com/Slushi-Github/leafyEngine/blob/main/leafy/gamepad/LfGamepad.hx)

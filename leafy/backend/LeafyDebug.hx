@@ -162,7 +162,9 @@ class LeafyDebug {
             var logFile = logsDir + "leafyLog_" + currentTimeMod + "-" + currentDateMod + ".txt";
     
             if (!LfSystemPaths.exists(logFile)) {
-                LfFile.writeFile(logFile, "Leafy Engine [" + LfEngine.VERSION + "] Log File\n" + " - " + currentDateStr + " | " + currentTimeStr + "\n-------------------\n\n");
+                var hxcuDefinedVersion:String = untyped __cpp__("HXCOMPILEU_VERSION");
+                var hxcuDefinedDate:String = untyped __cpp__("HXCOMPILEU_HAXE_APPROXIMATED_COMPILATION_DATE");
+                LfFile.writeFile(logFile, "Leafy Engine [" + LfEngine.VERSION + "] Log File\n" + " - " + currentDateStr + " | " + currentTimeStr + "\n - Compilated with HxCompileU v" + hxcuDefinedVersion + "\n - Aproximate CPP compilation date: " + hxcuDefinedDate + "\n-------------------\n\n");
             }
     
             currentLogFile = logFile;
@@ -254,7 +256,7 @@ class LeafyDebug {
         + " - CRASH]\n\nCall stack:\n" + getHaxeFilePosForCrash(pos) + "\n\nError: " + crashError
 		+ "\n\n\n\t\t    Please reset the console.");
 
-        LfFile.appendToFile(currentLogFile, "---------------------");
+        LfFile.appendToFile(currentLogFile, "\n---------------------\n");
         log("CRASH: " + crashError, ERROR, pos);
         log("Call stack:\n\t" + getHaxeFilePosForCrash(pos), ERROR, pos);
         log("Executing WUT OSFatal call for crash...", ERROR, pos);
@@ -286,10 +288,11 @@ class LeafyDebug {
 		}
 
         callStackText += "\nError: " + LfStringUtils.stringReplacer(e, "Error: ", "");
-        LfFile.appendToFile(currentLogFile, "-- CRASH ------------");
-        log(callStackText, ERROR);
-        LfFile.appendToFile(currentLogFile, "---------------------");
-        log("Executing WUT OSFatal call for crash...", ERROR);
-        Debug.OSFatal(ConstCharPtr.fromString("[Leafy Engine " + LfEngine.VERSION + " logger - " + getCurrentTime() + " - CRASH]\n\n" + callStackText));
+        LfFile.appendToFile(currentLogFile, "\n-- CRASH ------------\n");
+        LfFile.appendToFile(currentLogFile, callStackText);
+        LfFile.appendToFile(currentLogFile, "\n---------------------\n");
+        LfFile.appendToFile(currentLogFile, "On real hardware, please check \"/storage_slc/sys/logs\" for more CafeOS info about this crash.\n");
+        LfFile.appendToFile(currentLogFile, "Executing WUT OSFatal function for crash the console...");
+        Debug.OSFatal(ConstCharPtr.fromString("[Leafy Engine " + LfEngine.VERSION + " logger - " + getCurrentTime() + " - CRASH]\n\n" + callStackText + "\n\n---------\n\nCheck the Leafy Engine log file for more info.\n"));
     }
 }

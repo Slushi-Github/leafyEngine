@@ -10,6 +10,7 @@ package leafy.network;
 #include <iostream>
 #include <string>
 #include <vector>
+#include \"leafy_backend_LeafyDebug.h\"
 
 size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* output) {
     size_t totalSize = size * nmemb;
@@ -54,7 +55,7 @@ std::string curlRequest(const std::string& url,
 
         res = curl_easy_perform(curl);
         if (res != CURLE_OK) {
-            std::cerr << \"curl_easy_perform() failed: \" << curl_easy_strerror(res) << std::endl;
+            leafy::backend::LeafyDebug::log(\"Failed to make HTTP request: \"s + url + \" - \"s + curl_easy_strerror(res), leafy::backend::LogLevel::ERROR(), haxe::shared_anon<haxe::PosInfos>(\"leafy.network.LfCurlRequest\"s, \"leafy/network/LfCurlRequest.hx\"s, 57, \"httpRequest\"s));
         }
 
         curl_easy_cleanup(curl);
@@ -76,13 +77,32 @@ class LfCurlRequest {
     /**
      * Make an HTTP request
      * @param url The URL to make the request to
-     * @param method The method to use (GET, POST, PUT, DELETE, PATCH)
+     * @param method The method to use (POST, PUT, DELETE, PATCH)
      * @param data The data to send
      * @param headers The headers to send
      * @return String The response
      */
-    public static function httpRequest(url:String, method:String, data:String, headers:Array<String>):String {
-        return untyped __cpp__("curlRequest({0}, {1}, {2}, {3})", url, method, data, headers);
+    public static function httpRequest(url:String, method:HttpMethod, data:String, headers:Array<String>):String {
+        return untyped __cpp__("curlRequest({0}, {1}, {2}, {3})", url, getMethodString(method), data, headers);
     }
+
+    private static function getMethodString(method:HttpMethod):String {
+        switch (method) {
+            case POST: return "POST";
+            case PUT: return "PUT";
+            case DELETE: return "DELETE";
+            case PATCH: return "PATCH";
+        }
+    }
+}
+
+/**
+ * Enum for HTTP methods
+ */
+enum HttpMethod {
+    POST;
+    PUT;
+    DELETE;
+    PATCH;
 }
 

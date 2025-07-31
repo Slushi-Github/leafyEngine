@@ -147,7 +147,7 @@ class LfSprite extends LfObject {
      * @param color Array of 4 components: [R, G, B, A] (0-255)
      */
     public function createGraphic(width:Int, height:Int, color:Array<UInt8>):Void {
-        if (color == null || color.length != 3) {
+        if (color == null || color.length < 3) {
             LeafyDebug.log("Invalid color array. Must be [R, G, B]", ERROR);
             return;
         }
