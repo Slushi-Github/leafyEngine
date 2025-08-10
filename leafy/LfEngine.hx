@@ -30,7 +30,7 @@ class LfEngine {
     /**
      * The current version of the engine
      */
-    public static final VERSION:String = "1.5.3";
+    public static final VERSION:String = "1.5.5";
 
     /**
      * Function to be called when the engine exits
@@ -65,10 +65,19 @@ class LfEngine {
      * @param state The initial state
      */
     public static function initEngine(gamePath:String, renderMode:LfRenderType = LfRenderType.DRC, state:LfState):Void {
+        #if !disableHxCrashHandler
         try {
+        #end
             Proc.WHBProcInit();
             Log_udp.WHBLogUdpInit();
-            Crash.WHBInitCrashHandler(); // This really works?
+            // Crash.WHBInitCrashHandler(); // This really works?
+
+            #if useWUTCrashHandler // Not recommended for now, it really doesn't work hehe
+            /**
+             * Initialize the custom Wii U crash handler
+             */
+            LeafyDebug.initWUTCrashHandler();
+            #end
 
             Sys.println("[Leafy Engine initial state - no logger started] Starting Leafy Engine [" + VERSION + "]");
 
@@ -94,6 +103,14 @@ class LfEngine {
 
             // Initialize the Wii U Gamepad
             LfGamepadInternal.initDRC();
+
+            #if disableHxCrashHandler
+            LeafyDebug.log("Haxe crash handler is disabled in this build, crashes will not be logged!", WARNING);
+            #end
+
+            #if useWUTCrashHandler
+            LeafyDebug.log("CafeOS crash handler is enabled in this build, crashes will be managed by the CafeOS exception handler!", WARNING);
+            #end
 
             #if debug
             LeafyDebug.log("Haxe debug mode is enabled in this build, lag may occur when printing many more logs!", WARNING);
@@ -131,7 +148,7 @@ class LfEngine {
 
             // Shutdown the engine //////////
             // Call the onEngineExit function
-            if (onEngineExit != null) {
+            if (untyped __cpp__("onEngineExit != NULL")) {
                 onEngineExit();
             }
 
@@ -142,9 +159,11 @@ class LfEngine {
             LfSystemPaths.deinitFSSystem();
             Log_udp.WHBLogUdpDeinit();
             Proc.WHBProcShutdown();
+        #if !disableHxCrashHandler
         }
         catch (e) {
-            LeafyDebug.crashHandler(e.message);
+            LeafyDebug.hxCrashHandler(e.message);
         }
+        #end
     }
 }

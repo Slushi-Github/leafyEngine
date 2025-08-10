@@ -2,7 +2,7 @@
 	"extraLibs": [
 		"leafyEngine"
 	],
-	"programVersion": "1.5.1",
+	"programVersion": ">1.5.3",
 	"projectDefines": [],
 	"haxeConfig": {
 		"errorReportingStyle": "pretty",

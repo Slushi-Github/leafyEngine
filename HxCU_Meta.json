@@ -1,5 +1,5 @@
 {
-    "libVersion": "1.5.0",
+    "libVersion": "1.5.5",
     "haxeLibs": [
         "hxu_sdl2",
         "hxu_jansson",
@@ -11,5 +11,7 @@
         "mbedx509",
         "mbedcrypto"
     ],
-    "mainDefines": []
+    "mainDefines": [],
+    "cDefines": [],
+    "cppDefines": []
 }

@@ -10,11 +10,6 @@ import jansson.Jansson;
 import leafy.filesystem.LfSystemPaths;
 import leafy.utils.LfStringUtils;
 
-typedef LeafyJson = {
-    var jsonPtr:Ptr<Json_t>;
-    var error:Json_error_t;
-}
-
 /**
  * JSON parser, loader, and utility functions
  * 
@@ -22,107 +17,86 @@ typedef LeafyJson = {
  */
 class LfJson {
     /**
-     * Parse a JSON string
-     * @param jsonStr 
-     * @return LeafyJson
+     * Pointer to the JSON object
      */
-    public static function parseJsonString(jsonStr:String):LeafyJson {
-        if (jsonStr == "" || jsonStr == null || LfStringUtils.stringEndsWith(jsonStr, ".json")) {
-            LeafyDebug.log("JSON string cannot be null or empty, if it ends with .json extension, use parseJsonFile instead", ERROR);
-            return null;
-        }
-
-        var rawJSONError:Json_error_t = new Json_error_t();
-        var rawJSON:Ptr<Json_t> = Jansson.json_loads(ConstCharPtr.fromString(jsonStr), 0, Syntax.toPointer(rawJSONError));
-        if (rawJSON == null) {
-            LeafyDebug.log("Error parsing JSON string: " + rawJSONError.text + " (line " + rawJSONError.line + ")", ERROR);
-            return null;
-        }
-
-        var jsonData:LeafyJson = {
-            jsonPtr: rawJSON,
-            error: rawJSONError
-        };
-
-        LeafyDebug.log("JSON string loaded successfully", INFO);
-        return jsonData;
-    }
+    private var jsonPtr:Ptr<Json_t>;
 
     /**
-     * Parse a JSON file
-     * @param jsonPath 
-     * @return LeafyJson
+     * JSON error object
      */
-    public static function parseJsonFile(jsonPath:String, absolutePath:Bool = false):LeafyJson {
-        var correctPath:String = "";
-        if (absolutePath) {
-            correctPath = jsonPath;
-        } else {
-            correctPath = LfSystemPaths.getEngineMainPath() + jsonPath;
+    private var jsonError:Json_error_t;
+
+    /**
+     * Constructor for LfJson
+     * @param json The JSON string or file path
+     * @param directJSONObj Optional direct JSON object pointer
+     */
+    public function new(json:String, ?directJSONObj:Ptr<Json_t> = null) {
+        if (directJSONObj != null) {
+            this.jsonPtr = directJSONObj;
+            this.jsonError = new Json_error_t();
+            return;
         }
 
-        if (jsonPath == null || jsonPath == "") {
-            LeafyDebug.log("JSON file path cannot be null or empty", ERROR);
-            return null;
+        this.jsonPtr = null;
+        this.jsonError = new Json_error_t();
+
+        if (json == "" || json == null) {
+            LeafyDebug.log("JSON cannot be null or empty", ERROR);
+            return;
         }
 
-        if (!LfSystemPaths.exists(correctPath) || !LfStringUtils.stringEndsWith(correctPath, ".json")) {
-            LeafyDebug.log("JSON file does not exist or is not a valid JSON file: [" + correctPath + "]", ERROR);
-            return null;
+        if (!LfStringUtils.stringEndsWith(json, ".json")) {
+            this.jsonPtr = Jansson.json_loads(ConstCharPtr.fromString(json), 0, Syntax.toPointer(this.jsonError));
+            if (this.jsonPtr == null) {
+                LeafyDebug.log("Error parsing JSON string: " + this.jsonError.text + " (line " + this.jsonError.line + ")", ERROR);
+                return;
+            }
         }
-        
-        var rawJSONError:Json_error_t = new Json_error_t();
-        var rawJSON:Ptr<Json_t> = Jansson.json_load_file(ConstCharPtr.fromString(correctPath), 0, Syntax.toPointer(rawJSONError));
-        if (rawJSON == null) {
-            LeafyDebug.log("Error parsing JSON file: " + rawJSONError.text + " (line " + rawJSONError.line + ")", ERROR);
-            return null;
+        else if (LfStringUtils.stringEndsWith(json, ".json")) {
+            if (!LfSystemPaths.exists(json)) {
+                LeafyDebug.log("JSON file does not exist: " + json, ERROR);
+                return;
+            }
+
+            this.jsonPtr = Jansson.json_load_file(ConstCharPtr.fromString(json), 0, Syntax.toPointer(this.jsonError));
+            if (this.jsonPtr == null) {
+                LeafyDebug.log("Error parsing JSON file: " + this.jsonError.text + " (line " + this.jsonError.line + ")", ERROR);
+                return;
+            }
         }
-
-        var jsonData:LeafyJson = {
-            jsonPtr: rawJSON,
-            error: rawJSONError
-        };
-
-        LeafyDebug.log("JSON file loaded successfully: " + jsonPath, INFO);
-        return jsonData;
     }
 
     /**
      * Free a JSON from the memory
-     * @param json The parent JSON
      */
-    public static function freeJson(json:LeafyJson):Void {
-        if (json == null) {
-            LeafyDebug.log("JSON object cannot be null", ERROR);
-            return;
-        }
-        if (json.jsonPtr == null) {
+    public function freeJson():Void {
+        if (this.jsonPtr == null) {
             LeafyDebug.log("JSON parent is null", ERROR);
             return;
         }
 
-        Jansson.json_decref(json.jsonPtr);
+        Jansson.json_decref(this.jsonPtr);
     }
 
     /////////////////////////////
 
     /**
      * Get a string from a JSON
-     * @param json The parent JSON
      * @param key The key of the object
      * @return String
      */
-    public static function getStringFromJson(json:LeafyJson, key:String):String {
+    public function getString(key:String):String {
         if (key == null || key == "") {
             LeafyDebug.log("Key cannot be null or empty", ERROR);
             return "";
         }
-        if (json.jsonPtr == null) {
+        else if (this.jsonPtr == null) {
             LeafyDebug.log("JSON parent is null", ERROR);
             return "";
         }
 
-        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(json.jsonPtr, ConstCharPtr.fromString(key));
+        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(this.jsonPtr, ConstCharPtr.fromString(key));
         if (jsonValue == null) {
             LeafyDebug.log("Key not found in JSON: " + key, WARNING);
             return "";
@@ -138,21 +112,20 @@ class LfJson {
 
     /**
      * Get a number from a JSON
-     * @param json The parent JSON
      * @param key The key of the object
-     * @return Float
+     * @return Float (If you need or expect a integer, use Std.int())
      */
-    public static function getNumberFromJson(json:LeafyJson, key:String):Float {
+    public function getNumber(key:String):Float {
         if (key == null || key == "") {
             LeafyDebug.log("Key cannot be null or empty", ERROR);
             return 0.0;
         }
-        if (json.jsonPtr == null) {
+        else if (this.jsonPtr == null) {
             LeafyDebug.log("JSON parent is null", ERROR);
             return 0.0;
         }
-    
-        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(json.jsonPtr, ConstCharPtr.fromString(key));
+
+        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(this.jsonPtr, ConstCharPtr.fromString(key));
         if (jsonValue == null) {
             LeafyDebug.log("Key not found in JSON: " + key, WARNING);
             return 0.0;
@@ -171,21 +144,20 @@ class LfJson {
 
     /**
      * Get a boolean from a JSON
-     * @param json The parent JSON
      * @param key The key of the object
      * @return Bool
      */
-    public static function getBooleanFromJson(json:LeafyJson, key:String):Bool {
+    public function getBoolean(key:String):Bool {
         if (key == null || key == "") {
             LeafyDebug.log("Key cannot be null or empty", ERROR);
             return false;
         }
-        if (json.jsonPtr == null) {
+        else if (this.jsonPtr == null) {
             LeafyDebug.log("JSON parent is null", ERROR);
             return false;
         }
         /////////
-        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(json.jsonPtr, ConstCharPtr.fromString(key));
+        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(this.jsonPtr, ConstCharPtr.fromString(key));
         if (jsonValue == null) {
             LeafyDebug.log("Key not found in JSON: " + key, WARNING);
             return false;
@@ -202,21 +174,20 @@ class LfJson {
 
     /**
      * Get an array of integers from a JSON
-     * @param json The parent JSON
      * @param key The key of the object
      * @return Array<Int>
      */
-    public static function getArrayIntegerFromJson(json:LeafyJson, key:String):Array<Int> {
+    public function getArrayInt(key:String):Array<Int> {
         if (key == null || key == "") {
             LeafyDebug.log("Key cannot be null or empty", ERROR);
             return [];
         }
-        if (json.jsonPtr == null) {
+        else if (this.jsonPtr == null) {
             LeafyDebug.log("JSON parent is null", ERROR);
             return [];
         }
         /////////
-        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(json.jsonPtr, ConstCharPtr.fromString(key));
+        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(this.jsonPtr, ConstCharPtr.fromString(key));
         if (jsonValue == null) {
             LeafyDebug.log("Key not found in JSON: " + key, WARNING);
             return [];
@@ -227,8 +198,8 @@ class LfJson {
             return [];
         }
 
-        var arrayLength:Int = Jansson.json_array_size(jsonValue);
         var result:Array<Int> = [];
+        var arrayLength:Int = Jansson.json_array_size(jsonValue);
         for (i in 0...arrayLength) {
             var item:Ptr<Json_t> = Jansson.json_array_get(jsonValue, i);
             if (Jansson.json_is_integer(item) == 1) {
@@ -240,21 +211,20 @@ class LfJson {
 
     /**
      * Get an array of floats from a JSON
-     * @param json The parent JSON
      * @param key The key of the object
      * @return Array<Float>
      */
-    public static function getArrayFloatFromJson(json:LeafyJson, key:String):Array<Float> {
+    public function getArrayFloat(key:String):Array<Float> {
         if (key == null || key == "") {
             LeafyDebug.log("Key cannot be null or empty", ERROR);
             return [];
         }
-        if (json.jsonPtr == null) {
+        else if (this.jsonPtr == null) {
             LeafyDebug.log("JSON parent is null", ERROR);
             return [];
         }
         /////////
-        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(json.jsonPtr, ConstCharPtr.fromString(key));
+        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(this.jsonPtr, ConstCharPtr.fromString(key));
         if (jsonValue == null) {
             LeafyDebug.log("Key not found in JSON: " + key, WARNING);
             return [];
@@ -278,21 +248,20 @@ class LfJson {
 
     /**
      * Get an array of strings from a JSON
-     * @param json The parent JSON
      * @param key The key of the object
      * @return Array<String>
      */
-    public static function getArrayStringFromJson(json:LeafyJson, key:String):Array<String> {
+    public function getArrayString(key:String):Array<String> {
         if (key == null || key == "") {
             LeafyDebug.log("Key cannot be null or empty", ERROR);
             return [];
         }
-        if (json.jsonPtr == null) {
+        else if (this.jsonPtr == null) {
             LeafyDebug.log("JSON parent is null", ERROR);
             return [];
         }
         /////////
-        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(json.jsonPtr, ConstCharPtr.fromString(key));
+        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(this.jsonPtr, ConstCharPtr.fromString(key));
         if (jsonValue == null) {
             LeafyDebug.log("Key not found in JSON: " + key, WARNING);
             return [];
@@ -316,36 +285,32 @@ class LfJson {
 
     /**
      * Get an array of JSON objects from a JSON
-     * @param json The parent JSON
      * @param key The key of the object
-     * @return Array<LeafyJson> The json with the requested object
+     * @return Array<LfJson>
      */
-    public static function getArrayJsonFromJson(json:LeafyJson, key:String):Array<LeafyJson> {
+    public function getArrayJson(key:String):Array<LfJson> {
         if (key == null || key == "") {
             LeafyDebug.log("Key cannot be null or empty", ERROR);
             return [];
         }
-        if (json.jsonPtr == null) {
+        else if (this.jsonPtr == null) {
             LeafyDebug.log("JSON parent is null", ERROR);
             return [];
         }
 
-        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(json.jsonPtr, ConstCharPtr.fromString(key));
+        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(this.jsonPtr, ConstCharPtr.fromString(key));
         if (jsonValue == null || Jansson.json_is_array(jsonValue) == 0) {
             LeafyDebug.log("Key not found or not an array: " + key, WARNING);
             return [];
         }
 
-        var array:Array<LeafyJson> = [];
+        var array:Array<LfJson> = [];
         var arraySize:Int = Jansson.json_array_size(jsonValue);
 
         for (i in 0...arraySize) {
             var element:Ptr<Json_t> = Jansson.json_array_get(jsonValue, i);
             if (element != null) {
-                array.push({
-                    jsonPtr: element,
-                    error: new Json_error_t()
-                });
+                array.push(new LfJson("", element));
             } else {
                 LeafyDebug.log("Element at index " + i + " is null", WARNING);
             }
@@ -356,32 +321,27 @@ class LfJson {
 
     /**
      * Get a JSON object from a JSON
-     * @param json The parent JSONThe parent JSON
      * @param key The key of the object
-     * @return LeafyJson The json with the requested object
+     * @return LfJson
      */
-    public static function getObjectFromJson(json:LeafyJson, key:String):LeafyJson {
+    public function getObject(key:String):LfJson {
         if (key == null || key == "") {
             LeafyDebug.log("Key cannot be null or empty", ERROR);
             return null;
         }
-        if (json.jsonPtr == null) {
+        else if (this.jsonPtr == null) {
             LeafyDebug.log("JSON parent is null", ERROR);
             return null;
         }
 
-        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(json.jsonPtr, ConstCharPtr.fromString(key));
+        var jsonValue:Ptr<Json_t> = Jansson.json_object_get(this.jsonPtr, ConstCharPtr.fromString(key));
         if (jsonValue == null || Jansson.json_is_object(jsonValue) == 0) {
             LeafyDebug.log("Key is not an object or not found: " + key, WARNING);
             return null;
         }
 
-        var jsonResult:Ptr<Json_t> = jsonValue;
-        var leafyJsonResult:LeafyJson = {
-            jsonPtr: jsonValue,
-            error: new Json_error_t() 
-        };
+        var jsonResult:LfJson = new LfJson("", jsonValue);
 
-        return leafyJsonResult;
+        return jsonResult;
     }
 }

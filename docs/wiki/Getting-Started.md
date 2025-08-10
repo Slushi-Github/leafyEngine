@@ -24,7 +24,7 @@ haxelib git hxu_vorbis https://github.com/Haxe-WiiU/HxU_Vorbis.git
 haxelib git hxu_jansson https://github.com/Haxe-WiiU/HxU_Jansson.git
 ```
 
-Now get or compile the compiler, [HxCompileU](https://github.com/Slushi-Github/hxCompileU) in version 1.5.1 or higher, and add the executable to your project folder.
+Now get or compile the compiler, [HxCompileU](https://github.com/Slushi-Github/hxCompileU?tab=readme-ov-file#usage) in version 1.5.3 or higher, and add the executable to your project folder.
 
 Now you need the DevKitPro dependencies:
 
