@@ -63,7 +63,7 @@ Make a new folder called ``src`` (or whatever you want, if you change it, don't 
 Create a new file called ``Main.hx`` in the source code folder, it should look like this:
 
 ```haxe
-package src;
+package;
 
 import leafy.LfEngine;
 

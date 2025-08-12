@@ -13,7 +13,7 @@ Leafy Engine is an engine inspired by [HaxeFlixel](https://haxeflixel.com/) for 
 A normal Leafy Engine code looks like this:
 
 ```haxe
-package src;
+package;
 
 import Std;
 import leafy.objects.LfSprite;
