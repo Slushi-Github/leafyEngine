@@ -86,7 +86,7 @@ class LfJson {
      * @param key The key of the object
      * @return String
      */
-    public function getString(key:String):String {
+    public function getString(key:String, ?freeAfterUse:Bool = false):String {
         if (key == null || key == "") {
             LeafyDebug.log("Key cannot be null or empty", ERROR);
             return "";
@@ -107,7 +107,12 @@ class LfJson {
             return "";
         }
 
-        return Jansson.json_string_value(jsonValue).toString();
+        var result = Jansson.json_string_value(jsonValue).toString();
+        if (freeAfterUse) {
+            Jansson.json_decref(jsonValue);
+        }
+
+        return result;
     }
 
     /**
@@ -115,7 +120,7 @@ class LfJson {
      * @param key The key of the object
      * @return Float (If you need or expect a integer, use Std.int())
      */
-    public function getNumber(key:String):Float {
+    public function getNumber(key:String, ?freeAfterUse:Bool = false):Float {
         if (key == null || key == "") {
             LeafyDebug.log("Key cannot be null or empty", ERROR);
             return 0.0;
@@ -135,10 +140,16 @@ class LfJson {
             LeafyDebug.log("Key is not a number: " + key, WARNING);
             return 0.0;
         }
-    
-        return Jansson.json_is_real(jsonValue) == 1
+
+        var result:Float = Jansson.json_is_real(jsonValue) == 1
             ? Jansson.json_real_value(jsonValue)
             : Jansson.json_integer_value(jsonValue) * 1.0;
+
+        if (freeAfterUse) {
+            Jansson.json_decref(jsonValue);
+        }
+        
+        return result;
     }
     
 
@@ -147,7 +158,7 @@ class LfJson {
      * @param key The key of the object
      * @return Bool
      */
-    public function getBoolean(key:String):Bool {
+    public function getBoolean(key:String, ?freeAfterUse:Bool = false):Bool {
         if (key == null || key == "") {
             LeafyDebug.log("Key cannot be null or empty", ERROR);
             return false;
@@ -168,7 +179,12 @@ class LfJson {
             return false;
         }
 
-        return Jansson.json_boolean_value(jsonValue) != 0;
+        var result:Bool = Jansson.json_boolean_value(jsonValue) != 0;
+        if (freeAfterUse) {
+            Jansson.json_decref(jsonValue);
+        }
+
+        return result;
     }
     
 
@@ -177,7 +193,7 @@ class LfJson {
      * @param key The key of the object
      * @return Array<Int>
      */
-    public function getArrayInt(key:String):Array<Int> {
+    public function getArrayInt(key:String, ?freeAfterUse:Bool = false):Array<Int> {
         if (key == null || key == "") {
             LeafyDebug.log("Key cannot be null or empty", ERROR);
             return [];
@@ -206,6 +222,11 @@ class LfJson {
                 result.push(Jansson.json_integer_value(item));
             }
         }
+
+        if (freeAfterUse) {
+            Jansson.json_decref(jsonValue);
+        }
+
         return result;
     }
 
@@ -214,7 +235,7 @@ class LfJson {
      * @param key The key of the object
      * @return Array<Float>
      */
-    public function getArrayFloat(key:String):Array<Float> {
+    public function getArrayFloat(key:String, ?freeAfterUse:Bool = false):Array<Float> {
         if (key == null || key == "") {
             LeafyDebug.log("Key cannot be null or empty", ERROR);
             return [];
@@ -243,6 +264,11 @@ class LfJson {
                 result.push(Jansson.json_real_value(item));
             }
         }
+
+        if (freeAfterUse) {
+            Jansson.json_decref(jsonValue);
+        }
+
         return result;
     }
 
@@ -251,7 +277,7 @@ class LfJson {
      * @param key The key of the object
      * @return Array<String>
      */
-    public function getArrayString(key:String):Array<String> {
+    public function getArrayString(key:String, ?freeAfterUse:Bool = false):Array<String> {
         if (key == null || key == "") {
             LeafyDebug.log("Key cannot be null or empty", ERROR);
             return [];
@@ -280,6 +306,11 @@ class LfJson {
                 result.push(Jansson.json_string_value(item).toString());
             }
         }
+
+        if (freeAfterUse) {
+            Jansson.json_decref(jsonValue);
+        }
+
         return result;
     }
 
@@ -288,7 +319,7 @@ class LfJson {
      * @param key The key of the object
      * @return Array<LfJson>
      */
-    public function getArrayJson(key:String):Array<LfJson> {
+    public function getArrayJson(key:String, ?freeAfterUse:Bool = false):Array<LfJson> {
         if (key == null || key == "") {
             LeafyDebug.log("Key cannot be null or empty", ERROR);
             return [];
@@ -316,6 +347,10 @@ class LfJson {
             }
         }
 
+        if (freeAfterUse) {
+            Jansson.json_decref(jsonValue);
+        }
+
         return array;
     }
 
@@ -324,7 +359,7 @@ class LfJson {
      * @param key The key of the object
      * @return LfJson
      */
-    public function getObject(key:String):LfJson {
+    public function getObject(key:String, ?freeAfterUse:Bool = false):LfJson {
         if (key == null || key == "") {
             LeafyDebug.log("Key cannot be null or empty", ERROR);
             return null;
@@ -341,6 +376,10 @@ class LfJson {
         }
 
         var jsonResult:LfJson = new LfJson("", jsonValue);
+
+        if (freeAfterUse) {
+            Jansson.json_decref(jsonValue);
+        }
 
         return jsonResult;
     }

@@ -32,4 +32,25 @@ LeafyDebug.criticalError("something went wrong");
 ## The crash handler
 
 The crash handler is used when the engine crashes. The crash handler is used to log the Haxe call stack and error message in the log file and display it on the screen, This should not be used directly, automatically when a critical error occurs, the crash handler appears.
-#### Note: The crash handler in Leafy Engine is considered to be truly experimental, so I cannot guarantee that it will work properly in every case of an error that may occur at runtime.
+
+Now you can set up a custom crash handler if you want, instead of using the default one from Leafy Engine.
+
+```haxe
+import leafy.LeafyEngine;
+
+// set a custom crash handler
+LeafyEngine.setCustomCrashHandler(myCrashHandler);
+
+// your custom crash handler
+function myCrashHandler(message:String):Void {
+    // your code here
+}
+```
+
+**Note: The crash handler in Leafy Engine is considered to be truly experimental, so I cannot guarantee that it will work properly in every case of an error that may occur at runtime.**
+
+--------
+
+See [``LeafyDebug``](https://github.com/Slushi-Github/leafyEngine/blob/main/leafy/backend/LeafyDebug.hx)
+
+See [``LfEngine``](https://github.com/Slushi-Github/leafyEngine/blob/main/leafy/LfEngine.hx)

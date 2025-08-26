@@ -59,14 +59,10 @@ class LfAudio {
      */
     public var loop:Bool = false;
 
-    // /**
-    //  * The fade tween
-    //  */
-    // private var fadeTween:LfTween;
-
     /**
      * Creates a new OGG and loads it
      * @param path The path to the OGG
+     * @param loop Whether the OGG should loop
      */
     public function new(path:String, loop:Bool = false) {
         var correctPath:String = LfSystemPaths.getConsolePath() + path;

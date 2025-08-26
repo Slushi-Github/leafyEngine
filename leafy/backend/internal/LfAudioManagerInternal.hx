@@ -145,6 +145,8 @@ class LfAudioManagerInternal {
                     continue;
                 } else {
                     playing = false;
+                    paused = true;
+                    currentTime = 0.0;
                     if (bytesRead < totalBytesToRead) {
                         SDL_Stdinc.SDL_memset(
                             untyped __cpp__("((char*){0}) + {1}", stream, bytesRead),
@@ -334,7 +336,7 @@ class LfAudioManagerInternal {
         }
 
         var tempAudio:LfAudio = new LfAudio(path, loop);
-        if (untyped __cpp__("{0} == nullptr", tempAudio)) {
+        if (untyped __cpp__("{0} == NULL", tempAudio)) {
             LeafyDebug.log("Failed to create LfAudio object.", ERROR);
             return;
         }

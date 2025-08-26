@@ -4,7 +4,7 @@ Leafy Engine uses a audio engine that uses the [Vorbis](https://github.com/Haxe-
 
 Unfortunately, there is a major limitation in this audio engine, I can't get more than one audio to play at a time without slowing down the sound reproduction or even getting a console crash, so I will only use one audio at a time.
 
-#### **As a recommendation**, SDL_Audio by default is started to expect audio that is on frequency *``44100``* and has __2__ audio channels. While the audio engine is able to detect if the audio being loaded has any difference in those 2 values, what it will do is reopen the entire audio device, causing there to be a significant lag when that happens. For that reason I recommend to verify if your audio (sound, music) is in the frequency *``44100``* and that it has __2__ audio channels, otherwise you can convert it using some web page or a tool that allows you to do that.
+**As a recommendation**, SDL_Audio by default is started to expect audio that is on frequency *``44100``* and has __2__ audio channels. While the audio engine is able to detect if the audio being loaded has any difference in those 2 values, what it will do is reopen the entire audio device, causing there to be a significant lag when that happens. For that reason I recommend to verify if your audio (sound, music) is in the frequency *``44100``* and that it has __2__ audio channels, otherwise you can convert it using some web page or a tool that allows you to do that.
 
 --------
 

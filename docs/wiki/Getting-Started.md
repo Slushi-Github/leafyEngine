@@ -70,12 +70,26 @@ import leafy.LfEngine;
 class Main {
     public static function main() {
         /*
+            use this function when the engine is fully initialized, before loading the first state
+        */
+        LfEngine.onEngineInitFinished = function() {
+            // Add your code here
+        }
+
+        /*
+            Use this function when the engine is about to finish and exit.
+        */
+        LfEngine.onEngineExit = function() {
+            // Add your code here
+        }
+
+        /*
             "YOUR_GAME" = The name of your game, this will be the name of the folder where you'll find your assets
             Engine render modes:
                 DRC = Display the game on the Wii U Gamepad
                 TV = Display the game on the TV
                 UNIQUE = Display the game on a unique screen (Gamepad and TV)
-            ``YOUR_STATE()`` = The class of the state (LfState) you want to start the game in
+            ``new YOUR_STATE()`` = The class of the state (LfState) you want to start the game in
         */
         LfEngine.initEngine("YOUR_GAME", DRC, new YOUR_STATE());
     }

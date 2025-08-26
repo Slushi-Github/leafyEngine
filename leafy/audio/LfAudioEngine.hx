@@ -24,16 +24,6 @@ class LfAudioEngine {
      */
     public var paused:Bool = true;
 
-    // /**
-    //  * The current audio time
-    //  */
-    // public var currentTime:Float = 0;
-
-    // /**
-    //  * The current audio duration
-    //  */
-    // public var duration:Float = 0;
-
     /**
      * Plays an audio file
      * @param path The path to the audio file

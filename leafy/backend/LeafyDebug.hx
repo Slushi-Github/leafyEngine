@@ -5,15 +5,16 @@
 
 package leafy.backend;
 
-import wut.coreinit.Memory;
-import haxe.PosInfos; 
 import Std;
-import cxx.std.Exception;
+
+import wut.coreinit.Debug;
+import wut.coreinit.Memory;
+
+import haxe.PosInfos; 
 import haxe.Exception;
 import haxe.CallStack;
 
-
-import wut.coreinit.Debug;
+import cxx.std.Exception;
 
 import leafy.filesystem.LfFile;
 import leafy.filesystem.LfSystemPaths;
@@ -216,6 +217,14 @@ class LeafyDebug {
     @:include("haxe_PosInfos.h")
     public static function criticalError(msg:String, ?pos:PosInfos):Void {
         crashConsole(msg, pos);
+    }
+
+    public static function printToLogFileOnly(msg:String):Void {
+        if (!started) {
+            return;
+        }
+
+        LfFile.appendToFile(currentLogFilePath, msg);
     }
 
     ///////////////////////////////////////////

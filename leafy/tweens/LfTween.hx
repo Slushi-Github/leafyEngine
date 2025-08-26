@@ -5,6 +5,7 @@
 
 package leafy.tweens;
 
+import haxe.Exception;
 import Std;
 import leafy.objects.LfObject;
 
@@ -167,43 +168,47 @@ class LfTween {
      */
     public function update(dt:Float):Void {
         if (isComplete) return;
+        try {
+            if (elapsed < duration) {
+                elapsed += dt;
+                var progress = Math.min(elapsed / duration, 1);
+                var easedProgress = getEasedValue(progress);
 
-        if (elapsed < duration) {
-            elapsed += dt;
-            var progress = Math.min(elapsed / duration, 1);
-            var easedProgress = getEasedValue(progress);
+                var value = startValue + (endValue - startValue) * easedProgress;
 
-            var value = startValue + (endValue - startValue) * easedProgress;
+                // if (untyped __cpp__("onUpdate != nullptr")) {
+                //     onUpdate();
+                // }
 
-            // if (untyped __cpp__("onUpdate != nullptr")) {
-            //     onUpdate();
-            // }
+                if (_isNumber) {
+                    value = Std.int(value);
+                }
+                else {
+                    switch (valueType) {
+                        case LfTweenProperty.X: target.x = Std.int(value);
+                        case LfTweenProperty.Y: target.y = Std.int(value);
+                        // case LfTweenProperty.SCALE:
+                        //     target.scale.x = value;
+                        //     target.scale.y = value;
+                        case LfTweenProperty.WIDTH: target.width = Std.int(value);
+                        case LfTweenProperty.HEIGHT: target.height = Std.int(value);
+                        case LfTweenProperty.ALPHA: target.alpha = value;
+                        case LfTweenProperty.ANGLE: target.angle = Std.int(value);
+                    }
+                }
+            } else {
+                isComplete = true;
+                if (untyped __cpp__("onComplete != NULL")) {
+                    onComplete();
+                }
 
-            if (_isNumber) {
-                value = Std.int(value);
-            }
-            else {
-                switch (valueType) {
-                    case LfTweenProperty.X: target.x = Std.int(value);
-                    case LfTweenProperty.Y: target.y = Std.int(value);
-                    // case LfTweenProperty.SCALE:
-                    //     target.scale.x = value;
-                    //     target.scale.y = value;
-                    case LfTweenProperty.WIDTH: target.width = Std.int(value);
-                    case LfTweenProperty.HEIGHT: target.height = Std.int(value);
-                    case LfTweenProperty.ALPHA: target.alpha = value;
-                    case LfTweenProperty.ANGLE: target.angle = Std.int(value);
+                if (_autoDestroy) {
+                    removeTween(this);
                 }
             }
-        } else {
+        } catch (e:Exception) {
+            LeafyDebug.log("Error in LfTween update (Tween -> " + Std.string(this) + "): " + e.toString(), ERROR);
             isComplete = true;
-            if (untyped __cpp__("onComplete != NULL")) {
-                onComplete();
-            }
-
-            if (_autoDestroy) {
-                removeTween(this);
-            }
         }
     }
 
@@ -251,8 +256,15 @@ class LfTween {
      * @param elapsed The elapsed time
      */
     public static function updateTweens(elapsed:Float):Void {
-        for (i in 0..._tweens.length) {
-            _tweens[i].update(elapsed);
+        for (tween in _tweens) {
+            if (tween != null) {
+                if (tween.isComplete)
+                    continue;
+                tween.update(elapsed);
+            }
+            else {
+                LeafyDebug.log("Null tween found! ->" + Std.string(tween), WARNING);
+            }
         }
     }
 
@@ -278,6 +290,9 @@ for (size_t i = 0; i < _tweens->size(); i++) {
         return;
     }
 }");
+
+        // This causes errors in C++ compilation
+        // _tweens.remove(tween);
     }
 
     /**

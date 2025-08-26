@@ -2,33 +2,36 @@
 
 The ``LfJson`` class is used to parse a JSON file or string.
 
+--------
+
 JSON file content Example:
 
 ```json
 {
-    "name": "John Doe",
-    "age": 30,
-    "hobbies": ["reading", "coding", "playing video games"],
+    "name": "Slushi",
+    "age": 20,
+    "hobbies": ["drawing", "comics", "anime"],
 }
 ```
 
-To parse a JSON file:
+### To parse a JSON file:
 
 ```haxe
+// import Std for ``Std.int``
 import Std;
 // import the LfJSON class
 import leafy.backend.LfJson;
 
-// parse the JSON file
-var json:LeafyJson = LfJson.parseJsonFile("GAME_PATH/file.json");
-
 // access the JSON data
-var name:String = LfJson.getStringFromJson(json, "name");
-var age:Int = Std.int(LfJson.getNumberFromJson(json, "age"));
-var hobbies:Array<String> = LfJson.getArrayStringFromJson(json, "hobbies");
+var name:String = new LfJSon("GAME_PATH/file.json").getString("name");
+var age:Int = Std.int(new LfJSon("GAME_PATH/file.json").getNumber("age")); // LfJSon.getNumber returns a float
+var hobbies:Array<String> = new LfJSon("GAME_PATH/file.json").getArrayString("hobbies");
 
 // Free the JSON object after using it
 LfJson.freeJson(json);
+
+// Or free all JSON object after getting the data
+var name:String = new LfJSon("GAME_PATH/file.json").getString("name", true);
 ```
 
 --------
