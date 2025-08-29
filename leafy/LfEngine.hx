@@ -43,7 +43,7 @@ class LfEngine {
     /**
      * The current version of the engine
      */
-    public static final VERSION:String = "1.5.6";
+    public static final VERSION:String = "1.5.8";
 
     /**
      * Function to be called when the engine exits
@@ -78,14 +78,13 @@ class LfEngine {
     /**
      * Initialize the engine, and start the state
      * 
+     *  Example:
+     * 
+     *      LfEngine.initEngine("LEAFY_GAME", LfRenderType.DRC, new MyGameState());
+     * 
      * @param gamePath The path to the game folder ("LEAFY_GAME" by default)
      * @param renderMode The render mode of the engine
      * @param state The initial state
-     * 
-     * Example:
-     * ```
-     * LfEngine.initEngine("LEAFY_GAME", LfRenderType.DRC, new MyGameState());
-     * ```
      */
     public static function initEngine(gamePath:String, renderMode:LfRenderType = LfRenderType.DRC, state:LfState):Void {
         #if !disableHxCrashHandler

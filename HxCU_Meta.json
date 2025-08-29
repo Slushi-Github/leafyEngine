@@ -1,5 +1,6 @@
 {
-    "libVersion": "1.5.5",
+    "libVersion": "1.5.7",
+    "customUDPPort": "",
     "haxeLibs": [
         "hxu_sdl2",
         "hxu_jansson",

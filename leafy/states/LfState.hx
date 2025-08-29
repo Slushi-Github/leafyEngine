@@ -5,10 +5,10 @@
 
 package leafy.states;
 
-import haxe.ds.List;
+import haxe.Unserializer.TypeResolver;
 import Std;
+
 import leafy.objects.LfObject;
-import leafy.gamepad.LfGamepad;
 
 /**
  * Base class for Leafy states
@@ -20,6 +20,21 @@ class LfState extends LfBase {
      * The list of objects in the state
      */
     public var stateObjects:Array<LfObject> = new Array<LfObject>();
+
+    /**
+     * The sub-state of the state
+     */
+    public var subState:LfSubState = null;
+
+    // /**
+    //  * Whether the state should keep updating
+    //  */
+    // public var keepUpdating:Bool = true;
+
+    // /**
+    //  * Whether the state should keep rendering
+    //  */
+    // public var keepRendering:Bool = true;
 
     public function new() {
         super();
@@ -41,16 +56,27 @@ class LfState extends LfBase {
      * @param elapsed The elapsed time
      */
     override public function update(elapsed:Float):Void {
+        // if (!keepUpdating) {
+        //     return;
+        // }
+
         for (object in this.stateObjects) {
             object.update(elapsed);
         }
+
+        if (this.subState != null) {
+            this.subState.update(elapsed);
+        }
     }
 
-
     /**
-     * /* Function called when the state is rendered
+     * Function called when the state is rendered
      */
     override public function render():Void {
+        // if (!keepRendering) {
+        //     return;
+        // }
+
         if (this.stateObjects == []) {
             return;
         }
@@ -59,6 +85,10 @@ class LfState extends LfBase {
             if (untyped __cpp__("obj != nullptr")) {
                 obj.render();
             }
+        }
+
+        if (this.subState != null) {
+            this.subState.render();
         }
     }
     
@@ -76,6 +106,10 @@ class LfState extends LfBase {
                 continue;
             }
             object.destroy();
+        }
+
+        if (this.subState != null) {
+            this.subState.destroy();
         }
 
         this.stateObjects.pop();
@@ -109,7 +143,30 @@ for (size_t i = 0; i < stateObjects->size(); i++) {
     }
 }
         ");
+    }
 
-        
+    /**
+     * Function to set the sub-state of the state
+     * @param newSubState The new sub-state to set
+     */
+    public function setSubState(newSubState:LfSubState):Void {
+        if (newSubState == null) {
+            return;
+        }
+
+        if (this.subState != null) {
+            this.subState.destroy();
+        }
+
+        this.subState = newSubState;
+        this.subState.create();
+    }
+
+    /**
+     * Function to get the sub-state of the state
+     * @return The current sub-state
+     */
+    public function getSubState():LfSubState {
+        return this.subState;
     }
 }

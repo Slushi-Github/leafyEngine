@@ -78,7 +78,7 @@ A code probably similar to one from [HaxeFlixel](https://haxeflixel.com) right?
 	- [x] buttons (Partially broken)
 - [x] Audio support with precise control (Only one music or sound at the same time)
 - [x] States 
-- [ ] Substates
+- [x] Substates
 - [x] Collisions
 - [x] Sprites basic physics
 - [x] Tweens and easing functions

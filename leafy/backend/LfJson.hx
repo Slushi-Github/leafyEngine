@@ -19,12 +19,12 @@ class LfJson {
     /**
      * Pointer to the JSON object
      */
-    private var jsonPtr:Ptr<Json_t>;
+    public var jsonPtr:Ptr<Json_t>;
 
     /**
      * JSON error object
      */
-    private var jsonError:Json_error_t;
+    public var jsonError:Json_error_t;
 
     /**
      * Constructor for LfJson

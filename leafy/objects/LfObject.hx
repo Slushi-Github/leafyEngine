@@ -8,8 +8,9 @@ package leafy.objects;
 import Std;
 
 import sdl2.SDL_Render.SDL_Texture;
-import sdl2.SDL_Pixels.SDL_Color;
 import sdl2.SDL_Render;
+import sdl2.SDL_Render.SDL_RendererFlip;
+import sdl2.SDL_Pixels.SDL_Color;
 import sdl2.SDL_Rect;
 import sdl2.SDL_Surface.SDL_Surface;
 import sdl2.SDL_Image;
@@ -17,7 +18,6 @@ import sdl2.SDL_Image;
 import leafy.backend.sdl.LfWindow;
 import leafy.utils.LfUtils.LfVector2D;
 import leafy.utils.LfUtils;
-
 
 /**
  * Type of the object
@@ -37,10 +37,22 @@ enum CenterMode {
     CENTER_XY;
 }
 
+/**
+ * Scale mode of the object
+ */
 enum ScaleMode {
     NEAREST;
     LINEAR;
     BEST;
+}
+
+/**
+ * Flip mode of the object
+ */
+enum FlipMode {
+    NONE;
+    HORIZONTAL;
+    VERTICAL;
 }
 
 /**
@@ -183,6 +195,11 @@ class LfObject extends LfBase {
      */
     public var scaleMode:ScaleMode = null;
 
+    /**
+     * Flip mode of the object
+     */
+    public var flipMode:FlipMode = FlipMode.NONE;
+
     ////////////////////////////////
 
     override public function update(elapsed:Float):Void {
@@ -241,7 +258,7 @@ class LfObject extends LfBase {
         // }
 
         SDL_Render.SDL_SetTextureAlphaMod(this.sdlTexturePtr, Std.int(this.alpha * 255));
-        SDL_Render.SDL_RenderCopyEx(LfWindow.currentRenderer, this.sdlTexturePtr, null, this.sdlRect, this.angle, null, SDL_FLIP_NONE);
+        SDL_Render.SDL_RenderCopyEx(LfWindow.currentRenderer, this.sdlTexturePtr, null, this.sdlRect, this.angle, null, convertFlipModeToSDL(this.flipMode));
     }
 
     /**
@@ -374,6 +391,18 @@ class LfObject extends LfBase {
     }
 
     /**
+     * Set the flip mode of the object texture
+     * @param flipMode
+     */
+    public function setFlipMode(flipMode:FlipMode):Void {
+        if (this.sdlTexturePtr == null) {
+            LeafyDebug.log("Failed to set flip mode for object: [" + this.name + "] - Texture is null (" + SDL_Image.IMG_GetError().toString() + ")", ERROR);
+            return;
+        }
+        this.flipMode = flipMode;
+    }
+
+    /**
      * Convert a Leafy object scale mode to an SDL scale mode
      * @param scaleMode 
      * @return SDL_ScaleMode
@@ -388,6 +417,24 @@ class LfObject extends LfBase {
                 return SDL_ScaleMode.SDL_ScaleModeBest;
             default:
                 return SDL_ScaleMode.SDL_ScaleModeNearest;
+        }
+    }
+
+    /**
+     * Convert a Leafy object flip mode to an SDL flip mode
+     * @param flipMode 
+     * @return SDL_Render.SDL_RendererFlip
+     */
+    private function convertFlipModeToSDL(flipMode:FlipMode):SDL_RendererFlip {
+        switch (flipMode) {
+            case FlipMode.NONE:
+                return SDL_RendererFlip.SDL_FLIP_NONE;
+            case FlipMode.HORIZONTAL:
+                return SDL_RendererFlip.SDL_FLIP_HORIZONTAL;
+            case FlipMode.VERTICAL:
+                return SDL_RendererFlip.SDL_FLIP_VERTICAL;
+            default:
+                return SDL_RendererFlip.SDL_FLIP_NONE;
         }
     }
 
