@@ -88,6 +88,20 @@ class LfUtils {
         return dividend - Math.floor(dividend / divisor) * divisor;
     }
 
+    /**
+     * Get the HxCompileU metadata from the C++ defines
+     */
+    public static function getHxCUMetadata():{version:String, date:String, projectName:String} {
+        var hxcuDefinedVersion:String = untyped __cpp__("HXCOMPILEU_VERSION");
+        var hxcuDefinedDate:String = untyped __cpp__("HXCOMPILEU_HAXE_APPROXIMATED_COMPILATION_DATE");
+        var hxcuDefinedProjectName:String = untyped __cpp__("HXCOMPILEU_JSON_WIIU_PROJECTNAME");
+        return {
+            version: hxcuDefinedVersion,
+            date: hxcuDefinedDate,
+            projectName: hxcuDefinedProjectName
+        };
+    }
+
     // 3D functions
     // private function renderAs3D():Void {
     // var tex = this.sdlTexturePtr;

@@ -5,6 +5,7 @@
 
 package leafy.backend;
 
+import leafy.utils.LfUtils;
 import Std;
 
 import wut.coreinit.Debug;
@@ -248,14 +249,15 @@ class LeafyDebug {
 
             var currentDateStr:String = getCurrentDate();
             var currentDateMod:String = LfStringUtils.stringReplacer(currentDateStr, "/", "_");
-    
-            var logFile = logsDir + "leafyLog_" + currentTimeMod + "-" + currentDateMod + ".txt";
-    
-            if (!LfSystemPaths.exists(logFile)) {
-                var hxcuDefinedVersion:String = untyped __cpp__("HXCOMPILEU_VERSION");
-                var hxcuDefinedDate:String = untyped __cpp__("HXCOMPILEU_HAXE_APPROXIMATED_COMPILATION_DATE");
 
-                LfFile.writeFile(logFile, "Leafy Engine [" + LfEngine.VERSION + "] Log File\n" + " - " + currentDateStr + " | " + currentTimeStr + "\n - Compilated with HxCompileU v" + hxcuDefinedVersion + "\n - Aproximate CPP compilation date: " + hxcuDefinedDate + "\n-------------------\n\n");
+            var hxcuProjectName:String = LfUtils.getHxCUMetadata().projectName;
+            var logFile = logsDir + hxcuProjectName + "_leafyLog_" + currentTimeMod + "-" + currentDateMod + ".txt";
+
+            if (!LfSystemPaths.exists(logFile)) {
+                var hxcuDefinedVersion:String = LfUtils.getHxCUMetadata().version;
+                var hxcuDefinedDate:String = LfUtils.getHxCUMetadata().date;
+
+                LfFile.writeFile(logFile, "Leafy Engine [" + LfEngine.VERSION + "] Log File\n" + " - " + currentDateStr + " | " + currentTimeStr + "\n - HxCompileU project name: " + hxcuProjectName + "\n - Compilated with HxCompileU v" + hxcuDefinedVersion + "\n - Aproximate CPP compilation date: " + hxcuDefinedDate + "\n-------------------\n\n");
             }
     
             currentLogFilePath = logFile;

@@ -49,6 +49,9 @@ class LfTimer {
         // Update all timers
         for (i in 0..._timers.length) {
             var timer = _timers[i];
+            if (untyped __cpp__("timer == nullptr")) {
+                continue;
+            }
             timer.time -= _deltaTime;
             if (timer.time <= 0) {
                 if (untyped __cpp__("timer->callback != NULL")) {

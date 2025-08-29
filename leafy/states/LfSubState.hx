@@ -41,7 +41,9 @@ class LfSubState extends LfBase {
      */
     override public function create():Void {
         for (object in this.subStateObjects) {
-            object.create();
+            if (untyped __cpp__("object != nullptr")) {
+                object.create();
+            }
         }
 
         this.isVisible = true;
@@ -57,7 +59,9 @@ class LfSubState extends LfBase {
         }
 
         for (object in this.subStateObjects) {
-            object.update(elapsed);
+            if (untyped __cpp__("object != nullptr")) {
+                object.update(elapsed);
+            }
         }
     }
 
@@ -92,7 +96,7 @@ class LfSubState extends LfBase {
         }
 
         for (object in this.subStateObjects) {
-            if (object == null) {
+            if (untyped __cpp__("object == nullptr")) {
                 LeafyDebug.log("Object [" + Std.string(object) + "] is null, skipping", WARNING);
                 continue;
             }
@@ -109,7 +113,7 @@ class LfSubState extends LfBase {
      * @param object The object to add
      */
     public function addObject(object:LfObject):Void {
-        if (object == null) {
+        if (untyped __cpp__("object == nullptr")) {
             return;
         }
 
@@ -122,6 +126,10 @@ class LfSubState extends LfBase {
      */
     public function removeObject(object:LfObject):Void {
         untyped __cpp__("
+if (object == nullptr) {
+    return;
+}
+
 for (size_t i = 0; i < subStateObjects->size(); i++) {
     auto obj = subStateObjects->at(i);
     if (obj == object) {

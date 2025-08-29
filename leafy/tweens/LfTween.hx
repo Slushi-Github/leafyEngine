@@ -282,6 +282,10 @@ class LfTween {
      */
     public static function removeTween(tween:LfTween):Void {
         untyped __cpp__("
+if (tween == nullptr) {
+    return;
+}
+
 for (size_t i = 0; i < _tweens->size(); i++) {
     auto obj = _tweens->at(i);
     if (obj == tween) {

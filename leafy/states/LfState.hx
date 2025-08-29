@@ -47,7 +47,9 @@ class LfState extends LfBase {
      */
     override public function create():Void {
         for (object in this.stateObjects) {
-            object.create();
+            if (untyped __cpp__("object != nullptr")) {
+                object.create();
+            }
         }
     }
 
@@ -61,10 +63,12 @@ class LfState extends LfBase {
         // }
 
         for (object in this.stateObjects) {
-            object.update(elapsed);
+            if (untyped __cpp__("object != nullptr")) {
+                object.update(elapsed);
+            }
         }
 
-        if (this.subState != null) {
+        if (untyped __cpp__("subState != NULL")) {
             this.subState.update(elapsed);
         }
     }
@@ -87,7 +91,7 @@ class LfState extends LfBase {
             }
         }
 
-        if (this.subState != null) {
+        if (untyped __cpp__("subState != NULL")) {
             this.subState.render();
         }
     }
@@ -101,14 +105,14 @@ class LfState extends LfBase {
         }
 
         for (object in this.stateObjects) {
-            if (object == null) {
+            if (untyped __cpp__("object == nullptr")) {
                 LeafyDebug.log("Object [" + Std.string(object) + "] is null, skipping", WARNING);
                 continue;
             }
             object.destroy();
         }
 
-        if (this.subState != null) {
+        if (untyped __cpp__("subState != NULL")) {
             this.subState.destroy();
         }
 
@@ -122,7 +126,7 @@ class LfState extends LfBase {
      * @param object The object to add
      */
     public function addObject(object:LfObject):Void {
-        if (object == null) {
+        if (untyped __cpp__("object == nullptr")) {
             return;
         }
 
@@ -135,6 +139,10 @@ class LfState extends LfBase {
      */
     public function removeObject(object:LfObject):Void {
         untyped __cpp__("
+if (object == nullptr) {
+    return;
+}
+    
 for (size_t i = 0; i < stateObjects->size(); i++) {
     auto obj = stateObjects->at(i);
     if (obj == object) {
@@ -154,12 +162,14 @@ for (size_t i = 0; i < stateObjects->size(); i++) {
             return;
         }
 
-        if (this.subState != null) {
+        if (untyped __cpp__("subState != NULL")) {
             this.subState.destroy();
         }
 
         this.subState = newSubState;
-        this.subState.create();
+        if (untyped __cpp__("subState != NULL")) {
+            this.subState.create();
+        }
     }
 
     /**
