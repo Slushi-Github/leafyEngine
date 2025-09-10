@@ -49,13 +49,13 @@ import leafy.Leafy;
 var isTouched:Bool = Leafy.wiiuGamepad.touchPressed();
 
 // Get if the touchscreen is just pressed
-var isTouchReleased:Bool = Leafy.wiiuGamepad.isTouchJustPressed();
+var isTouchJustPressed:Bool = Leafy.wiiuGamepad.touchJustPressed();
 
 // Get if the touchscreen is released
-var isTouchReleased:Bool = Leafy.wiiuGamepad.isTouchReleased();
+var isTouchReleased:Bool = Leafy.wiiuGamepad.touchReleased();
 
 // Get if the touchscreen is just released
-var isTouchReleased:Bool = Leafy.wiiuGamepad.isTouchJustReleased();
+var isTouchJustReleased:Bool = Leafy.wiiuGamepad.touchJustReleased();
 
 // Get if the touchscreen is touching
 var isTouching:Bool = Leafy.wiiuGamepad.isTouching();
