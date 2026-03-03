@@ -1,3 +1,9 @@
+# HEY! This project is canceled!
+
+Please [read this](https://github.com/Slushi-Github/hxCompileU?tab=readme-ov-file#i-consider-this-project-finished-and-canceled-at-the-same-time). If you want another engine from me, I recommend [Vupx Engine](https://github.com/Slushi-Github/Vupx-Engine).
+
+-----
+
 <h1 align="center">Leafy Engine</h1>
 <h2 align="center">The first 2D game engine for the Wii U made with Haxe!</h2>
 
